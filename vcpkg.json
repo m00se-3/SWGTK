@@ -1,0 +1,12 @@
+{
+  "name": "card-table-simulator",
+  "description": "A simple card game program that is user customizable.",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "sdl2",
+    "sdl2-image",
+    "sdl2-ttf",
+    "sdl2-mixer"
+  ]
+
+}
