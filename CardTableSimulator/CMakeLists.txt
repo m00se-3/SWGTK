@@ -31,6 +31,7 @@ target_link_libraries(
 	$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
 	$<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+	fmt::fmt-header-only
 )
 
 target_sources(
@@ -39,8 +40,10 @@ target_sources(
 	PUBLIC 
 
 	${CMAKE_CURRENT_LIST_DIR}/include/CardTableSimulator.hpp
+	${CMAKE_CURRENT_LIST_DIR}/include/SDLApp.hpp
 
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/src/CardTableSimulator.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/SDLApp.cpp
 )
