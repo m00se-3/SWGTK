@@ -21,7 +21,7 @@ class SDLApp {
 	SDL_Window* _window = nullptr;
 
 
-	timePoint _lastFrameTime;
+	timePoint _lastFrameTime, _currentFrameTime;
 	bool _running = true;
 
 	// A mostly unused flag, until we get 'headless server' mode.
@@ -38,6 +38,7 @@ public:
 	void Run();
 	void InitHeadless();
 	void InitGraphical();
+	void EventsAndTimeStep();
 
 	// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__

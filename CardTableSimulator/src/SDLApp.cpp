@@ -11,6 +11,8 @@
 SDLApp::SDLApp() { InitGraphical(); }
 #else
 SDLApp::SDLApp(int argc, char** argv)
+	: _lastFrameTime(std::chrono::high_resolution_clock::now()),
+	  _currentFrameTime()
 {
 	// Because I plan on eventually having a headless version, I'm guarding
 	// window creation with the --headless cmd flag.
@@ -41,6 +43,10 @@ SDLApp::~SDLApp()
 
 void SDLApp::Run()
 {
+	SDL_ShowWindow(_window);
+
+	_currentFrameTime = std::chrono::high_resolution_clock::now();
+
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
 
@@ -48,7 +54,7 @@ void SDLApp::Run()
 
 	while (_running)
 	{
-
+		EventsAndTimeStep();
 	}
 
 #endif // __EMSCRIPTEN__
@@ -68,6 +74,14 @@ void SDLApp::InitGraphical()
 
 	if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
 	{
+		_window = SDL_CreateWindow("Card Table Simulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN);
+
+		if (!_window)
+		{
+			SDL_Log("Failed to create window. - %s\n", SDL_GetError());
+			return;
+		}
+
 
 	}
 	else
@@ -75,6 +89,23 @@ void SDLApp::InitGraphical()
 		SDL_Log("An SDL Library failed to initialize. - %s\n", SDL_GetError());
 		return;
 	}
+}
+
+void SDLApp::EventsAndTimeStep()
+{
+	SDL_Event e;
+
+	while (SDL_PollEvent(&e))
+	{
+		switch (e.type)
+		{
+
+		}
+	}
+
+	auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
+	_lastFrameTime = _currentFrameTime;
+
 }
 
 #ifdef __EMSCRIPTEN__
