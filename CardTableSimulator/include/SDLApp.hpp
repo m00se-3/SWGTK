@@ -28,10 +28,16 @@ class SDLApp {
 	bool _headless = false;
 
 public:
+#ifdef __EMSCRIPTEN__
+	SDLApp();
+#else
 	SDLApp(int argc, char** argv);
+#endif
 	~SDLApp();
 
 	void Run();
+	void InitHeadless();
+	void InitGraphical();
 
 	// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__

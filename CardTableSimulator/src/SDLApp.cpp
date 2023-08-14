@@ -7,33 +7,24 @@
 
 #include <cstring>
 
-
+#ifdef __EMSCRIPTEN__
+SDLApp::SDLApp() { InitGraphical(); }
+#else
 SDLApp::SDLApp(int argc, char** argv)
 {
 	// Because I plan on eventually having a headless version, I'm guarding
 	// window creation with the --headless cmd flag.
 	if (argc > 1 && strcmp(argv[1], "--headless") != 0)
 	{
-		const int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
-		const int ImageFlags = IMG_INIT_PNG;
-		const int MixFlags = 0;
-
-		if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
-		{
-
-		}
-		else
-		{
-			SDL_Log("An SDL Library failed to initialize. - %s\n", SDL_GetError());
-			return;
-		}
+		InitHeadless();
 	}
 	else
 	{
-		_headless = true;
+		InitGraphical();
 	}
 
 }
+#endif // __EMSCRIPTEN__
 
 SDLApp::~SDLApp()
 {
@@ -62,6 +53,28 @@ void SDLApp::Run()
 
 #endif // __EMSCRIPTEN__
 
+}
+
+void SDLApp::InitHeadless()
+{
+	_headless = true;
+}
+
+void SDLApp::InitGraphical()
+{
+	const int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
+	const int ImageFlags = IMG_INIT_PNG;
+	const int MixFlags = 0;
+
+	if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
+	{
+
+	}
+	else
+	{
+		SDL_Log("An SDL Library failed to initialize. - %s\n", SDL_GetError());
+		return;
+	}
 }
 
 #ifdef __EMSCRIPTEN__
