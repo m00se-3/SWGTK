@@ -39,11 +39,12 @@ target_sources(
 
 	PUBLIC 
 
-	${CMAKE_CURRENT_LIST_DIR}/include/CardTableSimulator.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/SDLApp.hpp
+	${CMAKE_CURRENT_LIST_DIR}/include/Texture.hpp
 
 	PRIVATE 
 
-	${CMAKE_CURRENT_LIST_DIR}/src/CardTableSimulator.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/SDLApp.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/Texture.cpp
 )
