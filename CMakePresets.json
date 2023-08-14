@@ -7,7 +7,7 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "17"
+        "CMAKE_CXX_STANDARD": "20"
       },
       "environment": {
         "External_Sources": "${sourceDir}/external"
