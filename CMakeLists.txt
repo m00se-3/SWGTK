@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.25)
 project ("CardTableSimulator")
 
 # Clang compiler warning flags go here.
-list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic")
+list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic", "-Wconversion")
 
 # If building for emscripten, we want to add the cmake folder for our local dependencies to the search path.
 if(EMSCRIPTEN)
