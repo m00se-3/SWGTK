@@ -13,6 +13,15 @@ if(EMSCRIPTEN)
 message("-- Emscripten build enabled!!!")
 
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+include(${CMAKE_CURRENT_LIST_DIR}/CardTableSimulator/external/cmake/BuildLua.cmake)
+
+else()
+
+include(FindLua)
+find_package(Lua REQUIRED)
+find_package(sol2 CONFIG REQUIRED)
+
 endif()
 
 find_package(SDL2 CONFIG REQUIRED)
