@@ -3,21 +3,13 @@
 # If we are building for emscripten.
 if(EMSCRIPTEN)
 
-endif(EMSCRIPTEN)
+else()
 
 target_compile_definitions(
 	CardTableSimulator
 
 	PRIVATE 
 
-)
-
-target_include_directories(
-	CardTableSimulator
-
-	PUBLIC 
-
-	${CMAKE_CURRENT_LIST_DIR}/include 
 )
 
 target_link_libraries(
@@ -31,7 +23,16 @@ target_link_libraries(
 	$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
 	$<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
-	fmt::fmt-header-only
+)
+
+endif(EMSCRIPTEN)
+
+target_include_directories(
+	CardTableSimulator
+
+	PUBLIC 
+
+	${CMAKE_CURRENT_LIST_DIR}/include 
 )
 
 target_sources(
