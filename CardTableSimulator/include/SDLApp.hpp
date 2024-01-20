@@ -12,44 +12,47 @@ extern "C" {
 	struct SDL_Renderer;
 }
 
-/*
-	This class is designed to handle SDL windows and events.
-*/
-class SDLApp {
+namespace cts
+{
 
-	using timePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
+	/*
+		This class is designed to handle SDL windows and events.
+	*/
+	class SDLApp {
 
-	SDL_Window* _window = nullptr;
-	SDL_Renderer* _renderer = nullptr;
+		using timePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
-	timePoint _lastFrameTime, _currentFrameTime;
-	bool _running = true;
+		SDL_Window* _window = nullptr;
+		SDL_Renderer* _renderer = nullptr;
 
-	// A mostly unused flag, until we get 'headless server' mode.
-	bool _headless = false;
+		timePoint _lastFrameTime, _currentFrameTime;
+		bool _running = true;
 
-public:
+		// A mostly unused flag, until we get 'headless server' mode.
+		bool _headless = false;
+
+	public:
 #ifdef __EMSCRIPTEN__
-	SDLApp();
+		SDLApp();
 #else
-	SDLApp(int argc, char** argv);
+		SDLApp(int argc, char** argv);
 #endif
-	~SDLApp();
+		~SDLApp();
 
-	void Run();
-	void InitHeadless();
-	void InitGraphical();
-	void EventsAndTimeStep();
-	void CloseApp();
+		void Run();
+		void InitHeadless();
+		void InitGraphical();
+		void EventsAndTimeStep();
+		void CloseApp();
 
-	// The following functions are for emscripten.
+		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__
 
-	const timePoint& GetLastFrame();
+		const timePoint& GetLastFrame();
 
-	static void EmscriptenUpdate(void* ptr);
+		static void EmscriptenUpdate(void* ptr);
 
 #endif // __EMSCRIPTEN__
-};
-
+	};
+}
 #endif // !SDLAPP_HPP
