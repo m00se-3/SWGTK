@@ -23,6 +23,7 @@
       "inherits": "base",
       "hidden": true,
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "MinSizeRel"
       }
     },
     {
@@ -57,22 +58,20 @@
     },
     {
       "name": "em-win",
-      "displayName": "Emscripten Debug(Win)",
+      "displayName": "Emscripten (Win)",
       "inherits": "embase",
       "hidden": true,
       "generator": "MinGW Makefiles",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "MinSizeRel"
       }
     },
     {
       "name": "em-unix",
-      "displayName": "Emscripten Debug(Unix)",
+      "displayName": "Emscripten (Unix)",
       "inherits": "embase",
       "hidden": true,
       "generator": "Unix Makefiles",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "MinSizeRel"
       }
     },
     {
