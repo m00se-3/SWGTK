@@ -16,7 +16,7 @@ SDLApp::SDLApp(int argc, char** argv)
 {
 	// Because I plan on eventually having a headless version, I'm guarding
 	// window creation with the --headless cmd flag.
-	if (argc > 1 && strcmp(argv[1], "--headless") != 0)
+	if (argc > 1 && strcmp(argv[1], "--headless") == 0)
 	{
 		InitHeadless();
 	}
@@ -32,6 +32,7 @@ SDLApp::~SDLApp()
 {
 	if (!_headless)
 	{
+		SDL_DestroyRenderer(_renderer);
 		SDL_DestroyWindow(_window);
 		
 		Mix_Quit();
@@ -43,7 +44,10 @@ SDLApp::~SDLApp()
 
 void SDLApp::Run()
 {
-	SDL_ShowWindow(_window);
+	if (!_headless)
+	{
+		SDL_ShowWindow(_window);
+	}
 
 	_currentFrameTime = std::chrono::high_resolution_clock::now();
 
@@ -74,14 +78,14 @@ void SDLApp::InitGraphical()
 
 	if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
 	{
-		_window = SDL_CreateWindow("Card Table Simulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN);
-
-		if (!_window)
+		if (SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_HIDDEN, &_window, &_renderer) != 0)
 		{
 			SDL_Log("Failed to create window. - %s\n", SDL_GetError());
 			return;
 		}
-
+		
+		SDL_SetWindowTitle(_window, "Card Table");
+		SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
 	}
 	else
@@ -100,6 +104,36 @@ void SDLApp::EventsAndTimeStep()
 		switch (e.type)
 		{
 
+		case SDL_MOUSEMOTION:
+		{
+			break;
+		}
+
+		case SDL_MOUSEBUTTONDOWN:
+		{
+			break;
+		}
+
+		case SDL_MOUSEBUTTONUP:
+		{
+			break;
+		}
+
+		case SDL_KEYDOWN:
+		{
+			break;
+		}
+
+		case SDL_KEYUP:
+		{
+			break;
+		}
+
+		case SDL_QUIT:
+		{
+			CloseApp();
+			break;
+		}
 		}
 	}
 
@@ -108,13 +142,23 @@ void SDLApp::EventsAndTimeStep()
 
 }
 
+void SDLApp::CloseApp()
+{
+#ifdef __EMSCRIPTEN__
+	emscripten_cancel_main_loop();
+#else
+	_running = false;
+
+#endif
+}
+
 #ifdef __EMSCRIPTEN__
 
 const SDLApp::timePoint& SDLApp::GetLastFrame() { return _lastFrameTime; }
 
 void SDLApp::EmscriptenUpdate(void* ptr)
 {
-
+	static_cast<SDLApp*>(ptr)->EventsAndTimeStep();
 }
 
 #endif

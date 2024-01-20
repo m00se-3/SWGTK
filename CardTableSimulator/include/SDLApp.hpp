@@ -9,6 +9,7 @@
 
 extern "C" {
 	struct SDL_Window;
+	struct SDL_Renderer;
 }
 
 /*
@@ -19,7 +20,7 @@ class SDLApp {
 	using timePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
 	SDL_Window* _window = nullptr;
-
+	SDL_Renderer* _renderer = nullptr;
 
 	timePoint _lastFrameTime, _currentFrameTime;
 	bool _running = true;
@@ -39,6 +40,7 @@ public:
 	void InitHeadless();
 	void InitGraphical();
 	void EventsAndTimeStep();
+	void CloseApp();
 
 	// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__
