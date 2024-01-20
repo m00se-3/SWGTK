@@ -21,7 +21,18 @@ namespace cts
 		SDL_DestroyTexture(_texture);
 	}
 
+	Texture& Texture::operator=(const Texture& other)
+	{
+		Assign(other.Get());
+	}
+
 	SDL_Texture* Texture::Get() const { return _texture; }
+
+	void Texture::Assign(SDL_Texture* tex)
+	{
+		SDL_DestroyTexture(_texture);
+		_texture = tex;
+	}
 
 	void Texture::SetBlend(const SDL_BlendMode& mode)
 	{
