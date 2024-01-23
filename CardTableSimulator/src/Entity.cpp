@@ -1,0 +1,60 @@
+#include "Entity.hpp"
+
+namespace cts
+{
+	uint32_t Registry::_entityIDCounter = 0u;
+	
+	Registry::CreateResult Registry::Create()
+	{
+		if (_entities.size() < _entities.capacity())
+		{
+			auto entity = _entities.emplace_back(_entityIDCounter);
+			_compMap.insert_or_assign(entity, std::unordered_map<std::string, uint32_t>{});
+			++_entityIDCounter;
+			return entity;
+		}
+		else if(!_freeEntities.empty())
+		{
+			_entities[_freeEntities.front()] = _entityIDCounter;
+			++_entityIDCounter;
+			_freeEntities.pop_front();
+			return _entityIDCounter;
+		}
+		else
+		{
+			return EntityError::no_storage;
+		}
+	}
+
+	void Registry::SetComponentCapacity(const std::string& name, uint32_t size)
+	{
+		if (_compContainer.contains(name))
+		{
+			_compContainer.at(name).reserve(size);
+		}
+	}
+
+	void Registry::Destroy(Entity entity)
+	{
+		size_t location = 0u;
+
+		for (auto ent : _entities)
+		{
+			if (ent == entity)
+			{
+				_freeEntities.emplace_back(location);
+				
+				for (auto& [name, id] : _compMap.at(ent))
+				{
+					_freeLists.at(name).emplace_back(id);
+					_compContainer.at(name)[id] = std::monostate{};
+				}
+
+				_compMap.erase(ent);
+
+				break;
+			}
+			++location;
+		}
+	}
+}
