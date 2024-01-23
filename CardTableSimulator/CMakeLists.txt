@@ -71,6 +71,8 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/include/Texture.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Scene.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Input.hpp
+	${CMAKE_CURRENT_LIST_DIR}/include/Entity.hpp
+	${CMAKE_CURRENT_LIST_DIR}/include/Component.hpp
 
 	PRIVATE 
 
@@ -79,4 +81,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/src/Texture.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/Input.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/Entity.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/Component.cpp
 )
