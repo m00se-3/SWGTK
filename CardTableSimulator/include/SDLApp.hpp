@@ -2,6 +2,7 @@
 #define SDLAPP_HPP
 
 #include <chrono>
+#include <memory>
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
@@ -49,6 +50,8 @@ namespace cts
 
 		SDL_Window* _window = nullptr;
 		SDL_Renderer* _renderer = nullptr;
+
+		std::unique_ptr<Scene> _currentScene;
 
 		timePoint _lastFrameTime, _currentFrameTime;
 		bool _running = true;
