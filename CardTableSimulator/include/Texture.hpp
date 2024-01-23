@@ -15,9 +15,6 @@ namespace cts
 		A simple wrapper class for SDL_Texture
 	*/
 	class Texture {
-
-		SDL_Texture* _texture = nullptr;
-
 	public:
 		Texture() = default;
 		Texture(SDL_Renderer* ren, const std::filesystem::path& filepath);
@@ -39,6 +36,8 @@ namespace cts
 
 		SDL_Texture* Get() const;
 
+	private:
+		SDL_Texture* _texture = nullptr;
 	};
 }
 #endif // !TEXTURE_HPP
