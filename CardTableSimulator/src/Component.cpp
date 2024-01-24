@@ -23,9 +23,4 @@ namespace cts
 	{
 	}
 
-	Component::Component(uint32_t size)
-	{
-		_comps.reserve(size);
-	}
-
 }

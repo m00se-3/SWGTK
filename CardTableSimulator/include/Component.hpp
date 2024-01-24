@@ -41,18 +41,6 @@ namespace cts
 		vec4f(float x, float y, float w, float h);
 	};
 
-	class Component
-	{
-	public:
-		using Type = std::variant<std::monostate, vec2i, vec2f, vec4i, vec4f>;
-
-		Component(uint32_t size);
-
-
-	private:
-		std::vector<Type> _comps;
-	};
-
 }
 
 #endif // !CTS_COMPONENT_HPP
