@@ -5,7 +5,6 @@
 
 #include "sol/sol.hpp"
 
-#include "Entity.hpp"
 
 extern "C"
 {
@@ -22,14 +21,13 @@ namespace cts
 		~Scene() = default;
 
 	protected:
-		virtual bool Init(const std::string& gameDir) = 0;
+		virtual bool Create(const std::string& gameDir) = 0;
 		virtual bool Update(float dt) = 0;
 
 
 	private:
 		SDL_Renderer* _renderer = nullptr;	// Does not own the pointer.
 		sol::state _lua;
-		Registry _registry;
 	};
 
 }
