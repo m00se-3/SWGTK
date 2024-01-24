@@ -28,6 +28,7 @@ find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(SDL2_mixer CONFIG REQUIRED)
+find_package(unofficial-nuklear CONFIG REQUIRED)
 
 # Include sub-projects.
 add_subdirectory ("CardTableSimulator")

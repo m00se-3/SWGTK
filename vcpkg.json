@@ -8,7 +8,8 @@
     "sdl2-ttf",
     "sdl2-mixer",
     "lua",
-    "sol2"
+    "sol2",
+    "nuklear"
   ]
 
 }
