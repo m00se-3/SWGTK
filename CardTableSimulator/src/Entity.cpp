@@ -2,23 +2,21 @@
 
 namespace cts
 {
-	uint32_t Registry::_entityIDCounter = 0u;
-	
 	Registry::CreateResult Registry::Create()
 	{
-		if (_entities.size() < _entities.capacity())
+		const auto size = _entities.size();
+		
+		if (size < _entities.capacity())
 		{
-			auto entity = _entities.emplace_back(_entityIDCounter);
+			auto entity = _entities.emplace_back(size);
 			_compMap.insert_or_assign(entity, std::unordered_map<std::string, uint32_t>{});
-			++_entityIDCounter;
 			return entity;
 		}
 		else if(!_freeEntities.empty())
 		{
-			_entities[_freeEntities.front()] = _entityIDCounter;
-			++_entityIDCounter;
+			auto id = _freeEntities.front();
 			_freeEntities.pop_front();
-			return _entityIDCounter;
+			return id;
 		}
 		else
 		{
@@ -32,6 +30,11 @@ namespace cts
 		{
 			_compContainer.at(name).reserve(size);
 		}
+	}
+
+	void Registry::SetEntityCapacity(uint32_t size)
+	{
+		_entities.reserve(size);
 	}
 
 	void Registry::Destroy(Entity entity)
@@ -50,7 +53,7 @@ namespace cts
 					_compContainer.at(name)[id] = std::monostate{};
 				}
 
-				_compMap.erase(ent);
+				_compMap.at(ent).clear();
 
 				break;
 			}

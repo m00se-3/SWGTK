@@ -12,20 +12,22 @@ namespace cts
 {
 	using Entity = uint32_t;
 
-	enum class EntityError : uint32_t
+	enum class EntityError : int
 	{
-		no_storage
+		no_storage = -1
 	};
 
 	class Registry
 	{
 	public:
 		using CreateResult = std::variant<std::monostate, Entity, EntityError>;
+		using Component = std::variant<std::monostate, vec2i, vec2f, vec4i, vec4f>;
 
 		Registry() = default;
 
-		[[nodiscard]] Registry::CreateResult Create();
+		[[nodiscard]] CreateResult Create();
 		void SetComponentCapacity(const std::string& name, uint32_t size);
+		void SetEntityCapacity(uint32_t size);
 		void Destroy(Entity entity);
 
 		template<typename CompType>
@@ -33,7 +35,7 @@ namespace cts
 		{
 			if (!_compContainer.contains(name))	// Assuming the component is not already registered.
 			{
-				_compContainer.insert_or_assign(name, std::vector<Component::Type>{});
+				_compContainer.insert_or_assign(name, std::vector<Component>{});
 				_freeLists.insert_or_assign(name, std::list<uint32_t>{});
 			}
 		}
@@ -79,7 +81,9 @@ namespace cts
 
 			if (_compContainer.contains(name) && !ent.contains(name))	// Assuming the component is already registered.
 			{
-				_freeLists.at(name).emplace_back(ent.at(name));
+				auto& id = ent.at(name)
+				_freeLists.at(name).emplace_back(id);
+				_compContainer.at(name)[id] = std::monostate{};
 				ent.erase(name);
 			}
 		}
@@ -91,10 +95,9 @@ namespace cts
 		std::list<Entity> _freeEntities;
 
 		std::map<Entity, std::unordered_map<std::string, uint32_t>> _compMap;
-		std::unordered_map<std::string, std::vector<Component::Type>> _compContainer;
+		std::unordered_map<std::string, std::vector<Component>> _compContainer;
 		std::unordered_map<std::string, std::list<uint32_t>> _freeLists;
 
-		static uint32_t _entityIDCounter;
 	};
 
 }
