@@ -10,7 +10,8 @@
         "CMAKE_CXX_STANDARD": "20"
       },
       "environment": {
-        "External_Sources": "${sourceDir}/external"
+        "External_Sources": "${sourceDir}/external",
+        "Assets_Dir": "${sourceDir}/assets"
       },
       "condition": {
         "type": "equals",
