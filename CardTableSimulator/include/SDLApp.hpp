@@ -8,6 +8,17 @@
 #include "emscripten.h"
 #endif
 
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_STANDARD_IO
+
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_UINT_DRAW_INDEX
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_FIXED_TYPES
+
+#undef NK_IMPLEMENTATION
+#include "nuklear/nuklear.h"
+
 #include "scenes/Scene.hpp"
 
 extern "C" {
@@ -36,6 +47,9 @@ namespace cts
 		void EventsAndTimeStep();
 		void CloseApp();
 
+		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
+		nk_buttons SDLButtontoNKButton(uint8_t button);
+
 		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__
 
@@ -50,6 +64,8 @@ namespace cts
 
 		SDL_Window* _window = nullptr;
 		SDL_Renderer* _renderer = nullptr;
+
+		nk_context _ctx;
 
 		std::unique_ptr<Scene> _currentScene;
 

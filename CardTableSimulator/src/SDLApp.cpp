@@ -11,7 +11,12 @@ namespace cts
 {
 
 #ifdef __EMSCRIPTEN__
-	SDLApp::SDLApp() { InitGraphical(); }
+	SDLApp::SDLApp()
+		: _lastFrameTime(std::chrono::high_resolution_clock::now()),
+		_currentFrameTime()
+	{
+		InitGraphical();
+	}
 #else
 	SDLApp::SDLApp(int argc, char** argv)
 		: _lastFrameTime(std::chrono::high_resolution_clock::now()),
@@ -52,8 +57,6 @@ namespace cts
 			SDL_ShowWindow(_window);
 		}
 
-		_currentFrameTime = std::chrono::high_resolution_clock::now();
-
 #ifdef __EMSCRIPTEN__
 		emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
 
@@ -81,7 +84,7 @@ namespace cts
 
 		if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
 		{
-			if (SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_HIDDEN, &_window, &_renderer) != 0)
+			if (SDL_CreateWindowAndRenderer(1200, 900, SDL_WINDOW_HIDDEN, &_window, &_renderer) != 0)
 			{
 				SDL_Log("Failed to create window. - %s\n", SDL_GetError());
 				return;
@@ -109,26 +112,34 @@ namespace cts
 
 			case SDL_MOUSEMOTION:
 			{
+				// TODO: handle outside of nuklear
+
+
+				nk_input_motion(&_ctx, e.motion.x, e.motion.y);
 				break;
 			}
 
 			case SDL_MOUSEBUTTONDOWN:
-			{
-				break;
-			}
-
 			case SDL_MOUSEBUTTONUP:
 			{
+				// TODO: handle outside of nuklear
+				
+				nk_input_button(&_ctx, SDLButtontoNKButton(e.button.button), e.button.x, e.button.y, (e.type == SDL_MOUSEBUTTONDOWN));
 				break;
 			}
 
 			case SDL_KEYDOWN:
+			case SDL_KEYUP:
 			{
+				// TODO: handle outside of nuklear
+								
+				nk_input_key(&_ctx, SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod), (e.type == SDL_KEYDOWN));
 				break;
 			}
 
-			case SDL_KEYUP:
+			case SDL_MOUSEWHEEL:
 			{
+				nk_input_scroll(&_ctx, nk_vec2(static_cast<float>(e.wheel.x), static_cast<float>(e.wheel.y)));
 				break;
 			}
 
@@ -139,6 +150,8 @@ namespace cts
 			}
 			}
 		}
+
+		_currentFrameTime = std::chrono::high_resolution_clock::now();
 
 		auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
 		_lastFrameTime = _currentFrameTime;
@@ -165,3 +178,27 @@ namespace cts
 	}
 }
 #endif
+
+nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods)
+{
+	switch (key)
+	{
+	case SDLK_LSHIFT:			
+	case SDLK_RSHIFT:					return NK_KEY_SHIFT;
+	case SDLK_LCTRL:
+	case SDLK_RCTRL:					return NK_KEY_CTRL;
+	}
+
+	return NK_KEY_NONE;			// Not a nk_key.
+}
+
+nk_buttons SDLApp::SDLButtontoNKButton(uint8_t button)
+{
+	switch (button)
+	{
+	case SDL_BUTTON_LEFT:			return NK_BUTTON_LEFT;
+	case SDL_BUTTON_RIGHT:			return NK_BUTTON_RIGHT;
+	case SDL_BUTTON_MIDDLE:			return NK_BUTTON_MIDDLE;
+	}
+}
+
