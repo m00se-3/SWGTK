@@ -9,7 +9,6 @@ target_include_directories(
 	PUBLIC 
 
 	${CMAKE_CURRENT_LIST_DIR}/include 
-	${CMAKE_CURRENT_LIST_DIR}/include/scenes 
 	${LUA_INCLUDE_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/external
 )
@@ -36,6 +35,7 @@ target_compile_definitions(
 
 	PRIVATE 
 
+	CTS_ASSETS="$ENV{Assets_Dir}"
 )
 
 target_include_directories(
@@ -79,6 +79,8 @@ target_sources(
 
 	${CMAKE_CURRENT_LIST_DIR}/include/scenes/Scene.hpp
 
+	${CMAKE_CURRENT_LIST_DIR}/include/systems/UI.hpp
+
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
@@ -91,4 +93,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/src/nuklear.cpp
 
 	${CMAKE_CURRENT_LIST_DIR}/src/scenes/Scene.cpp
+
+	${CMAKE_CURRENT_LIST_DIR}/src/systems/UI.cpp
 )
