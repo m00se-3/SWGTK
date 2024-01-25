@@ -15,7 +15,7 @@ namespace cts
 	*/
 
 	// SDL KeyCode implementation.
-	enum class KeyCode : uint32_t
+	enum class KeyCode : int32_t
 	{
 		Unknown = 0, Back = 8, Tab = 9, Enter = 13, Esc = 27, Space = 32, Exlaim = 33, DblQuote = 34, Hash = 35, Dollar = 36, Prct = 37,
 		Amp = 38, Quote = 39, Ast = 42, Plus = 43, Comma = 44, Minus = 45, Period = 46, FSlash = 47, R0 = 48, R1 = 49, R2 = 50, R3 = 51,
@@ -26,7 +26,7 @@ namespace cts
 	};
 
 	// SDL ScanCode implementation.
-	enum class LayoutCode : uint32_t
+	enum class LayoutCode : int32_t
 	{
 		Unknown = 0, A = 4, B = 5, C = 6, D = 7, E = 8, F = 9, G = 10, H = 11, I = 12, J = 13, K = 14, L = 15,
 		M = 16, N = 17, O = 18, P = 19, Q = 20, R = 21, S = 22, T = 23, U = 24, V = 25, W = 26, X = 27, Y = 28, Z = 29,
