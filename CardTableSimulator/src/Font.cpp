@@ -11,6 +11,11 @@ namespace cts
     {
         nk_font_atlas_cleanup(&_atlas);
         nk_font_atlas_clear(&_atlas);
+
+        for (auto& font : _ttfFonts)
+        {
+            TTF_CloseFont(font.second);
+        }
     }
 
     void FontGroup::Create()
@@ -25,28 +30,53 @@ namespace cts
 
     void FontGroup::AddFont(FontStyle styleMask, float size, const std::filesystem::path& filename)
     {
-        if (!_fonts.contains(styleMask))
+        if (!_nkFonts.contains(styleMask))
         {
-            struct nk_font* temp = nk_font_atlas_add_from_file(&_atlas, filename.string().c_str(), size, nullptr);
-            if (temp) _fonts.insert_or_assign(styleMask, temp);
+            auto str = filename.string();
+            
+            struct nk_font* temp = nk_font_atlas_add_from_file(&_atlas, str.c_str(), size, nullptr);
+            TTF_Font* ttf = TTF_OpenFont(str.c_str(), static_cast<int>(size));
+
+            if (temp) _nkFonts.insert_or_assign(styleMask, temp);
+            if (ttf) _ttfFonts.insert_or_assign(styleMask, ttf);
         }
     }
 
-    nk_font* FontGroup::GetFont(FontStyle mask)
+    nk_font* FontGroup::GetNK(FontStyle mask)
     {
-        if (_fonts.contains(mask))
+        if (_nkFonts.contains(mask))
         {
-            return _fonts.at(mask);
+            return _nkFonts.at(mask);
         }
 
         return nullptr;
     }
 
-    const nk_font* FontGroup::GetFont(FontStyle mask) const
+    const nk_font* FontGroup::GetNK(FontStyle mask) const
     {
-        if (_fonts.contains(mask))
+        if (_nkFonts.contains(mask))
         {
-            return _fonts.at(mask);
+            return _nkFonts.at(mask);
+        }
+
+        return nullptr;
+    }
+
+    TTF_Font* FontGroup::GetTTF(FontStyle mask)
+    {
+        if (_ttfFonts.contains(mask))
+        {
+            return _ttfFonts.at(mask);
+        }
+
+        return nullptr;
+    }
+
+    const TTF_Font* FontGroup::GetTTF(FontStyle mask) const
+    {
+        if (_ttfFonts.contains(mask))
+        {
+            return _ttfFonts.at(mask);
         }
 
         return nullptr;
