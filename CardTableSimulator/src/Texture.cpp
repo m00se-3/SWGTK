@@ -45,6 +45,16 @@ namespace cts
 		SDL_SetTextureAlphaMod(_texture, a);
 	}
 
+	void Texture::Create(SDL_Renderer* ren, const std::filesystem::path& filepath)
+	{
+		_texture = IMG_LoadTexture(ren, filepath.string().c_str());
+	}
+
+	void Texture::Create(SDL_Renderer* ren, SDL_Surface* surface)
+	{
+		_texture = SDL_CreateTextureFromSurface(ren, surface);
+	}
+
 	SDL_BlendMode Texture::GetBlend() const
 	{
 		SDL_BlendMode m;
