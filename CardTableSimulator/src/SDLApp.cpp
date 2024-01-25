@@ -123,7 +123,7 @@ namespace cts
 			case SDL_MOUSEBUTTONUP:
 			{
 				// TODO: handle outside of nuklear
-				
+
 				nk_input_button(&_ctx, SDLButtontoNKButton(e.button.button), e.button.x, e.button.y, (e.type == SDL_MOUSEBUTTONDOWN));
 				break;
 			}
@@ -132,7 +132,7 @@ namespace cts
 			case SDL_KEYUP:
 			{
 				// TODO: handle outside of nuklear
-								
+
 				nk_input_key(&_ctx, SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod), (e.type == SDL_KEYDOWN));
 				break;
 			}
@@ -176,29 +176,54 @@ namespace cts
 	{
 		static_cast<SDLApp*>(ptr)->EventsAndTimeStep();
 	}
-}
 #endif
 
-nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods)
-{
-	switch (key)
+	nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods)
 	{
-	case SDLK_LSHIFT:			
-	case SDLK_RSHIFT:					return NK_KEY_SHIFT;
-	case SDLK_LCTRL:
-	case SDLK_RCTRL:					return NK_KEY_CTRL;
+		switch (key)
+		{
+		case SDLK_LSHIFT:
+		case SDLK_RSHIFT:					return NK_KEY_SHIFT;
+		case SDLK_LCTRL:
+		case SDLK_RCTRL:					return NK_KEY_CTRL;
+		}
+
+		return NK_KEY_NONE;			// Not a nk_key.
 	}
 
-	return NK_KEY_NONE;			// Not a nk_key.
-}
-
-nk_buttons SDLApp::SDLButtontoNKButton(uint8_t button)
-{
-	switch (button)
+	nk_buttons SDLApp::SDLButtontoNKButton(uint8_t button)
 	{
-	case SDL_BUTTON_LEFT:			return NK_BUTTON_LEFT;
-	case SDL_BUTTON_RIGHT:			return NK_BUTTON_RIGHT;
-	case SDL_BUTTON_MIDDLE:			return NK_BUTTON_MIDDLE;
+		switch (button)
+		{
+		case SDL_BUTTON_LEFT:			return NK_BUTTON_LEFT;
+		case SDL_BUTTON_RIGHT:			return NK_BUTTON_RIGHT;
+		case SDL_BUTTON_MIDDLE:			return NK_BUTTON_MIDDLE;
+		}
 	}
-}
 
+	FontGroup& SDLApp::GetFontGroup()
+	{
+		return _fonts;
+	}
+
+	nk_font* SDLApp::GetNKFont(FontStyle style)
+	{
+		return _fonts.GetNK(style);
+	}
+
+	TTF_Font* SDLApp::GetTTF(FontStyle style)
+	{
+		return _fonts.GetTTF(style);
+	}
+
+	nk_context* SDLApp::GetNKContext()
+	{
+		return &_ctx;
+	}
+
+	SDL_Renderer* SDLApp::Renderer()
+	{
+		return _renderer;
+	}
+
+}

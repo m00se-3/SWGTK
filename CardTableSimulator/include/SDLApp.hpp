@@ -20,6 +20,7 @@
 #include "nuklear/nuklear.h"
 
 #include "scenes/Scene.hpp"
+#include "Font.hpp"
 
 extern "C" {
 	struct SDL_Window;
@@ -50,6 +51,13 @@ namespace cts
 		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
 		nk_buttons SDLButtontoNKButton(uint8_t button);
 
+		FontGroup& GetFontGroup();
+		nk_font* GetNKFont(FontStyle style);
+		TTF_Font* GetTTF(FontStyle style);
+
+		nk_context* GetNKContext();
+		SDL_Renderer* Renderer();
+
 		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__
 
@@ -66,6 +74,7 @@ namespace cts
 		SDL_Renderer* _renderer = nullptr;
 
 		nk_context _ctx;
+		FontGroup _fonts;
 
 		std::unique_ptr<Scene> _currentScene;
 
