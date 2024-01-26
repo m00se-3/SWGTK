@@ -124,7 +124,12 @@ namespace cts
 			{
 				// TODO: handle outside of nuklear
 
-				nk_input_button(&_ctx, SDLButtontoNKButton(e.button.button), e.button.x, e.button.y, (e.type == SDL_MOUSEBUTTONDOWN));
+				auto button = SDLButtontoNKButton(e.button.button);
+				
+				if (button > -1)
+				{
+					nk_input_button(&_ctx, static_cast<nk_buttons>(button), e.button.x, e.button.y, (e.type == SDL_MOUSEBUTTONDOWN));
+				}
 				break;
 			}
 
@@ -133,7 +138,12 @@ namespace cts
 			{
 				// TODO: handle outside of nuklear
 
-				nk_input_key(&_ctx, SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod), (e.type == SDL_KEYDOWN));
+				auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
+
+				if (key != NK_KEY_NONE)
+				{
+					nk_input_key(&_ctx, key, (e.type == SDL_KEYDOWN));
+				}
 				break;
 			}
 
@@ -183,15 +193,63 @@ namespace cts
 		switch (key)
 		{
 		case SDLK_LSHIFT:
-		case SDLK_RSHIFT:					return NK_KEY_SHIFT;
+		case SDLK_RSHIFT:
+		{
+			return NK_KEY_SHIFT;
+		}
+
 		case SDLK_LCTRL:
-		case SDLK_RCTRL:					return NK_KEY_CTRL;
+		case SDLK_RCTRL:
+		{
+			return NK_KEY_CTRL;
+		}
+
+		case SDLK_RETURN:
+		{
+			return NK_KEY_ENTER;
+		}
+
+		case SDLK_BACKSPACE:
+		{
+			return NK_KEY_BACKSPACE;
+		}
+
+		case SDLK_TAB:
+		{
+			return NK_KEY_TAB;
+		}
+
+		case SDLK_DELETE:
+		{
+			return NK_KEY_DEL;
+		}
+
+		case SDLK_RIGHT:
+		{
+			return NK_KEY_RIGHT;
+		}
+
+		case SDLK_LEFT:
+		{
+			return NK_KEY_LEFT;
+		}
+
+		case SDLK_DOWN:
+		{
+			return NK_KEY_DOWN;
+		}
+
+		case SDLK_UP:
+		{
+			return NK_KEY_UP;
+		}
+		
 		}
 
 		return NK_KEY_NONE;			// Not a nk_key.
 	}
 
-	nk_buttons SDLApp::SDLButtontoNKButton(uint8_t button)
+	int SDLApp::SDLButtontoNKButton(uint8_t button)
 	{
 		switch (button)
 		{
@@ -199,6 +257,7 @@ namespace cts
 		case SDL_BUTTON_RIGHT:			return NK_BUTTON_RIGHT;
 		case SDL_BUTTON_MIDDLE:			return NK_BUTTON_MIDDLE;
 		}
+		return -1;
 	}
 
 	FontGroup& SDLApp::GetFontGroup()

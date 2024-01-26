@@ -49,7 +49,7 @@ namespace cts
 		void CloseApp();
 
 		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
-		nk_buttons SDLButtontoNKButton(uint8_t button);
+		int SDLButtontoNKButton(uint8_t button);
 
 		FontGroup& GetFontGroup();
 		nk_font* GetNKFont(FontStyle style);
