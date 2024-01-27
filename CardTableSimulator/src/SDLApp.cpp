@@ -5,7 +5,6 @@
 #include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL_mixer.h"
 
-#include <cstring>
 
 namespace cts
 {
@@ -19,7 +18,8 @@ namespace cts
 	}
 #else
 	SDLApp::SDLApp(int argc, char** argv)
-		: _lastFrameTime(std::chrono::high_resolution_clock::now()),
+		: _assetsDir(CTS_ASSETS),
+		_lastFrameTime(std::chrono::high_resolution_clock::now()),
 		_currentFrameTime()
 	{
 		// Because I plan on eventually having a headless version, I'm guarding
@@ -55,19 +55,23 @@ namespace cts
 		if (!_headless)
 		{
 			SDL_ShowWindow(_window);
-		}
 
 #ifdef __EMSCRIPTEN__
-		emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
+			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
 
-#else
+	#else
 
-		while (_running)
-		{
-			EventsAndTimeStep();
-		}
+			while (_running)
+			{
+				EventsAndTimeStep();
+			}
 
 #endif // __EMSCRIPTEN__
+		}
+		else
+		{
+			
+		}
 
 	}
 
@@ -99,6 +103,8 @@ namespace cts
 			SDL_Log("An SDL Library failed to initialize. - %s\n", SDL_GetError());
 			return;
 		}
+
+		_ui = std::make_unique<UI>(this, _assetsDir + "/fonts");
 	}
 
 	void SDLApp::EventsAndTimeStep()
@@ -125,7 +131,7 @@ namespace cts
 				// TODO: handle outside of nuklear
 
 				auto button = SDLButtontoNKButton(e.button.button);
-				
+
 				if (button > -1)
 				{
 					nk_input_button(&_ctx, static_cast<nk_buttons>(button), e.button.x, e.button.y, (e.type == SDL_MOUSEBUTTONDOWN));
@@ -160,6 +166,7 @@ namespace cts
 			}
 			}
 		}
+
 
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 

@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <memory>
+#include <string>
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
@@ -20,6 +21,7 @@
 #include "nuklear/nuklear.h"
 
 #include "scenes/Scene.hpp"
+#include "systems/UI.hpp"
 #include "Font.hpp"
 
 extern "C" {
@@ -77,6 +79,9 @@ namespace cts
 		FontGroup _fonts;
 
 		std::unique_ptr<Scene> _currentScene;
+		std::unique_ptr<UI> _ui;
+
+		std::string _assetsDir;
 
 		timePoint _lastFrameTime, _currentFrameTime;
 		bool _running = true;
