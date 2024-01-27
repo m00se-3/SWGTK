@@ -82,6 +82,7 @@ namespace cts
 		std::unique_ptr<UI> _ui;
 
 		std::string _assetsDir;
+		std::string _configDir;
 
 		timePoint _lastFrameTime, _currentFrameTime;
 		bool _running = true;

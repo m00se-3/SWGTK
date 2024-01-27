@@ -36,6 +36,7 @@ target_compile_definitions(
 	PRIVATE 
 
 	CTS_ASSETS="$ENV{Assets_Dir}"
+	CTS_CONFIG="$ENV{Config_Dir}"
 )
 
 target_include_directories(
@@ -69,6 +70,8 @@ target_sources(
 	CardTableSimulator
 
 	PUBLIC 
+
+	${CMAKE_CURRENT_LIST_DIR}/include/ErrCodes.hpp
 
 	${CMAKE_CURRENT_LIST_DIR}/include/SDLApp.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Texture.hpp

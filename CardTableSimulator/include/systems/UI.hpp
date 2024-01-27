@@ -18,6 +18,7 @@
 #include "sol/sol.hpp"
 
 #include "Texture.hpp"
+#include "ErrCodes.hpp"
 
 namespace cts
 {
@@ -32,7 +33,12 @@ namespace cts
 		void Draw();
 		void InitLua();
 
+		LuaError LoadScriptsFromDirectory(const std::string& dir, bool recursive = false);
+
 	private:
+
+		LuaError LoadScript(const std::string& file);
+
 		sol::state _lua;
 		sol::table _dataTable;
 		Texture _fontTexture, _whiteTexture;

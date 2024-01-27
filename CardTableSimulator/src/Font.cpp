@@ -11,11 +11,6 @@ namespace cts
     {
         nk_font_atlas_cleanup(&_atlas);
         nk_font_atlas_clear(&_atlas);
-
-        for (auto& font : _ttfFonts)
-        {
-            TTF_CloseFont(font.second);
-        }
     }
 
     void FontGroup::Create()
@@ -39,6 +34,14 @@ namespace cts
 
             if (temp) _nkFonts.insert_or_assign(styleMask, temp);
             if (ttf) _ttfFonts.insert_or_assign(styleMask, ttf);
+        }
+    }
+
+    void FontGroup::ClearTTFFonts()
+    {
+        for (auto& font : _ttfFonts)
+        {
+            TTF_CloseFont(font.second);
         }
     }
 

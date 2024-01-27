@@ -1,5 +1,9 @@
 #include "systems/UI.hpp"
 
+#include <filesystem>
+#include <format>
+#include <cstdio>
+
 #include "SDLApp.hpp"
 #include "SDL2/SDL_surface.h"
 
@@ -44,7 +48,11 @@ namespace cts
 		int imgWidth = 0, imgHeight = 0;
 		nk_font_atlas_bake(fontGroup.GetAtlas(), &imgWidth, &imgHeight, NK_FONT_ATLAS_RGBA32);
 
-		SDL_Surface* tempSurf = SDL_CreateRGBSurfaceFrom(fontGroup.GetAtlas()->pixel, imgWidth, imgHeight, 32, imgWidth * 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+		SDL_Surface* tempSurf = SDL_CreateRGBSurface(0, imgWidth, imgHeight, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+		SDL_LockSurface(tempSurf);
+		memcpy_s(tempSurf->pixels, (uint64_t)imgWidth * (uint64_t)imgHeight, fontGroup.GetAtlas()->pixel, (uint64_t)imgWidth * (uint64_t)imgHeight);
+		SDL_UnlockSurface(tempSurf);
+
 		_fontTexture.Create(app->Renderer(), tempSurf);
 
 		SDL_FreeSurface(tempSurf);
@@ -101,13 +109,75 @@ namespace cts
 
 			SDL_Texture* drawTex = (cmd->texture.ptr) ? (SDL_Texture*)cmd->texture.ptr : nullptr;
 
-			SDL_RenderGeometry(_parent->Renderer(), drawTex, _buffer.data() + offset, static_cast<int>(_buffer.size()), _elements.data(), static_cast<int>(cmd->elem_count));
+			SDL_RenderGeometry(_parent->Renderer(), drawTex, _buffer.data() + offset, static_cast<int>(_buffer.size() - offset), _elements.data() + offset, static_cast<int>(cmd->elem_count));
 
 			offset += cmd->elem_count;
 		}
 
-		nk_buffer_clear(&_cmds);
-		nk_clear(_ctx);
+		nk_buffer_clear(&_cmds); nk_clear(_ctx);
+		_buffer.clear(); _elements.clear();
+	}
+
+	LuaError UI::LoadScriptsFromDirectory(const std::string& dir, bool recursive)
+	{
+		if (!std::filesystem::exists(dir))
+		{
+			std::fputs(std::format("Error loading Lua script: no such file or directory - {}", dir).c_str(), stdout);
+			return LuaError::file_dir_404;
+		}
+
+		if (recursive)
+		{
+			for (auto& item : std::filesystem::recursive_directory_iterator(dir))
+			{
+				auto& path = item.path();
+
+				if (path.extension() == ".lua")
+				{
+					auto err = LoadScript(path.string());
+
+					if (err != LuaError::ok)
+					{
+						std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
+						return err;
+					}
+				}
+			}
+		}
+		else
+		{
+			for (auto& item : std::filesystem::directory_iterator(dir))
+			{
+				auto& path = item.path();
+
+				if (path.extension() == ".lua")
+				{
+					auto err = LoadScript(path.string());
+
+					if (err != LuaError::ok)
+					{
+						std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
+						return err;
+					}
+				}
+			}
+		}
+
+		return LuaError::ok;
+	}
+
+	LuaError UI::LoadScript(const std::string& file)
+	{
+		sol::protected_function_result result = _lua.script_file(file);
+
+		if (result.valid())
+		{
+			return LuaError::ok;
+		}
+		else
+		{
+			return LuaError::parsing_failed;
+		}
 	}
 
 	void UI::InitLua()

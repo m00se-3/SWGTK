@@ -11,7 +11,8 @@
       },
       "environment": {
         "External_Sources": "${sourceDir}/external",
-        "Assets_Dir": "${sourceDir}/assets"
+        "Assets_Dir": "${sourceDir}/assets",
+        "Config_Dir": "${sourceDir}/config"
       },
       "condition": {
         "type": "equals",

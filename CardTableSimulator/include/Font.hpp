@@ -45,6 +45,7 @@ namespace cts
         void Create();
         void Finalize(SDL_Texture* texture);
         void AddFont(FontStyle styleMask, float size, const std::filesystem::path& filename);
+        void ClearTTFFonts();
 
         [[nodiscard]] nk_font* GetNK(FontStyle mask);
         [[nodiscard]] const nk_font* GetNK(FontStyle mask) const;

@@ -18,7 +18,7 @@ namespace cts
 	}
 #else
 	SDLApp::SDLApp(int argc, char** argv)
-		: _assetsDir(CTS_ASSETS),
+		: _assetsDir(CTS_ASSETS), _configDir(CTS_CONFIG),
 		_lastFrameTime(std::chrono::high_resolution_clock::now()),
 		_currentFrameTime()
 	{
@@ -40,6 +40,8 @@ namespace cts
 	{
 		if (!_headless)
 		{
+			_fonts.ClearTTFFonts();
+			
 			SDL_DestroyRenderer(_renderer);
 			SDL_DestroyWindow(_window);
 
@@ -55,6 +57,7 @@ namespace cts
 		if (!_headless)
 		{
 			SDL_ShowWindow(_window);
+			SDL_SetRenderDrawColor(_renderer, 32u, 32u, 32u, 255u);
 
 #ifdef __EMSCRIPTEN__
 			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
@@ -167,11 +170,16 @@ namespace cts
 			}
 		}
 
-
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 
 		auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
 		_lastFrameTime = _currentFrameTime;
+
+		SDL_RenderClear(_renderer);
+
+		// TODO: Update the scene...
+
+		SDL_RenderPresent(_renderer);
 
 	}
 

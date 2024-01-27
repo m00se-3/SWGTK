@@ -18,7 +18,7 @@ namespace cts
 	{
 	public:
 		Scene(SDL_Renderer* ren);
-		~Scene() = default;
+		virtual ~Scene() = default;
 
 	protected:
 		virtual bool Create(const std::string& gameDir) = 0;
