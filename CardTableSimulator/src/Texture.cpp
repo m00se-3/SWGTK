@@ -21,18 +21,7 @@ namespace cts
 		SDL_DestroyTexture(_texture);
 	}
 
-	Texture& Texture::operator=(const Texture& other)
-	{
-		Assign(other.Get());
-	}
-
 	SDL_Texture* Texture::Get() const { return _texture; }
-
-	void Texture::Assign(SDL_Texture* tex)
-	{
-		SDL_DestroyTexture(_texture);
-		_texture = tex;
-	}
 
 	void Texture::SetBlend(const SDL_BlendMode& mode)
 	{
@@ -47,11 +36,13 @@ namespace cts
 
 	void Texture::Create(SDL_Renderer* ren, const std::filesystem::path& filepath)
 	{
+		if (_texture) SDL_DestroyTexture(_texture);
 		_texture = IMG_LoadTexture(ren, filepath.string().c_str());
 	}
 
 	void Texture::Create(SDL_Renderer* ren, SDL_Surface* surface)
 	{
+		if (_texture) SDL_DestroyTexture(_texture);
 		_texture = SDL_CreateTextureFromSurface(ren, surface);
 	}
 

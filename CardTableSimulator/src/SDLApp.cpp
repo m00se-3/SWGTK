@@ -42,6 +42,8 @@ namespace cts
 		{
 			_fonts.ClearTTFFonts();
 			
+			nk_free(&_ctx);
+			
 			SDL_DestroyRenderer(_renderer);
 			SDL_DestroyWindow(_window);
 
@@ -57,7 +59,7 @@ namespace cts
 		if (!_headless)
 		{
 			SDL_ShowWindow(_window);
-			SDL_SetRenderDrawColor(_renderer, 32u, 32u, 32u, 255u);
+			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u);
 
 #ifdef __EMSCRIPTEN__
 			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
@@ -91,14 +93,23 @@ namespace cts
 
 		if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
 		{
-			if (SDL_CreateWindowAndRenderer(1200, 900, SDL_WINDOW_HIDDEN, &_window, &_renderer) != 0)
+			_window = SDL_CreateWindow("Card Table", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 900, SDL_WINDOW_HIDDEN);
+
+			if (_window)
+			{
+				_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
+			}
+			else
 			{
 				SDL_Log("Failed to create window. - %s\n", SDL_GetError());
 				return;
 			}
-
-			SDL_SetWindowTitle(_window, "Card Table");
-			SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+			
+			if (!_renderer)
+			{
+				SDL_Log("Failed to initialize renderer. - %s\n", SDL_GetError());
+				return;
+			}
 
 		}
 		else
@@ -108,10 +119,13 @@ namespace cts
 		}
 
 		_ui = std::make_unique<UI>(this, _assetsDir + "/fonts");
+		_ui->LoadScriptsFromDirectory(_configDir + "/ui");
 	}
 
 	void SDLApp::EventsAndTimeStep()
 	{
+		nk_input_begin(&_ctx);
+		
 		SDL_Event e;
 
 		while (SDL_PollEvent(&e))
@@ -170,6 +184,8 @@ namespace cts
 			}
 		}
 
+		nk_input_end(&_ctx);
+
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 
 		auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
@@ -178,6 +194,9 @@ namespace cts
 		SDL_RenderClear(_renderer);
 
 		// TODO: Update the scene...
+
+		_ui->Update();
+		_ui->Draw();
 
 		SDL_RenderPresent(_renderer);
 

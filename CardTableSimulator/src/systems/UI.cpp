@@ -17,22 +17,34 @@ namespace cts
 
 	static const struct nk_draw_vertex_layout_element vertex_layout[] = {
 		{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
-		{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
 		{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, tex_coord)},
+		{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
 		{NK_VERTEX_LAYOUT_END}
 	};
 
+	UI::~UI()
+	{
+		nk_buffer_free(&_cmds);
+
+		SDL_DestroyTexture(_fontTexture);
+		SDL_DestroyTexture(_whiteTexture);
+	}
 
 	UI::UI(SDLApp* app, const std::string& fontsDir)
 		: _parent(app), _ctx(app->GetNKContext())
 	{
 		auto& fontGroup = _parent->GetFontGroup();
 
-		SDL_Surface* null = SDL_CreateRGBSurface(0, 1,1, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-		SDL_FillRect(null, nullptr, 0xFFFFFFFF);
-		_whiteTexture.Create(app->Renderer(), null);
-		SDL_FreeSurface(null);
+		// Assign the white texture to _nullTexture.
 
+		uint32_t value = 0xFFFFFFFF;
+
+		_whiteTexture = SDL_CreateTexture(_parent->Renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, 1, 1);
+		SDL_UpdateTexture(_whiteTexture, nullptr, &value, 4);
+
+		_nullTexture.texture = nk_handle_ptr(_whiteTexture);
+		_nullTexture.uv = nk_vec2(0.0f, 0.0f);
+		
 		// Add Fonts to the FontGroup.
 
 		fontGroup.Create();
@@ -46,23 +58,15 @@ namespace cts
 		// Bake the fonts.
 
 		int imgWidth = 0, imgHeight = 0;
-		nk_font_atlas_bake(fontGroup.GetAtlas(), &imgWidth, &imgHeight, NK_FONT_ATLAS_RGBA32);
+		const void* img = nk_font_atlas_bake(fontGroup.GetAtlas(), &imgWidth, &imgHeight, NK_FONT_ATLAS_RGBA32);
 
-		SDL_Surface* tempSurf = SDL_CreateRGBSurface(0, imgWidth, imgHeight, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-		SDL_LockSurface(tempSurf);
-		memcpy_s(tempSurf->pixels, (uint64_t)imgWidth * (uint64_t)imgHeight, fontGroup.GetAtlas()->pixel, (uint64_t)imgWidth * (uint64_t)imgHeight);
-		SDL_UnlockSurface(tempSurf);
+		_fontTexture = SDL_CreateTexture(_parent->Renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, imgWidth, imgHeight);
+		SDL_UpdateTexture(_fontTexture, nullptr, img, imgWidth * 4);
 
-		_fontTexture.Create(app->Renderer(), tempSurf);
+		fontGroup.Finalize(_fontTexture);
 
-		SDL_FreeSurface(tempSurf);
-
-		// Assign the white texture to _nullTexture.
-
-		_nullTexture.texture = nk_handle_ptr(_whiteTexture.Get());
-		_nullTexture.uv = nk_vec2(0.0f, 0.0f);
-
-		fontGroup.Finalize(_fontTexture.Get());
+		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
+		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
 
 		if (!nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal)->handle)) return;
 
@@ -79,43 +83,52 @@ namespace cts
 		_configurator.null = _nullTexture;
 
 		nk_buffer_init_default(&_cmds);
-		_buffer.reserve(MaxVertexBuffer);
-		_elements.reserve(MaxVertexBuffer);
+		_buffer = std::make_unique<SDL_Vertex[]>(MaxVertexBuffer);
+		_elements = std::make_unique<int[]>(MaxVertexBuffer);
 
 		InitLua();
 	}
 
+	void UI::Update()
+	{
+		sol::protected_function_result result = _lua["Hello"]();
+
+		if (!result.valid())
+		{
+			std::fputs(std::format("Oops!\n").c_str(), stdout);
+		}
+	}
+
 	void UI::Compile()
 	{
-		void* verts = _buffer.data(), * inds = _elements.data();
-
-		nk_buffer_init_fixed(&_verts, verts, MaxVertexBuffer);
-		nk_buffer_init_fixed(&_inds, inds, MaxVertexBuffer);
-
-		nk_convert(_ctx, &_cmds, &_verts, &_inds, &_configurator);
-
-		nk_buffer_free(&_verts);
-		nk_buffer_free(&_inds);
+		
 	}
 
 	void UI::Draw()
 	{
+		nk_buffer_init_fixed(&_verts, _buffer.get(), MaxVertexBuffer);
+		nk_buffer_init_fixed(&_inds, _elements.get(), MaxVertexBuffer);
+
+		nk_convert(_ctx, &_cmds, &_verts, &_inds, &_configurator);
+		
 		const nk_draw_command* cmd = nullptr;
 		uint32_t offset = 0u;
+
+		const SDL_Vertex* vertices = (const SDL_Vertex*)nk_buffer_memory_const(&_verts);
+		const int* elements = (const int*)nk_buffer_memory_const(&_inds);
 
 		nk_draw_foreach(cmd, _ctx, &_cmds)
 		{
 			if (!cmd->elem_count) continue;
 
-			SDL_Texture* drawTex = (cmd->texture.ptr) ? (SDL_Texture*)cmd->texture.ptr : nullptr;
-
-			SDL_RenderGeometry(_parent->Renderer(), drawTex, _buffer.data() + offset, static_cast<int>(_buffer.size() - offset), _elements.data() + offset, static_cast<int>(cmd->elem_count));
+			SDL_RenderGeometry(_parent->Renderer(), (SDL_Texture*)cmd->texture.ptr, vertices, _verts.needed / sizeof(SDL_Vertex), (elements + offset), static_cast<int>(cmd->elem_count));
 
 			offset += cmd->elem_count;
 		}
 
 		nk_buffer_clear(&_cmds); nk_clear(_ctx);
-		_buffer.clear(); _elements.clear();
+		nk_buffer_free(&_verts);
+		nk_buffer_free(&_inds);
 	}
 
 	LuaError UI::LoadScriptsFromDirectory(const std::string& dir, bool recursive)

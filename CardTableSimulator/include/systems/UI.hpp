@@ -19,6 +19,7 @@
 
 #include "Texture.hpp"
 #include "ErrCodes.hpp"
+#include "Font.hpp"
 
 namespace cts
 {
@@ -28,7 +29,9 @@ namespace cts
 	{
 	public:
 		UI(SDLApp* app, const std::string& fontsDir);
+		~UI();
 
+		void Update();
 		void Compile();
 		void Draw();
 		void InitLua();
@@ -41,7 +44,7 @@ namespace cts
 
 		sol::state _lua;
 		sol::table _dataTable;
-		Texture _fontTexture, _whiteTexture;
+		SDL_Texture* _fontTexture = nullptr, * _whiteTexture = nullptr;
 		SDLApp* _parent = nullptr;
 
 		nk_context* _ctx = nullptr;
@@ -49,8 +52,8 @@ namespace cts
 		struct nk_buffer _cmds, _verts, _inds;
 		struct nk_draw_null_texture _nullTexture;
 
-		std::vector<SDL_Vertex> _buffer;
-		std::vector<int> _elements;
+		std::unique_ptr<SDL_Vertex[]> _buffer;
+		std::unique_ptr<int[]> _elements;
 	};
 }
 
