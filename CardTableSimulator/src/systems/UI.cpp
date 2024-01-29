@@ -91,11 +91,18 @@ namespace cts
 
 	void UI::Update()
 	{
-		sol::protected_function_result result = _lua["Hello"]();
+		auto size = _parent->GetWindowSize();
 
-		if (!result.valid())
+		_dataTable.set("wWidth", size.first, "wHeight", size.second);
+		
+		for (auto& pair : _luaFunctions)
 		{
-			std::fputs(std::format("Oops!\n").c_str(), stdout);
+			sol::protected_function_result result = _lua[pair.first]();
+
+			if (!result.valid())
+			{
+				std::fputs(std::format("Lua runtime error: Function {} - {}\n", pair.first, pair.second).c_str(), stdout);
+			}
 		}
 	}
 
@@ -185,6 +192,9 @@ namespace cts
 
 		if (result.valid())
 		{
+			std::pair<std::string, std::string> res = result;
+			_luaFunctions.insert_or_assign(res.first, res.second);
+			
 			return LuaError::ok;
 		}
 		else

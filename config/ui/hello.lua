@@ -7,3 +7,5 @@ function Hello()
     Ctx:End()
 
 end
+
+return "Hello", "Goodbye World! :("

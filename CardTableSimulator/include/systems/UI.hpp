@@ -13,7 +13,8 @@
 #include "nuklear/nuklear.h"
 
 #include <string>
-#include <vector>
+#include <memory>
+#include <map>
 
 #include "sol/sol.hpp"
 
@@ -54,6 +55,8 @@ namespace cts
 
 		std::unique_ptr<SDL_Vertex[]> _buffer;
 		std::unique_ptr<int[]> _elements;
+
+		std::map<std::string, std::string> _luaFunctions;
 	};
 }
 
