@@ -53,12 +53,15 @@ namespace cts
 		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
 		int SDLButtontoNKButton(uint8_t button);
 
-		FontGroup& GetFontGroup();
-		nk_font* GetNKFont(FontStyle style);
-		TTF_Font* GetTTF(FontStyle style);
+		[[nodiscard]] FontGroup& GetFontGroup();
+		[[nodiscard]]nk_font* GetNKFont(FontStyle style);
+		[[nodiscard]]TTF_Font* GetTTF(FontStyle style);
 
-		nk_context* GetNKContext();
-		SDL_Renderer* Renderer();
+		[[nodiscard]] nk_context* GetNKContext();
+		[[nodiscard]] SDL_Renderer* Renderer();
+		[[nodiscard]] SDL_Window* Window();
+
+		std::pair<int, int> GetWindowSize();
 
 		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__

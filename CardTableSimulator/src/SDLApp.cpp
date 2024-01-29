@@ -319,4 +319,18 @@ namespace cts
 		return _renderer;
 	}
 
+	SDL_Window* SDLApp::Window()
+	{
+		return _window;
+	}
+
+	std::pair<int, int> SDLApp::GetWindowSize()
+	{
+		int w = 0, h = 0;
+		
+		SDL_GetWindowSize(_window, &w, &h);
+
+		return std::make_pair(w, h);
+	}
+
 }
