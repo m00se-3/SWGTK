@@ -2,13 +2,8 @@
 
 
 namespace cts
-{
-	speed::speed(float v)
-		: value(v)
-	{
-	}
-	
-	health::health(float v)
+{	
+	angle::angle(float v)
 		: value(v)
 	{
 	}
@@ -58,5 +53,9 @@ namespace cts
 	{
 	}
 
+	texture::texture(SDL_Texture* in_tex)
+		: tex(in_tex)
+	{
+	}
 
 }
