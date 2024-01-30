@@ -1,44 +1,97 @@
 #ifndef CTS_COMPONENT_HPP
 #define CTS_COMPONENT_HPP
 
-#include <vector>
-#include <variant>
-
 namespace cts
 {
-	
-	struct vec2i
+	struct speed
 	{
-		int x = 0, y = 0;
+		float value = 0.f;
 
-		vec2i() = default;
-		vec2i(int x, int y);
+		speed() = default;
+		speed(float v);
 	};
 
-	struct vec2f
+	struct health
+	{
+		float value = 0.f;
+
+		health() = default;
+		health(float v);
+	};
+	
+	struct position
 	{
 		float x = 0.f, y = 0.f;
 
-		vec2f() = default;
-		vec2f(float x, float y);
+		position() = default;
+		position(float x, float y);
 	};
 
-	struct vec4i
+	struct velocity
 	{
-		int x = 0, y = 0,
-			w = 0, h = 0;
+		float x = 0.f, y = 0.f;
 
-		vec4i() = default;
-		vec4i(int x, int y, int w, int h);
+		velocity() = default;
+		velocity(float x, float y);
 	};
 
-	struct vec4f
+	struct acceleration
+	{
+		float x = 0.f, y = 0.f;
+
+		acceleration() = default;
+		acceleration(float x, float y);
+	};
+
+	struct sprite
 	{
 		float x = 0.f, y = 0.f,
 			w = 0.f, h = 0.f;
 
-		vec4f() = default;
-		vec4f(float x, float y, float w, float h);
+		sprite() = default;
+		sprite(float x, float y, float w, float h);
+	};
+
+	struct bounding_box
+	{
+		float x = 0.f, y = 0.f,
+			w = 0.f, h = 0.f;
+
+		bounding_box() = default;
+		bounding_box(float x, float y, float w, float h);
+	};
+
+	struct bounding_circle
+	{
+		float x = 0.f, y = 0.f, radius = 0.f;
+
+		bounding_circle() = default;
+		bounding_circle(float x, float y, float r);
+	};
+
+	struct area_box
+	{
+		float x = 0.f, y = 0.f,
+			w = 0.f, h = 0.f;
+
+		area_box() = default;
+		area_box(float x, float y, float w, float h);
+	};
+
+	struct area_circle
+	{
+		float x = 0.f, y = 0.f, radius = 0.f;
+
+		area_circle() = default;
+		area_circle(float x, float y, float r);
+	};
+
+	struct fov
+	{
+		float x = 0.f, y = 0.f, radius = 0.f;
+
+		fov() = default;
+		fov(float x, float y, float r);
 	};
 
 }
