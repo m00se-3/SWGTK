@@ -1,22 +1,65 @@
 #ifndef CTS_COMPONENT_HPP
 #define CTS_COMPONENT_HPP
 
+extern "C"
+{
+	struct SDL_Texture;
+}
+
 namespace cts
 {
+	template<typename T>
 	struct speed
 	{
-		float value = 0.f;
+		T value{};
 
 		speed() = default;
-		speed(float v);
+		speed(T v) : value(v) {}
 	};
 
+	template<typename T>
 	struct health
+	{
+		T value{};
+
+		health() = default;
+		health(T v) : value(v) {}
+	};
+
+	template<typename T>
+	struct score
+	{
+		T value{};
+		
+		score() = default;
+		score(T v) : value(v) {}
+	};
+
+	template<typename T>
+	struct basic_value
+	{
+		T value{};
+
+		basic_value() = default;
+		basic_value(T v) : value(v) {}
+	};
+
+	template<typename TFirst, typename TSecond>
+	struct basic_pair
+	{
+		TFirst first{};
+		TSecond second{};
+
+		basic_pair() = default;
+		basic_pair(TFirst f, TSecond s) : first(f), second(s) {}
+	};
+
+	struct angle
 	{
 		float value = 0.f;
 
-		health() = default;
-		health(float v);
+		angle() = default;
+		angle(float v);
 	};
 	
 	struct position
@@ -92,6 +135,14 @@ namespace cts
 
 		fov() = default;
 		fov(float x, float y, float r);
+	};
+
+	struct texture
+	{
+		SDL_Texture* tex = nullptr;
+
+		texture() = default;
+		texture(SDL_Texture* in_tex);
 	};
 
 }
