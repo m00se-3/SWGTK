@@ -77,7 +77,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/include/Texture.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Font.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Input.hpp
-	${CMAKE_CURRENT_LIST_DIR}/include/Entity.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Component.hpp
 
 	${CMAKE_CURRENT_LIST_DIR}/include/scenes/Scene.hpp
@@ -91,7 +90,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/src/Texture.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/Font.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/Input.cpp
-	${CMAKE_CURRENT_LIST_DIR}/src/Entity.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/Component.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/nuklear.cpp
 
