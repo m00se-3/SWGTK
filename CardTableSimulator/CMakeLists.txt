@@ -80,6 +80,7 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/include/Component.hpp
 
 	${CMAKE_CURRENT_LIST_DIR}/include/scenes/Scene.hpp
+	${CMAKE_CURRENT_LIST_DIR}/include/scenes/MenuScene.hpp
 
 	${CMAKE_CURRENT_LIST_DIR}/include/systems/UI.hpp
 
@@ -94,6 +95,7 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/src/nuklear.cpp
 
 	${CMAKE_CURRENT_LIST_DIR}/src/scenes/Scene.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/scenes/MenuScene.cpp
 
 	${CMAKE_CURRENT_LIST_DIR}/src/systems/UI.cpp
 )
