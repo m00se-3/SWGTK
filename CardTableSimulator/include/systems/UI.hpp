@@ -15,6 +15,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <set>
 
 #include "sol/sol.hpp"
 
@@ -37,6 +38,9 @@ namespace cts
 		void Draw();
 		void InitLua();
 
+		void Open(const std::string& name);
+		void Close(const std::string& name);
+
 		LuaError LoadScriptsFromDirectory(const std::string& dir, bool recursive = false);
 
 	private:
@@ -57,6 +61,7 @@ namespace cts
 		std::unique_ptr<int[]> _elements;
 
 		std::map<std::string, std::string> _luaFunctions;
+		std::set<std::string> _openMenus;
 	};
 }
 

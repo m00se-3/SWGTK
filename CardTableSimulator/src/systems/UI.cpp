@@ -95,13 +95,15 @@ namespace cts
 
 		_dataTable.set("wWidth", size.first, "wHeight", size.second);
 		
-		for (auto& pair : _luaFunctions)
+		for (auto& menu : _openMenus)
 		{
-			sol::protected_function_result result = _lua[pair.first]();
+			auto& err = _luaFunctions.at(menu);
+			
+			sol::protected_function_result result = _lua[menu]();
 
 			if (!result.valid())
 			{
-				std::fputs(std::format("Lua runtime error: Function {} - {}\n", pair.first, pair.second).c_str(), stdout);
+				std::fputs(std::format("Lua runtime error: Function {} - {}\n", menu, err).c_str(), stdout);
 			}
 		}
 	}
@@ -738,6 +740,19 @@ namespace cts
 			};
 
 		context["StylePopFont"] = nk_style_pop_font;
+	}
+
+	void UI::Open(const std::string& name)
+	{
+		if (_luaFunctions.contains(name))
+		{
+			_openMenus.insert(name);
+		}
+	}
+
+	void UI::Close(const std::string& name)
+	{
+		_openMenus.erase(name);
 	}
 
 }

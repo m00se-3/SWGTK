@@ -161,6 +161,11 @@ namespace cts
 			{
 				// TODO: handle outside of nuklear
 
+				if (e.key.keysym.scancode == SDL_SCANCODE_M)
+				{
+					_ui->Open("Hello");
+				}
+
 				auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
 
 				if (key != NK_KEY_NONE)
@@ -210,6 +215,16 @@ namespace cts
 		_running = false;
 
 #endif
+	}
+
+	void SDLApp::OpenMenu(const std::string& name)
+	{
+		_ui->Open(name);
+	}
+
+	void SDLApp::CloseMenu(const std::string& name)
+	{
+		_ui->Close(name);
 	}
 
 #ifdef __EMSCRIPTEN__
