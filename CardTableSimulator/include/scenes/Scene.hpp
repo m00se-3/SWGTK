@@ -5,29 +5,27 @@
 
 #include "sol/sol.hpp"
 
-
-extern "C"
-{
-	struct SDL_Renderer;
-}
-
 namespace cts
 {
+
+	class SDLApp;
 
 	class Scene
 	{
 	public:
-		Scene(SDL_Renderer* ren);
+		Scene(SDLApp* app);
 		virtual ~Scene() = default;
 
-	protected:
-		virtual bool Create(const std::string& gameDir) = 0;
+		virtual bool Create(const std::string& rootDir) = 0;
 		virtual bool Update(float dt) = 0;
 
+	protected:
+		SDLApp* Parent();
+
+		sol::state lua;
 
 	private:
-		SDL_Renderer* _renderer = nullptr;	// Does not own the pointer.
-		sol::state _lua;
+		SDLApp* _parent = nullptr;
 	};
 
 }

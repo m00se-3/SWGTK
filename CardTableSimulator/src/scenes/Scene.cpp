@@ -1,12 +1,17 @@
 #include "scenes/Scene.hpp"
 
-#include "SDL.h"
+#include "SDLApp.hpp"
 
 namespace cts
 {
-	Scene::Scene(SDL_Renderer* ren)
-		: _renderer(ren)
+	Scene::Scene(SDLApp* app)
+		: _parent(app)
 	{
 
+	}
+
+	SDLApp* Scene::Parent()
+	{
+		return _parent;
 	}
 }
