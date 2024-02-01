@@ -1,7 +1,10 @@
 #ifndef CTS_MENUSCENE_HPP
 #define CTS_MENUSCENE_HPP
 
+#include <vector>
+
 #include "Scene.hpp"
+#include "Texture.hpp"
 
 namespace cts
 {
@@ -16,7 +19,8 @@ namespace cts
 
 
 	private:
-
+		Texture _background;
+		std::vector<Texture> _freeTextItems;
 	};
 
 }
