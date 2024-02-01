@@ -1,24 +1,37 @@
 #include "Texture.hpp"
 
-#include "SDL2/SDL_surface.h"
 #include "SDL2/SDL_image.h"
 
 namespace cts
 {
 
-	Texture::Texture(SDL_Renderer* ren, const std::filesystem::path& filepath)
-		: _texture(IMG_LoadTexture(ren, filepath.string().c_str()))
+	Texture::Texture(SDL_Renderer* ren, const std::string& filepath)
+		: _texture(IMG_LoadTexture(ren, filepath.c_str()))
 	{
+		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
 	Texture::Texture(SDL_Renderer* ren, SDL_Surface* surface)
 		: _texture(SDL_CreateTextureFromSurface(ren, surface))
 	{
+		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
+	}
+
+	Texture::Texture(Texture&& tex) noexcept
+		: _texture(tex.Release())
+	{
+	}
+
+	Texture& Texture::operator=(SDL_Texture* tex)
+	{
+		if (_texture) SDL_DestroyTexture(_texture);
+		_texture = tex;
+		return *this;
 	}
 
 	Texture::~Texture()
 	{
-		SDL_DestroyTexture(_texture);
+		if(_texture) SDL_DestroyTexture(_texture);
 	}
 
 	SDL_Texture* Texture::Get() const { return _texture; }
@@ -34,16 +47,18 @@ namespace cts
 		SDL_SetTextureAlphaMod(_texture, a);
 	}
 
-	void Texture::Create(SDL_Renderer* ren, const std::filesystem::path& filepath)
+	void Texture::Create(SDL_Renderer* ren, const std::string& filepath)
 	{
 		if (_texture) SDL_DestroyTexture(_texture);
-		_texture = IMG_LoadTexture(ren, filepath.string().c_str());
+		_texture = IMG_LoadTexture(ren, filepath.c_str());
+		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
 	void Texture::Create(SDL_Renderer* ren, SDL_Surface* surface)
 	{
 		if (_texture) SDL_DestroyTexture(_texture);
 		_texture = SDL_CreateTextureFromSurface(ren, surface);
+		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
 	SDL_BlendMode Texture::GetBlend() const
@@ -59,6 +74,13 @@ namespace cts
 		SDL_GetTextureColorMod(_texture, &c.r, &c.b, &c.g);
 		SDL_GetTextureAlphaMod(_texture, &c.a);
 		return c;
+	}
+
+	SDL_Texture* Texture::Release()
+	{
+		SDL_Texture* temp = _texture;
+		_texture = nullptr;
+		return temp;
 	}
 
 }

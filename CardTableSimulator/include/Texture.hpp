@@ -1,34 +1,38 @@
-#ifndef TEXTURE_HPP
-#define TEXTURE_HPP
+#ifndef CTS_TEXTURE_HPP
+#define CTS_TEXTURE_HPP
+
+#include <string>
 
 #include "SDL2/SDL_render.h"
-
-#include <filesystem>
-
-extern "C" {
-	struct SDL_Surface;
-}
 
 namespace cts
 {
 	/*
-		A simple wrapper class for SDL_Texture
+		A simple wrapper class for SDL_Texture.
+
+		The class is able to reassign itself and release ownership of the pointer to another object.
+		The copy constructor and copy assignment operators have been deleted to avoid needed to use reference
+		counting for the underlying texture.
 	*/
 	class Texture {
 	public:
 		Texture() = default;
-		Texture(SDL_Renderer* ren, const std::filesystem::path& filepath);
+		Texture(SDL_Renderer* ren, const std::string& filepath);
 		Texture(SDL_Renderer* ren, SDL_Surface* surface);
+		Texture(Texture&& tex) noexcept;
 		~Texture();
 
-		// For now, until our requirements are more defined.
+		// This will clean up the previous SDL_Texture, if it holds one, before taking ownership of the new SDL_Texture.
+		Texture& operator=(SDL_Texture* tex);
+
+		// This class should never copy, this is so that we don't have to worry about reference counting.
 		Texture(const Texture&) = delete;
-		Texture(Texture&&) noexcept = delete;
+		Texture& operator=(const Texture&) = delete;
 
 		void SetBlend(const SDL_BlendMode& mode);
 		void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-		void Create(SDL_Renderer* ren, const std::filesystem::path& filepath);
+		void Create(SDL_Renderer* ren, const std::string& filepath);
 		void Create(SDL_Renderer* ren, SDL_Surface* surface);
 
 		SDL_BlendMode GetBlend() const;
@@ -36,8 +40,11 @@ namespace cts
 
 		SDL_Texture* Get() const;
 
+		// Releases control of the SDL_Texture pointer to the caller.
+		[[nodiscard]]SDL_Texture* Release();
+
 	private:
 		SDL_Texture* _texture = nullptr;
 	};
 }
-#endif // !TEXTURE_HPP
+#endif // !CTS_TEXTURE_HPP
