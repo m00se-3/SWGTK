@@ -44,7 +44,7 @@ namespace cts
 #endif
 		~SDLApp();
 
-		void Run();
+		void Run(std::unique_ptr<Scene> opener);
 		void InitHeadless();
 		void InitGraphical();
 		void EventsAndTimeStep();
@@ -55,6 +55,7 @@ namespace cts
 
 		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
 		int SDLButtontoNKButton(uint8_t button);
+		const std::string& AssetsDir() const;
 
 		[[nodiscard]] FontGroup& GetFontGroup();
 		[[nodiscard]]nk_font* GetNKFont(FontStyle style);

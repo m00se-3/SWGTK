@@ -54,12 +54,15 @@ namespace cts
 		}
 	}
 
-	void SDLApp::Run()
+	void SDLApp::Run(std::unique_ptr<Scene> opener)
 	{
 		if (!_headless)
 		{
 			SDL_ShowWindow(_window);
 			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u);
+
+			_currentScene.reset(opener.release());
+			_currentScene->Create(_configDir + "/data");
 
 #ifdef __EMSCRIPTEN__
 			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
@@ -161,11 +164,6 @@ namespace cts
 			{
 				// TODO: handle outside of nuklear
 
-				if (e.key.keysym.scancode == SDL_SCANCODE_M)
-				{
-					_ui->Open("Hello");
-				}
-
 				auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
 
 				if (key != NK_KEY_NONE)
@@ -193,12 +191,12 @@ namespace cts
 
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 
-		auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
+		double timeDiff = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime).count());
 		_lastFrameTime = _currentFrameTime;
 
 		SDL_RenderClear(_renderer);
 
-		// TODO: Update the scene...
+		_currentScene->Update(static_cast<float>(timeDiff * 0.000001));
 
 		_ui->Update();
 		_ui->Draw();
@@ -225,6 +223,11 @@ namespace cts
 	void SDLApp::CloseMenu(const std::string& name)
 	{
 		_ui->Close(name);
+	}
+
+	const std::string& SDLApp::AssetsDir() const
+	{
+		return _assetsDir;
 	}
 
 #ifdef __EMSCRIPTEN__
