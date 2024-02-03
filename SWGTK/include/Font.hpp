@@ -44,20 +44,22 @@ namespace swgtk
 
         void Create();
         void Finalize(SDL_Texture* texture);
-        void AddFont(FontStyle styleMask, float size, const std::filesystem::path& filename);
+        void AddFont(FontStyle styleMask, int size, const std::filesystem::path& filename);
         void ClearTTFFonts();
 
-        [[nodiscard]] nk_font* GetNK(FontStyle mask);
-        [[nodiscard]] const nk_font* GetNK(FontStyle mask) const;
-        [[nodiscard]] TTF_Font* GetTTF(FontStyle mask);
-        [[nodiscard]] const TTF_Font* GetTTF(FontStyle mask) const;
+        [[nodiscard]] nk_font* GetNK(FontStyle mask, int size);
+        [[nodiscard]] const nk_font* GetNK(FontStyle mask, int size) const;
+        [[nodiscard]] TTF_Font* GetTTF(FontStyle mask, int size);
+        [[nodiscard]] const TTF_Font* GetTTF(FontStyle mask, int size) const;
         [[nodiscard]] nk_font_atlas* GetAtlas();
         [[nodiscard]] const nk_font_atlas* GetAtlas() const;
 
     private:
+        int64_t Hash(FontStyle style, int size) const;
+
         struct nk_font_atlas _atlas;
-        std::unordered_map<FontStyle, struct nk_font*> _nkFonts;
-        std::unordered_map<FontStyle, TTF_Font*> _ttfFonts;
+        std::unordered_map<int64_t, struct nk_font*> _nkFonts;
+        std::unordered_map<int64_t, TTF_Font*> _ttfFonts;
     };
 }
 

@@ -317,14 +317,14 @@ namespace swgtk
 		return _fonts;
 	}
 
-	nk_font* SDLApp::GetNKFont(FontStyle style)
+	nk_font* SDLApp::GetNKFont(FontStyle style, int size)
 	{
-		return _fonts.GetNK(style);
+		return _fonts.GetNK(style, size);
 	}
 
-	TTF_Font* SDLApp::GetTTF(FontStyle style)
+	TTF_Font* SDLApp::GetTTF(FontStyle style, int size)
 	{
-		return _fonts.GetTTF(style);
+		return _fonts.GetTTF(style, size);
 	}
 
 	nk_context* SDLApp::GetNKContext()

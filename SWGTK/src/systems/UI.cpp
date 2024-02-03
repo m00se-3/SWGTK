@@ -49,10 +49,10 @@ namespace swgtk
 
 		fontGroup.Create();
 
-		fontGroup.AddFont(FontStyle::Normal, 16.0f, fontsDir + "/roboto/Roboto-Medium.ttf");
-		fontGroup.AddFont(FontStyle::Bold, 16.0f, fontsDir + "/roboto/Roboto-Bold.ttf");
-		fontGroup.AddFont(FontStyle::Bold_Italic, 16.0f, fontsDir + "/roboto/Roboto-BoldItalic.ttf");
-		fontGroup.AddFont(FontStyle::Italic, 16.0f, fontsDir + "/roboto/Roboto-Italic.ttf");
+		fontGroup.AddFont(FontStyle::Normal, 16, fontsDir + "/roboto/Roboto-Medium.ttf");
+		fontGroup.AddFont(FontStyle::Bold, 16, fontsDir + "/roboto/Roboto-Bold.ttf");
+		fontGroup.AddFont(FontStyle::Bold_Italic, 16, fontsDir + "/roboto/Roboto-BoldItalic.ttf");
+		fontGroup.AddFont(FontStyle::Italic, 16, fontsDir + "/roboto/Roboto-Italic.ttf");
 
 
 		// Bake the fonts.
@@ -68,7 +68,7 @@ namespace swgtk
 		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
 
-		if (!nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal)->handle)) return;
+		if (!nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal, 16)->handle)) return;
 
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;
@@ -730,10 +730,10 @@ namespace swgtk
 
 		// Styles
 
-		context["StylePushFont"] = [this](sol::optional<FontStyle> style) -> bool {
+		context["StylePushFont"] = [this](sol::optional<FontStyle> style, sol::optional<int> size) -> bool {
 			if (style)
 			{
-				return static_cast<bool>(nk_style_push_font(_ctx, &_parent->GetNKFont(*style)->handle));
+				return static_cast<bool>(nk_style_push_font(_ctx, &_parent->GetNKFont(*style, *size)->handle));
 			}
 
 			return false;

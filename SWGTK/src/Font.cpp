@@ -23,17 +23,19 @@ namespace swgtk
         nk_font_atlas_end(&_atlas, nk_handle_ptr(texture), nullptr);
     }
 
-    void FontGroup::AddFont(FontStyle styleMask, float size, const std::filesystem::path& filename)
+    void FontGroup::AddFont(FontStyle styleMask, int size, const std::filesystem::path& filename)
     {
-        if (!_nkFonts.contains(styleMask))
+        const auto hash = Hash(styleMask, size);
+        
+        if (!_nkFonts.contains(hash))
         {
             auto str = filename.string();
             
-            struct nk_font* temp = nk_font_atlas_add_from_file(&_atlas, str.c_str(), size, nullptr);
-            TTF_Font* ttf = TTF_OpenFont(str.c_str(), static_cast<int>(size));
+            struct nk_font* temp = nk_font_atlas_add_from_file(&_atlas, str.c_str(), static_cast<float>(size), nullptr);
+            TTF_Font* ttf = TTF_OpenFont(str.c_str(), size);
 
-            if (temp) _nkFonts.insert_or_assign(styleMask, temp);
-            if (ttf) _ttfFonts.insert_or_assign(styleMask, ttf);
+            if (temp) _nkFonts.insert_or_assign(hash, temp);
+            if (ttf) _ttfFonts.insert_or_assign(hash, ttf);
         }
     }
 
@@ -45,41 +47,49 @@ namespace swgtk
         }
     }
 
-    nk_font* FontGroup::GetNK(FontStyle mask)
+    nk_font* FontGroup::GetNK(FontStyle mask, int size)
     {
-        if (_nkFonts.contains(mask))
+        const auto key = Hash(mask, size);
+            
+        if (_nkFonts.contains(key))
         {
-            return _nkFonts.at(mask);
+            return _nkFonts.at(key);
         }
 
         return nullptr;
     }
 
-    const nk_font* FontGroup::GetNK(FontStyle mask) const
+    const nk_font* FontGroup::GetNK(FontStyle mask, int size) const
     {
-        if (_nkFonts.contains(mask))
+        const auto key = Hash(mask, size);
+        
+        if (_nkFonts.contains(key))
         {
-            return _nkFonts.at(mask);
+            return _nkFonts.at(key);
         }
 
         return nullptr;
     }
 
-    TTF_Font* FontGroup::GetTTF(FontStyle mask)
+    TTF_Font* FontGroup::GetTTF(FontStyle mask, int size)
     {
-        if (_ttfFonts.contains(mask))
+        const auto key = Hash(mask, size);
+        
+        if (_ttfFonts.contains(key))
         {
-            return _ttfFonts.at(mask);
+            return _ttfFonts.at(key);
         }
 
         return nullptr;
     }
 
-    const TTF_Font* FontGroup::GetTTF(FontStyle mask) const
+    const TTF_Font* FontGroup::GetTTF(FontStyle mask, int size) const
     {
-        if (_ttfFonts.contains(mask))
+        const auto key = Hash(mask, size);
+        
+        if (_ttfFonts.contains(key))
         {
-            return _ttfFonts.at(mask);
+            return _ttfFonts.at(key);
         }
 
         return nullptr;
@@ -88,4 +98,9 @@ namespace swgtk
     [[nodiscard]] nk_font_atlas* FontGroup::GetAtlas() { return &_atlas; }
 
     [[nodiscard]] const nk_font_atlas* FontGroup::GetAtlas() const { return &_atlas; }
+
+    int64_t FontGroup::Hash(FontStyle style, int size) const
+    {
+        return (int64_t)style << 32 | (int64_t)size;
+    }
 }

@@ -58,8 +58,8 @@ namespace swgtk
 		const std::string& AssetsDir() const;
 
 		[[nodiscard]] FontGroup& GetFontGroup();
-		[[nodiscard]]nk_font* GetNKFont(FontStyle style);
-		[[nodiscard]]TTF_Font* GetTTF(FontStyle style);
+		[[nodiscard]]nk_font* GetNKFont(FontStyle style, int size);
+		[[nodiscard]]TTF_Font* GetTTF(FontStyle style, int size);
 
 		[[nodiscard]] nk_context* GetNKContext();
 		[[nodiscard]] SDL_Renderer* Renderer();

@@ -11,7 +11,7 @@ namespace swgtk
 
 	bool MenuScene::Create(const std::string& rootDir)
 	{
-		auto* font = Parent()->GetTTF(FontStyle::Bold);
+		auto* font = Parent()->GetTTF(FontStyle::Bold, 16);
 
 		_background.Create(Parent()->Renderer(), Parent()->AssetsDir() + "/Card Assets/Backgrounds/background_2.png");
 
