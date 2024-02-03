@@ -1,7 +1,7 @@
 #include "Component.hpp"
 
 
-namespace cts
+namespace swgtk
 {	
 	angle::angle(float v)
 		: value(v)

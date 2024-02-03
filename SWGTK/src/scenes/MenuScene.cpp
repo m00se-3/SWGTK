@@ -2,7 +2,7 @@
 
 #include "SDLApp.hpp"
 
-namespace cts
+namespace swgtk
 {
 	MenuScene::MenuScene(SDLApp* app)
 		: Scene(app)

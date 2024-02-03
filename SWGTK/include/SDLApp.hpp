@@ -29,7 +29,7 @@ extern "C" {
 	struct SDL_Renderer;
 }
 
-namespace cts
+namespace swgtk
 {
 
 	/*

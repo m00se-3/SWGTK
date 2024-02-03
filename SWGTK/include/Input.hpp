@@ -1,9 +1,9 @@
-#ifndef CTS_INPUT_HPP
-#define CTS_INPUT_HPP
+#ifndef SWGTK_INPUT_HPP
+#define SWGTK_INPUT_HPP
 
 #include "SDL2/SDL_events.h"
 
-namespace cts
+namespace swgtk
 {
 	/*
 		The following are wrapper values for the corresponding keyboard and mouse button SDL values. These values are based on the
@@ -83,4 +83,4 @@ namespace cts
 	};
 }
 
-#endif // !CTS_INPUT_HPP
+#endif // !SWGTK_INPUT_HPP

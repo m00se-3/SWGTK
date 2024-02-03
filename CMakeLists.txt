@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.25)
 
-project ("CardTableSimulator")
+project ("SWGTK")
 
 # Clang compiler warning flags go here.
 list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic", "-Wconversion")
@@ -14,7 +14,7 @@ message("-- Emscripten build enabled!!!")
 
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
-include(${CMAKE_CURRENT_LIST_DIR}/CardTableSimulator/external/cmake/BuildLua.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/SWGTK/external/cmake/BuildLua.cmake)
 
 else()
 
@@ -31,4 +31,4 @@ find_package(SDL2_mixer CONFIG REQUIRED)
 find_package(unofficial-nuklear CONFIG REQUIRED)
 
 # Include sub-projects.
-add_subdirectory ("CardTableSimulator")
+add_subdirectory ("SWGTK")

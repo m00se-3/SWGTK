@@ -2,7 +2,7 @@
 
 #include "SDLApp.hpp"
 
-namespace cts
+namespace swgtk
 {
 	Scene::Scene(SDLApp* app)
 		: _parent(app)

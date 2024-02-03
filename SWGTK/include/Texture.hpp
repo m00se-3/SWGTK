@@ -1,11 +1,11 @@
-#ifndef CTS_TEXTURE_HPP
-#define CTS_TEXTURE_HPP
+#ifndef SWGTK_TEXTURE_HPP
+#define SWGTK_TEXTURE_HPP
 
 #include <string>
 
 #include "SDL2/SDL_render.h"
 
-namespace cts
+namespace swgtk
 {
 	/*
 		A simple wrapper class for SDL_Texture.
@@ -47,4 +47,4 @@ namespace cts
 		SDL_Texture* _texture = nullptr;
 	};
 }
-#endif // !CTS_TEXTURE_HPP
+#endif // !SWGTK_TEXTURE_HPP

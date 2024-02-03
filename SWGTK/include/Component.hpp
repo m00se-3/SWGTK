@@ -1,12 +1,12 @@
-#ifndef CTS_COMPONENT_HPP
-#define CTS_COMPONENT_HPP
+#ifndef SWGTK_COMPONENT_HPP
+#define SWGTK_COMPONENT_HPP
 
 extern "C"
 {
 	struct SDL_Texture;
 }
 
-namespace cts
+namespace swgtk
 {
 	template<typename T>
 	struct speed
@@ -147,4 +147,4 @@ namespace cts
 
 }
 
-#endif // !CTS_COMPONENT_HPP
+#endif // !SWGTK_COMPONENT_HPP

@@ -2,7 +2,7 @@
 
 #include "SDL2/SDL_image.h"
 
-namespace cts
+namespace swgtk
 {
 
 	Texture::Texture(SDL_Renderer* ren, const std::string& filepath)

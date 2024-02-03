@@ -1,10 +1,10 @@
-﻿add_executable (CardTableSimulator)
+﻿add_executable (SWGTK)
 
 # If we are building for emscripten.
 if(EMSCRIPTEN)
 
 target_include_directories(
-	CardTableSimulator
+	SWGTK
 
 	PUBLIC 
 
@@ -14,7 +14,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-	CardTableSimulator
+	SWGTK
 
 	PRIVATE 
 
@@ -31,7 +31,7 @@ target_link_libraries(
 else()
 
 target_compile_definitions(
-	CardTableSimulator
+	SWGTK
 
 	PRIVATE 
 
@@ -40,7 +40,7 @@ target_compile_definitions(
 )
 
 target_include_directories(
-	CardTableSimulator
+	SWGTK
 
 	PUBLIC 
 
@@ -49,7 +49,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-	CardTableSimulator
+	SWGTK
 
 	PRIVATE 
 
@@ -67,7 +67,7 @@ target_link_libraries(
 endif(EMSCRIPTEN)
 
 target_sources(
-	CardTableSimulator
+	SWGTK
 
 	PUBLIC 
 

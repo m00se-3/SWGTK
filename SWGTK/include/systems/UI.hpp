@@ -1,5 +1,5 @@
-#ifndef CTS_UI_SYSTEM_HPP
-#define CTS_UI_SYSTEM_HPP
+#ifndef SWGTK_UI_SYSTEM_HPP
+#define SWGTK_UI_SYSTEM_HPP
 
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_STANDARD_IO
@@ -23,7 +23,7 @@
 #include "ErrCodes.hpp"
 #include "Font.hpp"
 
-namespace cts
+namespace swgtk
 {
 	class SDLApp;
 	
@@ -65,4 +65,4 @@ namespace cts
 	};
 }
 
-#endif // !CTS_UI_SYSTEM_HPP
+#endif // !SWGTK_UI_SYSTEM_HPP

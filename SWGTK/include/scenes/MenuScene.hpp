@@ -1,12 +1,12 @@
-#ifndef CTS_MENUSCENE_HPP
-#define CTS_MENUSCENE_HPP
+#ifndef SWGTK_MENUSCENE_HPP
+#define SWGTK_MENUSCENE_HPP
 
 #include <vector>
 
 #include "Scene.hpp"
 #include "Texture.hpp"
 
-namespace cts
+namespace swgtk
 {
 
 	class MenuScene : public Scene
@@ -25,4 +25,4 @@ namespace cts
 
 }
 
-#endif // !CTS_MENUSCENE_HPP
+#endif // !SWGTK_MENUSCENE_HPP

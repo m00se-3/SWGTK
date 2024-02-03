@@ -1,6 +1,6 @@
 {
-  "name": "card-table-simulator",
-  "description": "A simple card game program that is user customizable.",
+  "name": "sdl-web-games",
+  "description": "A simple game engine that is user customizable.",
   "version-string": "1.0.0",
   "dependencies": [
     "sdl2",

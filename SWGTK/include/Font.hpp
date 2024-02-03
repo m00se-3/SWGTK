@@ -1,5 +1,5 @@
-#ifndef CTS_FONT_HPP
-#define CTS_FONT_HPP
+#ifndef SWGTK_FONT_HPP
+#define SWGTK_FONT_HPP
 
 #include <filesystem>
 #include <unordered_map> 
@@ -17,7 +17,7 @@
 #include "nuklear/nuklear.h"
 #include "SDL2/SDL_ttf.h"
 
-namespace cts
+namespace swgtk
 {
     enum class FontStyle : int32_t
     {

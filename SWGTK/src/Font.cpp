@@ -1,6 +1,6 @@
 #include "Font.hpp"
 
-namespace cts
+namespace swgtk
 {
     FontGroup::FontGroup()
     {

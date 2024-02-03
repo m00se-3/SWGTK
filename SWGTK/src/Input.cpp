@@ -1,6 +1,6 @@
 #include "Input.hpp"
 
-namespace cts
+namespace swgtk
 {
 	Key Key::FromValue(KeyCode value)
 	{

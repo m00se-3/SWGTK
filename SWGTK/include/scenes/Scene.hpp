@@ -1,11 +1,11 @@
-#ifndef CTS_SCENE_HPP
-#define CTS_SCENE_HPP
+#ifndef SWGTK_SCENE_HPP
+#define SWGTK_SCENE_HPP
 
 #include <string>
 
 #include "sol/sol.hpp"
 
-namespace cts
+namespace swgtk
 {
 
 	class SDLApp;
@@ -30,4 +30,4 @@ namespace cts
 
 }
 
-#endif // !CTS_SCENE_HPP
+#endif // !SWGTK_SCENE_HPP

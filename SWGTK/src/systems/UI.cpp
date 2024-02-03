@@ -7,7 +7,7 @@
 #include "SDLApp.hpp"
 #include "SDL2/SDL_surface.h"
 
-namespace cts
+namespace swgtk
 {
 	/*
 		NOTE: If you experience rendering issues while building the ui, consider increasing this buffer size.

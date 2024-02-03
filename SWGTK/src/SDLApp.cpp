@@ -6,7 +6,7 @@
 #include "SDL2/SDL_mixer.h"
 
 
-namespace cts
+namespace swgtk
 {
 
 #ifdef __EMSCRIPTEN__
@@ -96,7 +96,7 @@ namespace cts
 
 		if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
 		{
-			_window = SDL_CreateWindow("Card Table", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 900, SDL_WINDOW_HIDDEN);
+			_window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 900, SDL_WINDOW_HIDDEN);
 
 			if (_window)
 			{
