@@ -35,8 +35,8 @@ target_compile_definitions(
 
 	PRIVATE 
 
-	CTS_ASSETS="$ENV{Assets_Dir}"
-	CTS_CONFIG="$ENV{Config_Dir}"
+	SWGTK_ASSETS="$ENV{Assets_Dir}"
+	SWGTK_CONFIG="$ENV{Config_Dir}"
 )
 
 target_include_directories(
