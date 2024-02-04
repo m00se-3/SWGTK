@@ -10,6 +10,11 @@ namespace swgtk
 
 	}
 
+	SceneFactory Scene::GetNextScene()
+	{
+		return nextScene;
+	}
+
 	SDLApp* Scene::Parent()
 	{
 		return _parent;

@@ -18,7 +18,7 @@ namespace swgtk
 	}
 #else
 	SDLApp::SDLApp(int argc, char** argv)
-		: _assetsDir(CTS_ASSETS), _configDir(CTS_CONFIG),
+		: _assetsDir(SWGTK_ASSETS), _configDir(SWGTK_CONFIG),
 		_lastFrameTime(std::chrono::high_resolution_clock::now()),
 		_currentFrameTime()
 	{
@@ -62,7 +62,11 @@ namespace swgtk
 			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u);
 
 			_currentScene.reset(opener.release());
-			_currentScene->Create(_configDir + "/data");
+			
+			if (_currentScene->Create() != SSC::ok)
+			{
+				return;
+			}
 
 #ifdef __EMSCRIPTEN__
 			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
@@ -71,6 +75,21 @@ namespace swgtk
 
 			while (_running)
 			{
+				if (_currentSSC == SSC::fail)
+				{
+					break;
+				}
+
+				if (_currentSSC == SSC::change_scene)
+				{
+					auto factory = _currentScene->GetNextScene();
+
+					_currentScene = factory();
+					_currentSSC = _currentScene->Create();
+
+					continue;
+				}
+				
 				EventsAndTimeStep();
 			}
 
@@ -230,6 +249,11 @@ namespace swgtk
 		return _assetsDir;
 	}
 
+	const std::string& SDLApp::ConfigDir() const
+	{
+		return _configDir;
+	}
+
 #ifdef __EMSCRIPTEN__
 
 	const SDLApp::timePoint& SDLApp::GetLastFrame() { return _lastFrameTime; }
@@ -310,6 +334,11 @@ namespace swgtk
 		case SDL_BUTTON_MIDDLE:			return NK_BUTTON_MIDDLE;
 		}
 		return -1;
+	}
+
+	const SSC SDLApp::GetSceneStatus() const
+	{
+		return _currentSSC;
 	}
 
 	FontGroup& SDLApp::GetFontGroup()

@@ -14,8 +14,8 @@ namespace swgtk
 	public:
 		MenuScene(SDLApp* app);
 		
-		bool Create(const std::string& rootDir) override;
-		bool Update(float dt) override;
+		SSC Create() override;
+		SSC Update(float dt) override;
 
 
 	private:

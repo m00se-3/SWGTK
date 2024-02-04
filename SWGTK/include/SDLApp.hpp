@@ -56,6 +56,8 @@ namespace swgtk
 		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
 		int SDLButtontoNKButton(uint8_t button);
 		const std::string& AssetsDir() const;
+		const std::string& ConfigDir() const;
+		const SSC GetSceneStatus() const;
 
 		[[nodiscard]] FontGroup& GetFontGroup();
 		[[nodiscard]]nk_font* GetNKFont(FontStyle style, int size);
@@ -87,6 +89,8 @@ namespace swgtk
 
 		std::unique_ptr<Scene> _currentScene;
 		std::unique_ptr<UI> _ui;
+
+		SSC _currentSSC = SSC::ok;
 
 		std::string _assetsDir;
 		std::string _configDir;

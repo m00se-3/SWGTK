@@ -1,5 +1,7 @@
 #include "scenes/MenuScene.hpp"
 
+#include <string>
+
 #include "SDLApp.hpp"
 
 namespace swgtk
@@ -9,7 +11,7 @@ namespace swgtk
 	{
 	}
 
-	bool MenuScene::Create(const std::string& rootDir)
+	SSC MenuScene::Create()
 	{
 		auto* font = Parent()->GetTTF(FontStyle::Bold, 16);
 
@@ -24,10 +26,10 @@ namespace swgtk
 			SDL_FreeSurface(surf);
 		}
 		
-		return true;
+		return statusCode;
 	}
 
-	bool MenuScene::Update(float dt)
+	SSC MenuScene::Update(float dt)
 	{
 		// Draw the background, the texture has visible edges that need trimmed.
 		int w = 0, h = 0;
@@ -48,6 +50,6 @@ namespace swgtk
 			SDL_RenderCopy(Parent()->Renderer(), texture.Get(), nullptr, &rect);
 		}
 		
-		return true;
+		return statusCode;
 	}
 }
