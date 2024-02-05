@@ -13,17 +13,29 @@ namespace swgtk
 
 	SSC MenuScene::Create()
 	{
-		auto* font = Parent()->GetTTF(FontStyle::Bold, 16);
+		auto* font = Parent()->GetTTF(FontStyle::Bold, 40);
 
 		_background.Create(Parent()->Renderer(), Parent()->AssetsDir() + "/Card Assets/Backgrounds/background_2.png");
 
-		SDL_Surface* surf = TTF_RenderUTF8_Blended_Wrapped(font, "Play\nGame!", SDL_Color{ 230, 0, 0, 255 }, 0u);
+		sol::protected_function_result welcome = lua.script_file(Parent()->ConfigDir() + "/data/welcome_screen.lua");
 
-		if (surf)
+		if (welcome.valid())
 		{
-			auto& tex = _freeTextItems.emplace_back(Parent()->Renderer(), surf);
+			sol::table data = welcome;
+			sol::table buttons = data["main_buttons"];
 
-			SDL_FreeSurface(surf);
+			const auto size = buttons.size();
+
+			for (uint32_t index = 1; index <= size; ++index)
+			{
+				const std::string& text = buttons[index]["text"].get<std::string>();
+				const auto& bounds = buttons[index]["bounds"].get<sol::table>();
+
+				SDL_Surface* surf = TTF_RenderUTF8_Blended(font, text.c_str(), SDL_Color{ 255, 0, 0, 255 });
+
+				_freeTextItems.emplace_back(Parent()->Renderer(), surf);
+				_freeTextBounds.emplace_back(SDL_Rect{ bounds["x"].get<int>(), bounds["y"].get<int>(), bounds["w"].get<int>(), bounds["h"].get<int>() });
+			}
 		}
 		
 		return statusCode;
@@ -41,13 +53,9 @@ namespace swgtk
 
 		SDL_RenderCopy(Parent()->Renderer(), _background.Get(), &rect, nullptr);
 
-		for (auto& texture : _freeTextItems)
-		{
-			// We are stretching the sample texture here, so it will look pixelated.
-
-			auto rect = SDL_Rect{ 50, 200, 100, 100 };
-			
-			SDL_RenderCopy(Parent()->Renderer(), texture.Get(), nullptr, &rect);
+		for (uint32_t index = 0u; index < _freeTextItems.size(); ++index)
+		{			
+			SDL_RenderCopy(Parent()->Renderer(), _freeTextItems[index].Get(), nullptr, &_freeTextBounds[index]);
 		}
 		
 		return statusCode;

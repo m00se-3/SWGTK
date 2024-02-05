@@ -21,6 +21,7 @@ namespace swgtk
 	private:
 		Texture _background;
 		std::vector<Texture> _freeTextItems;
+		std::vector<SDL_Rect> _freeTextBounds;
 	};
 
 }
