@@ -53,6 +53,7 @@ namespace swgtk
 		fontGroup.AddFont(FontStyle::Bold, 16, fontsDir + "/roboto/Roboto-Bold.ttf");
 		fontGroup.AddFont(FontStyle::Bold_Italic, 16, fontsDir + "/roboto/Roboto-BoldItalic.ttf");
 		fontGroup.AddFont(FontStyle::Italic, 16, fontsDir + "/roboto/Roboto-Italic.ttf");
+		fontGroup.AddFont(FontStyle::Bold, 40, fontsDir + "/roboto/Roboto-Bold.ttf");
 
 
 		// Bake the fonts.
