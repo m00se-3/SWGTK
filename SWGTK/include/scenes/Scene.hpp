@@ -7,6 +7,8 @@
 
 #include "sol/sol.hpp"
 
+#include "Input.hpp"
+
 namespace swgtk
 {
 
@@ -44,6 +46,39 @@ namespace swgtk
 
 		SceneFactory GetNextScene();
 
+		/*
+			Input state and event polling for the derived scene class.
+
+			TODO: GetMousePosition like function returning a vector of the mouse position.
+		*/
+
+		float GetScroll() const;
+		bool IsKeyPressed(LayoutCode code) const;
+		bool IsKeyReleased(LayoutCode code) const;
+		bool IsKeyHeld(LayoutCode code) const;
+		KeyMod GetKeyMods() const;
+		bool IsButtonPressed(MButton button) const;
+		bool IsButtonReleased(MButton button) const;
+		bool IsButtonHeld(MButton button) const;
+		int GetMouseX() const;
+		int GetMouseY() const;
+
+
+		/*
+			Internal input state and event management.
+		*/
+
+		void SetMouseState(const MouseState& event);
+		void SetModState(const SDL_Keymod& state);
+		void SetKeyboardState(const uint8_t* state);
+		void ResetScroll();
+		void AddScroll(float amount);
+		void SetMouseEvent(MButton button, MButtonState state);
+		void ResetMouseEvents();
+		void ResetKeyEvent();
+		void SetKeyEvent(LayoutCode code, bool pressed);
+
+
 	protected:
 		/*
 			To change scenes you simply:
@@ -67,6 +102,22 @@ namespace swgtk
 
 	private:
 		SDLApp* _parent = nullptr;
+
+		/*
+			State management variables for inpuit polling.
+		*/
+
+		MouseState _mouseState;
+		KeyMod _modifiers = KeyMod::None;
+		const uint8_t* _keyboardState = nullptr;
+
+		/*
+			Variables for processing input events.
+		*/
+
+		std::array<MButtonState, 5u> _mouseEvents = { MButtonState::None };
+		std::pair<LayoutCode, bool> _keyEvent = std::make_pair(LayoutCode::Unknown, false);
+		float _scroll = 0.0f;
 	};
 
 }

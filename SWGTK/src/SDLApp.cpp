@@ -5,7 +5,6 @@
 #include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL_mixer.h"
 
-
 namespace swgtk
 {
 
@@ -150,26 +149,27 @@ namespace swgtk
 		
 		SDL_Event e;
 
+		_currentScene->ResetScroll();
+		_currentScene->ResetMouseEvents();
+		_currentScene->ResetKeyEvent();
+
 		while (SDL_PollEvent(&e))
 		{
 			switch (e.type)
 			{
 
 			case SDL_MOUSEMOTION:
-			{
-				// TODO: handle outside of nuklear
-
-
-				nk_input_motion(&_ctx, e.motion.x, e.motion.y);
-				break;
-			}
-
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 			{
-				// TODO: handle outside of nuklear
+				_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_MOUSEBUTTONDOWN) ? MButtonState::Pressed : MButtonState::Released);
 
 				auto button = SDLButtontoNKButton(e.button.button);
+
+				if (e.type == SDL_MOUSEMOTION)
+				{
+					nk_input_motion(&_ctx, e.motion.x, e.motion.y);
+				}
 
 				if (button > -1)
 				{
@@ -181,8 +181,8 @@ namespace swgtk
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 			{
-				// TODO: handle outside of nuklear
-
+				_currentScene->SetKeyEvent(LayoutCode{ e.key.keysym.scancode }, (e.type == SDL_KEYDOWN));
+				
 				auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
 
 				if (key != NK_KEY_NONE)
@@ -194,7 +194,9 @@ namespace swgtk
 
 			case SDL_MOUSEWHEEL:
 			{
-				nk_input_scroll(&_ctx, nk_vec2(static_cast<float>(e.wheel.x), static_cast<float>(e.wheel.y)));
+				_currentScene->AddScroll(e.wheel.preciseY);
+				
+				nk_input_scroll(&_ctx, nk_vec2(e.wheel.preciseX, e.wheel.preciseY));
 				break;
 			}
 
@@ -207,6 +209,16 @@ namespace swgtk
 		}
 
 		nk_input_end(&_ctx);
+
+		_currentScene->SetKeyboardState(SDL_GetKeyboardState(nullptr));
+		_currentScene->SetModState(SDL_GetModState());
+
+		{
+			MouseState mouse;
+			mouse.buttons = MButton{ SDL_GetMouseState(&mouse.x, &mouse.y) };
+
+			_currentScene->SetMouseState(mouse);
+		}
 
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 

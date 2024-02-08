@@ -53,33 +53,19 @@ namespace swgtk
 		None = 0, Left = SDL_BUTTON_LEFT, Middle = SDL_BUTTON_MIDDLE, Right = SDL_BUTTON_RIGHT, Ex1 = SDL_BUTTON_X1, Ex2 = SDL_BUTTON_X2
 	};
 
-	/*
-		A container struct for keyboard events. It stores the following information:
-
-		code:	the exact key that is pressed
-		value:	the keys value, this depends on the context
-		mod:	a value that represents and key modifiers that are set
-	*/
-	struct Key
+	// Mouse button event states.
+	enum class MButtonState : uint8_t
 	{
-		LayoutCode code;
-		KeyCode value;
-		KeyMod mod;
-
-		static Key FromValue(KeyCode value);
-		static Key FromCode(LayoutCode code);
+		None = 0u, Pressed = 1u, Released = 2u
 	};
 
 	/*
-		A container struct storing button values and coordinates that are used in mouse event handlers.
-
-		Fields that have no relevance to an event type are meaningless. 'rx' and 'ry' are only used in motion events.
-		'buttons' is only used for button events.
+		A container struct storing the current state of the mouse
 	*/
-	struct MouseEvent
+	struct MouseState
 	{
 		MButton buttons = MButton::None;
-		int x = 0, y = 0, rx = 0, ry = 0;
+		int x = 0, y = 0;
 	};
 }
 
