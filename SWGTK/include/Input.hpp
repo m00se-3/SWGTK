@@ -19,7 +19,7 @@ namespace swgtk
 	{
 		Unknown = 0, Back = 8, Tab = 9, Enter = 13, Esc = 27, Space = 32, Exlaim = 33, DblQuote = 34, Hash = 35, Dollar = 36, Prct = 37,
 		Amp = 38, Quote = 39, Ast = 42, Plus = 43, Comma = 44, Minus = 45, Period = 46, FSlash = 47, R0 = 48, R1 = 49, R2 = 50, R3 = 51,
-		R4 = 52, R5 = 53, R6 = 54, R7 = 55, R8 = 56, R9 = 57, Colon = 58, SemiColon = 59, Less = 60, Equals = 61, Greater = 62, Questions = 63,
+		R4 = 52, R5 = 53, R6 = 54, R7 = 55, R8 = 56, R9 = 57, Colon = 58, SemiColon = 59, Less = 60, Equals = 61, Greater = 62, Question = 63,
 		At = 64, LBracket = 91, BSlash = 92, RBracket = 93, Caret = 94, UnderScore = 95, BQuote = 96, A = 97, B = 98, C = 99, D = 100, E = 101,
 		F = 102, G = 103, H = 104, I = 105, J = 106, K = 107, L = 108, M = 109, N = 110, O = 111, P = 112, Q = 113, R = 114, S = 115, T = 116,
 		U = 117, V = 118, W = 119, X = 120, Y = 121, Z = 122, Delete = 127

@@ -95,6 +95,7 @@ namespace swgtk
 		}
 
 		SDLApp* Parent();
+		void InitLua();
 
 		sol::state lua;
 		SceneFactory nextScene;
