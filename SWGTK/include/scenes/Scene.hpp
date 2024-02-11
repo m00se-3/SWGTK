@@ -78,13 +78,14 @@ namespace swgtk
 		void ResetKeyEvent();
 		void SetKeyEvent(LayoutCode code, bool pressed);
 
+		SSC statusCode = SSC::ok;
 
 	protected:
 		/*
 			To change scenes you simply:
 
 			this->nextScene = SwitchToScene<[your scene class]>([pass optional arguments]);
-			this->statusCode = SSC::CHANGE_SCENE;
+			this->statusCode = SSC::change_scene;
 		*/
 		template<SceneObject T, typename... Args>
 		SceneFactory SwitchToScene(Args&&... args)
@@ -99,7 +100,6 @@ namespace swgtk
 
 		sol::state lua;
 		SceneFactory nextScene;
-		SSC statusCode = SSC::ok;
 
 	private:
 		SDLApp* _parent = nullptr;
