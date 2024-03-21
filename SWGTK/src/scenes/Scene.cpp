@@ -93,7 +93,7 @@ namespace swgtk
 
 	void Scene::SetMouseEvent(MButton button, MButtonState state)
 	{
-		_mouseEvents[uint64_t(button)] = state;
+		_mouseEvents[size_t(button)] = state;
 	}
 
 	void Scene::ResetMouseEvents()
