@@ -116,7 +116,7 @@ namespace swgtk
 			Variables for processing input events.
 		*/
 
-		std::array<MButtonState, 5u> _mouseEvents = { MButtonState::None };
+		std::array<MButtonState, 6u> _mouseEvents = { MButtonState::None };
 		std::pair<LayoutCode, bool> _keyEvent = std::make_pair(LayoutCode::Unknown, false);
 		float _scroll = 0.0f;
 	};

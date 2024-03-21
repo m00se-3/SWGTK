@@ -1,6 +1,7 @@
 #include "scenes/Scene.hpp"
 
 #include "SDLApp.hpp"
+#include "SDL2/SDL.h"
 
 namespace swgtk
 {
@@ -92,7 +93,7 @@ namespace swgtk
 
 	void Scene::SetMouseEvent(MButton button, MButtonState state)
 	{
-		_mouseEvents[uint64_t(button) - 1u] = state;
+		_mouseEvents[uint64_t(button)] = state;
 	}
 
 	void Scene::ResetMouseEvents()
@@ -245,8 +246,8 @@ namespace swgtk
 				return SDL_FRect{ *nx, *ny, *nw, *nh };
 			};
 
-		auto render = lua.new_usertype<SDL_Renderer>("SDL_Renderer", sol::no_constructor);
-		lua["Render"] = Parent()->Renderer();
+		// auto render = lua.new_usertype<SDL_Renderer>("SDL_Renderer", sol::no_constructor);
+		// lua["Render"] = Parent()->Renderer();
 
 
 		// Define functions for Lua.
