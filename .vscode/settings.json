@@ -17,5 +17,6 @@
         "Host"
     ],
     "Lua.completion.showWord": "Enable",
-    "Lua.completion.workspaceWord": true
+    "Lua.completion.workspaceWord": true,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
