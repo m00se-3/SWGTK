@@ -44,9 +44,10 @@ namespace swgtk
 	SSC MenuScene::Update(float dt)
 	{
 		// Draw the background, the texture has visible edges that need trimmed.
-		int w = 0, h = 0;
+		int w{}, h{};
 		auto rect = SDL_Rect{ 0, 0, 0, 0 };
 
+		// We have to adjust the width and height variables because the background image doesn't go to the edge of the image buffer.
 		SDL_QueryTexture(_background.Get(), nullptr, nullptr, &w, &h);
 		rect.w = w - 2;
 		rect.h = h - 3;

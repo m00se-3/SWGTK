@@ -217,44 +217,44 @@ namespace swgtk
 		{
 
 			auto vec2 = _lua.new_usertype<struct nk_vec2>("vec2", sol::no_constructor);
-			vec2["x"] = &nk_vec2::x;
-			vec2["y"] = &nk_vec2::y;
+			vec2.set("x", &nk_vec2::x);
+			vec2.set("y", &nk_vec2::y);
 			_lua["new_vec2"] = nk_vec2;
 
-			auto vec2i = _lua.new_usertype<struct nk_vec2i>("vec2i", sol::no_constructor);
-			vec2i["x"] = &nk_vec2i::x;
-			vec2i["y"] = &nk_vec2i::y;
+			auto vec2i = _lua.new_usertype<struct nk_vec2i>("vec2i");
+			vec2i.set("x", &nk_vec2i::x);
+			vec2i.set("y", &nk_vec2i::y);
 			_lua["new_vec2i"] = nk_vec2i;
 
-			auto rect = _lua.new_usertype<struct nk_rect>("rect", sol::no_constructor);
-			rect["x"] = &nk_rect::x;
-			rect["y"] = &nk_rect::y;
-			rect["w"] = &nk_rect::w;
-			rect["h"] = &nk_rect::h;
+			auto rect = _lua.new_usertype<struct nk_rect>("rect");
+			rect.set("x", &nk_rect::x);
+			rect.set("y", &nk_rect::y);
+			rect.set("w", &nk_rect::w);
+			rect.set("h", &nk_rect::h);
 			_lua["new_rect"] = nk_rect;
 
-			auto recti = _lua.new_usertype<struct nk_recti>("recti", sol::no_constructor);
-			recti["x"] = &nk_recti::x;
-			recti["y"] = &nk_recti::y;
-			recti["w"] = &nk_recti::w;
-			recti["h"] = &nk_recti::h;
+			auto recti = _lua.new_usertype<struct nk_recti>("recti");
+			recti.set("x", &nk_recti::x);
+			recti.set("y", &nk_recti::y);
+			recti.set("w", &nk_recti::w);
+			recti.set("h", &nk_recti::h);
 			_lua["new_recti"] = nk_recti;
 
-			auto color = _lua.new_usertype<struct nk_color>("color", sol::no_constructor);
-			color["r"] = &nk_color::r;
-			color["g"] = &nk_color::g;
-			color["b"] = &nk_color::b;
-			color["a"] = &nk_color::a;
+			auto color = _lua.new_usertype<struct nk_color>("color");
+			color.set("r", &nk_color::r);
+			color.set("g", &nk_color::g);
+			color.set("b", &nk_color::b);
+			color.set("a", &nk_color::a);
 			_lua["rgba"] = nk_rgba;
 
-			auto colorf = _lua.new_usertype<struct nk_colorf>("colorf", sol::no_constructor);
-			colorf["r"] = &nk_colorf::r;
-			colorf["g"] = &nk_colorf::g;
-			colorf["b"] = &nk_colorf::b;
-			colorf["a"] = &nk_colorf::a;
+			auto colorf = _lua.new_usertype<struct nk_colorf>("colorf");
+			colorf.set("r", &nk_colorf::r);
+			colorf.set("g", &nk_colorf::g);
+			colorf.set("b", &nk_colorf::b);
+			colorf.set("a", &nk_colorf::a);
 			_lua["rgba_f"] = nk_rgba_f;
 
-			auto scroll = _lua.new_usertype<struct nk_scroll>("scroll", sol::no_constructor);
+			auto scroll = _lua.new_usertype<struct nk_scroll>("scroll");
 			scroll["x"] = &nk_scroll::x;
 			scroll["y"] = &nk_scroll::y;
 

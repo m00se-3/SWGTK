@@ -33,7 +33,7 @@ namespace swgtk
 
 	bool Scene::IsKeyHeld(LayoutCode code) const
 	{
-		return _keyboardState[uint64_t(code)] == 1;
+		return _keyboardState[size_t(code)] == 1;
 	}
 
 	KeyMod Scene::GetKeyMods() const
@@ -43,12 +43,12 @@ namespace swgtk
 
 	bool Scene::IsButtonPressed(MButton button) const
 	{
-		return _mouseEvents[uint64_t(button) - 1u] == MButtonState::Pressed;
+		return _mouseEvents[size_t(button)] == MButtonState::Pressed;
 	}
 
 	bool Scene::IsButtonReleased(MButton button) const
 	{
-		return _mouseEvents[uint64_t(button) - 1u] == MButtonState::Released;
+		return _mouseEvents[size_t(button)] == MButtonState::Released;
 	}
 
 	bool Scene::IsButtonHeld(MButton button) const
@@ -228,19 +228,19 @@ namespace swgtk
 			);
 		}
 
-		auto point = lua.new_usertype<SDL_FPoint>("Vec2f", sol::no_constructor);
-		point["x"] = &SDL_FPoint::x;
-		point["y"] = &SDL_FPoint::y;
+		auto point = lua.new_usertype<SDL_FPoint>("Vec2f",
+			"x", &SDL_FPoint::x, "y", &SDL_FPoint::y
+		);
+		
 		point["new"] = [](sol::optional<float> nx, sol::optional<float> ny) -> SDL_FPoint
 			{
 				return SDL_FPoint{ *nx, *ny };
 			};
 
-		auto rect = lua.new_usertype<SDL_FRect>("Rect", sol::no_constructor);
-		rect["x"] = &SDL_FRect::x;
-		rect["y"] = &SDL_FRect::y;
-		rect["w"] = &SDL_FRect::w;
-		rect["h"] = &SDL_FRect::h;
+		auto rect = lua.new_usertype<SDL_FRect>("Rect",
+			"x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
+		);
+
 		rect["new"] = [](sol::optional<float> nx, sol::optional<float> ny, sol::optional<float> nw, sol::optional<float> nh) -> SDL_FRect
 			{
 				return SDL_FRect{ *nx, *ny, *nw, *nh };
