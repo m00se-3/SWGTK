@@ -90,7 +90,7 @@ namespace swgtk
 		template<SceneObject T, typename... Args>
 		SceneFactory SwitchToScene(Args&&... args)
 		{
-			return []() {
+			return [&]() -> std::unique_ptr<T>{
 				return std::make_unique<T>(std::forward<Args>(args)...);
 				};
 		}
