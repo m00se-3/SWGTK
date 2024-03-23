@@ -7,12 +7,14 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "23"
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
       },
       "environment": {
         "External_Sources": "${sourceDir}/external",
         "Assets_Dir": "${sourceDir}/assets",
-        "Config_Dir": "${sourceDir}/config"
+        "Config_Dir": "${sourceDir}/config",
+        "Lib_Includes": "${sourceDir}/build/${presetName}/vcpkg_installed"
       },
       "condition": {
         "type": "equals",

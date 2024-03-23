@@ -42,6 +42,11 @@ namespace swgtk
         FontGroup();
         ~FontGroup();
 
+        FontGroup(const FontGroup&) = delete;
+        FontGroup(FontGroup&&) = delete;
+        FontGroup& operator=(const FontGroup&) = delete;
+        FontGroup& operator=(FontGroup&&) = delete;
+
         void Create();
         void Finalize(SDL_Texture* texture);
         void AddFont(FontStyle styleMask, int size, const std::filesystem::path& filename);
@@ -57,7 +62,7 @@ namespace swgtk
     private:
         int64_t Hash(FontStyle style, int size) const;
 
-        struct nk_font_atlas _atlas;
+        struct nk_font_atlas _atlas{};
         std::unordered_map<int64_t, struct nk_font*> _nkFonts;
         std::unordered_map<int64_t, TTF_Font*> _ttfFonts;
     };
