@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <concepts>
+#include <span>
 
 #include "sol/sol.hpp"
 
@@ -39,6 +40,12 @@ namespace swgtk
 	{
 	public:
 		Scene(SDLApp* app);
+		Scene(const Scene&) = delete;
+		Scene(Scene&&) = delete;
+
+		Scene& operator=(const Scene&) = delete;
+		Scene& operator=(Scene&&) = delete;
+
 		virtual ~Scene() = default;
 
 		virtual SSC Create() = 0;
@@ -70,7 +77,7 @@ namespace swgtk
 
 		void SetMouseState(const MouseState& event);
 		void SetModState(const SDL_Keymod& state);
-		void SetKeyboardState(const uint8_t* state);
+		void SetKeyboardState();
 		void ResetScroll();
 		void AddScroll(float amount);
 		void SetMouseEvent(MButton button, MButtonState state);
@@ -78,7 +85,7 @@ namespace swgtk
 		void ResetKeyEvent();
 		void SetKeyEvent(LayoutCode code, bool pressed);
 
-		SSC statusCode = SSC::ok;
+		SSC statusCode = SSC::ok; // NOLINT
 
 	protected:
 		/*
@@ -88,7 +95,7 @@ namespace swgtk
 			this->statusCode = SSC::change_scene;
 		*/
 		template<SceneObject T, typename... Args>
-		SceneFactory SwitchToScene(Args&&... args)
+		SceneFactory SwitchToScene(Args&&... args) // NOLINT
 		{
 			return [&]() -> std::unique_ptr<T>{
 				return std::make_unique<T>(std::forward<Args>(args)...);
@@ -98,8 +105,8 @@ namespace swgtk
 		SDLApp* Parent();
 		void InitLua();
 
-		sol::state lua;
-		SceneFactory nextScene;
+		sol::state lua; // NOLINT
+		SceneFactory nextScene; // NOLINT
 
 	private:
 		SDLApp* _parent = nullptr;
@@ -108,15 +115,15 @@ namespace swgtk
 			State management variables for inpuit polling.
 		*/
 
-		MouseState _mouseState;
+		MouseState _mouseState{};
 		KeyMod _modifiers = KeyMod::None;
-		const uint8_t* _keyboardState = nullptr;
+		std::span<const uint8_t>_keyboardState{};
 
 		/*
 			Variables for processing input events.
 		*/
 
-		std::array<MButtonState, 6u> _mouseEvents = { MButtonState::None };
+		std::array<MButtonState, 6u> _mouseEvents = { MButtonState::None }; //NOLINT
 		std::pair<LayoutCode, bool> _keyEvent = std::make_pair(LayoutCode::Unknown, false);
 		float _scroll = 0.0f;
 	};

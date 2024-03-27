@@ -1,6 +1,8 @@
 #include "SDLApp.hpp"
 
-#include "SDL2/SDL.h"
+#include <format>
+#include <print>
+
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL_mixer.h"
@@ -16,14 +18,14 @@ namespace swgtk
 		InitGraphical();
 	}
 #else
-	SDLApp::SDLApp(int argc, char** argv)
+	SDLApp::SDLApp(std::span<const char*> argv)
 		: _assetsDir(SWGTK_ASSETS), _configDir(SWGTK_CONFIG),
 		_lastFrameTime(std::chrono::high_resolution_clock::now()),
 		_currentFrameTime()
 	{
 		// Because I plan on eventually having a headless version, I'm guarding
 		// window creation with the --headless cmd flag.
-		if (argc > 1 && strcmp(argv[1], "--headless") == 0)
+		if (argv.size() > 1u && strcmp(argv[1], "--headless") == 0)
 		{
 			InitHeadless();
 		}
@@ -58,7 +60,7 @@ namespace swgtk
 		if (!_headless)
 		{
 			SDL_ShowWindow(_window);
-			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u);
+			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u); // NOLINT
 
 			_currentScene.reset(opener.release());
 			
@@ -114,7 +116,7 @@ namespace swgtk
 
 		if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
 		{
-			_window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 900, SDL_WINDOW_HIDDEN);
+			_window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 900, SDL_WINDOW_HIDDEN); // NOLINT
 
 			if (_window)
 			{
@@ -122,20 +124,20 @@ namespace swgtk
 			}
 			else
 			{
-				SDL_Log("Failed to create window. - %s\n", SDL_GetError());
+				std::print("Failed to create window. - {}\n", SDL_GetError());
 				return;
 			}
 			
 			if (!_renderer)
 			{
-				SDL_Log("Failed to initialize renderer. - %s\n", SDL_GetError());
+				std::print("Failed to initialize renderer. - {}\n", SDL_GetError());
 				return;
 			}
 
 		}
 		else
 		{
-			SDL_Log("An SDL Library failed to initialize. - %s\n", SDL_GetError());
+			std::print("An SDL Library failed to initialize. - {}\n", SDL_GetError());
 			return;
 		}
 
@@ -210,7 +212,7 @@ namespace swgtk
 
 		nk_input_end(&_ctx);
 
-		_currentScene->SetKeyboardState(SDL_GetKeyboardState(nullptr));
+		_currentScene->SetKeyboardState();
 		_currentScene->SetModState(SDL_GetModState());
 
 		{
@@ -227,7 +229,7 @@ namespace swgtk
 
 		SDL_RenderClear(_renderer);
 
-		_currentScene->Update(static_cast<float>(timeDiff * 0.000001));
+		_currentScene->Update(static_cast<float>(timeDiff * 0.000001)); //NOLINT
 
 		_ui->Update();
 		_ui->Draw();

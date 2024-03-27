@@ -13,7 +13,7 @@ namespace swgtk
 
 	SSC MenuScene::Create()
 	{
-		auto* font = Parent()->GetTTF(FontStyle::Bold, 40);
+		auto* font = Parent()->GetTTF(FontStyle::Bold, normalFontSize);
 
 		_background.Create(Parent()->Renderer(), Parent()->AssetsDir() + "/Card Assets/Backgrounds/background_2.png");
 
@@ -31,7 +31,7 @@ namespace swgtk
 				const std::string& text = buttons[index]["text"].get<std::string>();
 				const auto& bounds = buttons[index]["bounds"].get<sol::table>();
 
-				SDL_Surface* surf = TTF_RenderUTF8_Blended(font, text.c_str(), SDL_Color{ 255, 0, 0, 255 });
+				SDL_Surface* surf = TTF_RenderUTF8_Blended(font, text.c_str(), SDL_Color{ 255, 0, 0, 255 }); // NOLINT
 
 				_freeTextItems.emplace_back(Parent()->Renderer(), surf);
 				_freeTextBounds.emplace_back(SDL_Rect{ bounds["x"].get<int>(), bounds["y"].get<int>(), bounds["w"].get<int>(), bounds["h"].get<int>() });

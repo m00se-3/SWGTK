@@ -4,6 +4,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <span>
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
@@ -19,6 +20,7 @@
 
 #undef NK_IMPLEMENTATION
 #include "nuklear/nuklear.h"
+#include "SDL2/SDL.h"
 
 #include "scenes/Scene.hpp"
 #include "systems/UI.hpp"
@@ -39,8 +41,16 @@ namespace swgtk
 	public:
 #ifdef __EMSCRIPTEN__
 		SDLApp();
+		SDLApp(const SDLApp&) = delete;
+		SDLApp(SDLApp&&) = delete;
+		SDLApp& operator=(const SDLApp&) = delete;
+		SDLApp& operator=(SDLApp&&) = delete;
 #else
-		SDLApp(int argc, char** argv);
+		SDLApp(std::span<const char*> argv);
+		SDLApp(const SDLApp&) = delete;
+		SDLApp(SDLApp&&) = delete;
+		SDLApp& operator=(const SDLApp&) = delete;
+		SDLApp& operator=(SDLApp&&) = delete;
 #endif
 		~SDLApp();
 
@@ -84,7 +94,7 @@ namespace swgtk
 		SDL_Window* _window = nullptr;
 		SDL_Renderer* _renderer = nullptr;
 
-		nk_context _ctx;
+		nk_context _ctx{};
 		FontGroup _fonts;
 
 		std::unique_ptr<Scene> _currentScene;

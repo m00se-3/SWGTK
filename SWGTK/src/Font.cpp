@@ -101,6 +101,7 @@ namespace swgtk
 
     int64_t FontGroup::Hash(FontStyle style, int size) const
     {
-        return (int64_t)style << 32 | (int64_t)size;
+        constexpr const int styleOffset = 32;
+        return (int64_t)style << styleOffset | (int64_t)size;
     }
 }

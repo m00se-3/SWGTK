@@ -28,6 +28,7 @@ namespace swgtk
 		// This class should never copy, this is so that we don't have to worry about reference counting.
 		Texture(const Texture&) = delete;
 		Texture& operator=(const Texture&) = delete;
+		Texture& operator=(Texture&&) = delete;
 
 		void SetBlend(const SDL_BlendMode& mode);
 		void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
@@ -35,10 +36,10 @@ namespace swgtk
 		void Create(SDL_Renderer* ren, const std::string& filepath);
 		void Create(SDL_Renderer* ren, SDL_Surface* surface);
 
-		SDL_BlendMode GetBlend() const;
-		SDL_Color GetColor() const;
+		[[nodiscard]] SDL_BlendMode GetBlend() const;
+		[[nodiscard]] SDL_Color GetColor() const;
 
-		SDL_Texture* Get() const;
+		[[nodiscard]] SDL_Texture* Get() const;
 
 		// Releases control of the SDL_Texture pointer to the caller.
 		[[nodiscard]]SDL_Texture* Release();

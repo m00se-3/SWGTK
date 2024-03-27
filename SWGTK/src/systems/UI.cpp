@@ -7,6 +7,13 @@
 #include "SDLApp.hpp"
 #include "SDL2/SDL_surface.h"
 
+static const std::array<nk_draw_vertex_layout_element, 4u> vertex_layout = {
+	nk_draw_vertex_layout_element{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
+	nk_draw_vertex_layout_element{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, tex_coord)}, 
+	nk_draw_vertex_layout_element{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
+	nk_draw_vertex_layout_element{NK_VERTEX_LAYOUT_END}
+}; 
+
 namespace swgtk
 {
 	/*
@@ -14,13 +21,6 @@ namespace swgtk
 	*/
 
 	constexpr uint64_t MaxVertexBuffer = 32ull * 1024ull;
-
-	static const struct nk_draw_vertex_layout_element vertex_layout[] = {
-		{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
-		{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, tex_coord)},
-		{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
-		{NK_VERTEX_LAYOUT_END}
-	};
 
 	UI::~UI()
 	{
@@ -37,7 +37,7 @@ namespace swgtk
 
 		// Assign the white texture to _nullTexture.
 
-		uint32_t value = 0xFFFFFFFF;
+		constexpr const uint32_t value = 0xFFFFFFFF;
 
 		_whiteTexture = SDL_CreateTexture(_parent->Renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, 1, 1);
 		SDL_UpdateTexture(_whiteTexture, nullptr, &value, 4);
@@ -49,11 +49,11 @@ namespace swgtk
 
 		fontGroup.Create();
 
-		fontGroup.AddFont(FontStyle::Normal, 16, fontsDir + "/roboto/Roboto-Medium.ttf");
-		fontGroup.AddFont(FontStyle::Bold, 16, fontsDir + "/roboto/Roboto-Bold.ttf");
-		fontGroup.AddFont(FontStyle::Bold_Italic, 16, fontsDir + "/roboto/Roboto-BoldItalic.ttf");
-		fontGroup.AddFont(FontStyle::Italic, 16, fontsDir + "/roboto/Roboto-Italic.ttf");
-		fontGroup.AddFont(FontStyle::Bold, 40, fontsDir + "/roboto/Roboto-Bold.ttf");
+		fontGroup.AddFont(FontStyle::Normal, normalFontSize , fontsDir + "/roboto/Roboto-Medium.ttf");
+		fontGroup.AddFont(FontStyle::Bold, normalFontSize , fontsDir + "/roboto/Roboto-Bold.ttf");
+		fontGroup.AddFont(FontStyle::Bold_Italic, normalFontSize , fontsDir + "/roboto/Roboto-BoldItalic.ttf");
+		fontGroup.AddFont(FontStyle::Italic, normalFontSize , fontsDir + "/roboto/Roboto-Italic.ttf");
+		fontGroup.AddFont(FontStyle::Bold, largeFontSize, fontsDir + "/roboto/Roboto-Bold.ttf");
 
 
 		// Bake the fonts.
@@ -69,23 +69,23 @@ namespace swgtk
 		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
 
-		if (!nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal, 16)->handle)) return;
+		if (!nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal, normalFontSize)->handle)) return;
 
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;
 		_configurator.line_AA = NK_ANTI_ALIASING_ON;
-		_configurator.vertex_layout = vertex_layout;
+		_configurator.vertex_layout = vertex_layout.data();
 		_configurator.vertex_alignment = NK_ALIGNOF(SDL_Vertex);
 		_configurator.vertex_size = sizeof(SDL_Vertex);
-		_configurator.circle_segment_count = 20;
-		_configurator.curve_segment_count = 20;
-		_configurator.arc_segment_count = 20;
-		_configurator.global_alpha = 1.0f;
+		_configurator.circle_segment_count = 20;//NOLINT
+		_configurator.curve_segment_count = 20;//NOLINT
+		_configurator.arc_segment_count = 20;//NOLINT
+		_configurator.global_alpha = 1.0f; //NOLINT
 		_configurator.null = _nullTexture;
 
 		nk_buffer_init_default(&_cmds);
-		_buffer = std::make_unique<SDL_Vertex[]>(MaxVertexBuffer);
-		_elements = std::make_unique<int[]>(MaxVertexBuffer);
+		_buffer.resize(MaxVertexBuffer);
+		_elements.resize(MaxVertexBuffer);
 
 		InitLua();
 	}
@@ -116,22 +116,22 @@ namespace swgtk
 
 	void UI::Draw()
 	{
-		nk_buffer_init_fixed(&_verts, _buffer.get(), MaxVertexBuffer);
-		nk_buffer_init_fixed(&_inds, _elements.get(), MaxVertexBuffer);
+		nk_buffer_init_fixed(&_verts, _buffer.data(), MaxVertexBuffer);
+		nk_buffer_init_fixed(&_inds, _elements.data(), MaxVertexBuffer);
 
 		nk_convert(_ctx, &_cmds, &_verts, &_inds, &_configurator);
 		
 		const nk_draw_command* cmd = nullptr;
 		uint32_t offset = 0u;
 
-		const SDL_Vertex* vertices = (const SDL_Vertex*)nk_buffer_memory_const(&_verts);
-		const int* elements = (const int*)nk_buffer_memory_const(&_inds);
+		const SDL_Vertex* vertices = static_cast<const SDL_Vertex*>(nk_buffer_memory_const(&_verts));
+		const std::span<const int> elements{static_cast<const int*>(nk_buffer_memory_const(&_inds)), MaxVertexBuffer};
 
 		nk_draw_foreach(cmd, _ctx, &_cmds)
 		{
 			if (!cmd->elem_count) continue;
 
-			SDL_RenderGeometry(_parent->Renderer(), (SDL_Texture*)cmd->texture.ptr, vertices, _verts.needed / sizeof(SDL_Vertex), (elements + offset), static_cast<int>(cmd->elem_count));
+			SDL_RenderGeometry(_parent->Renderer(), static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, _verts.needed / sizeof(SDL_Vertex), &elements[offset], static_cast<int>(cmd->elem_count));  // NOLINT
 
 			offset += cmd->elem_count;
 		}

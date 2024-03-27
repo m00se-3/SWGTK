@@ -63,7 +63,7 @@ namespace swgtk
 
 	SDL_BlendMode Texture::GetBlend() const
 	{
-		SDL_BlendMode m;
+		SDL_BlendMode m{};
 		SDL_GetTextureBlendMode(_texture, &m);
 		return m;
 	}

@@ -43,12 +43,12 @@ namespace swgtk
 
 	bool Scene::IsButtonPressed(MButton button) const
 	{
-		return _mouseEvents[size_t(button)] == MButtonState::Pressed;
+		return _mouseEvents.at(size_t(button)) == MButtonState::Pressed;
 	}
 
 	bool Scene::IsButtonReleased(MButton button) const
 	{
-		return _mouseEvents[size_t(button)] == MButtonState::Released;
+		return _mouseEvents.at(size_t(button)) == MButtonState::Released;
 	}
 
 	bool Scene::IsButtonHeld(MButton button) const
@@ -76,9 +76,11 @@ namespace swgtk
 		_modifiers = static_cast<KeyMod>(state);
 	}
 
-	void Scene::SetKeyboardState(const uint8_t* state)
+	void Scene::SetKeyboardState()
 	{
-		_keyboardState = state;
+		int numKeys{};
+		const uint8_t* state = SDL_GetKeyboardState(&numKeys);
+		_keyboardState = std::span<const uint8_t>{ state, static_cast<size_t>(numKeys) };
 	}
 
 	void Scene::ResetScroll()
@@ -93,7 +95,7 @@ namespace swgtk
 
 	void Scene::SetMouseEvent(MButton button, MButtonState state)
 	{
-		_mouseEvents[size_t(button)] = state;
+		_mouseEvents.at(size_t(button)) = state;
 	}
 
 	void Scene::ResetMouseEvents()

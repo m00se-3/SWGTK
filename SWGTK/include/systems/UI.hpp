@@ -16,6 +16,7 @@
 #include <memory>
 #include <map>
 #include <set>
+#include <vector>
 
 #include "sol/sol.hpp"
 
@@ -26,11 +27,20 @@
 namespace swgtk
 {
 	class SDLApp;
+
+	constexpr const int normalFontSize = 16;
+	constexpr const int largeFontSize = 40;
 	
 	class UI
 	{
 	public:
 		UI(SDLApp* app, const std::string& fontsDir);
+		UI(const UI&) = delete;
+		UI(UI&&) = delete;
+
+		UI& operator=(const UI&) = delete;
+		UI& operator=(UI&&) = delete;
+
 		~UI();
 
 		void Update();
@@ -53,12 +63,12 @@ namespace swgtk
 		SDLApp* _parent = nullptr;
 
 		nk_context* _ctx = nullptr;
-		struct nk_convert_config _configurator;
-		struct nk_buffer _cmds, _verts, _inds;
-		struct nk_draw_null_texture _nullTexture;
+		struct nk_convert_config _configurator{};
+		struct nk_buffer _cmds{}, _verts{}, _inds{};
+		struct nk_draw_null_texture _nullTexture{};
 
-		std::unique_ptr<SDL_Vertex[]> _buffer;
-		std::unique_ptr<int[]> _elements;
+		std::vector<SDL_Vertex> _buffer;
+		std::vector<int> _elements;
 
 		std::map<std::string, std::string> _luaFunctions;
 		std::set<std::string> _openMenus;

@@ -6,5 +6,5 @@
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_FIXED_TYPES
 
-#define NK_IMPLEMENTATION
+#define NK_IMPLEMENTATION // NOLINT
 #include "nuklear/nuklear.h"
