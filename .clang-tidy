@@ -1,2 +1,2 @@
-Checks: 'cppcoreguidelines-*'
-HeaderFilterRegex: '*'
+Checks: 'cppcoreguidelines-*,clang-analyzer-*'
+HeaderFilterRegex: '.*'

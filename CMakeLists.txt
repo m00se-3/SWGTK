@@ -8,7 +8,6 @@ project ("SWGTK")
 # Clang compiler warning flags go here.
 list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion")
 set(CMAKE_CXX_CLANG_TIDY clang-tidy)
-set(CMAKE_C_CLANG_TIDY clang-tidy)
 
 # If building for emscripten, we want to add the cmake folder for our local dependencies to the search path.
 if(EMSCRIPTEN)

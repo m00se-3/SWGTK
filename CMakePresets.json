@@ -13,8 +13,7 @@
       "environment": {
         "External_Sources": "${sourceDir}/external",
         "Assets_Dir": "${sourceDir}/assets",
-        "Config_Dir": "${sourceDir}/config",
-        "Lib_Includes": "${sourceDir}/build/${presetName}/vcpkg_installed"
+        "Config_Dir": "${sourceDir}/config"
       },
       "condition": {
         "type": "equals",
