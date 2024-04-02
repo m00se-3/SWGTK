@@ -17,7 +17,7 @@ namespace swgtk
 
 		_background.Create(Parent()->Renderer(), Parent()->AssetsDir() + "/Card Assets/Backgrounds/background_2.png");
 
-		sol::protected_function_result welcome = lua.script_file(Parent()->ConfigDir() + "/data/welcome_screen.lua");
+		sol::protected_function_result welcome = Lua().script_file(Parent()->ConfigDir() + "/data/welcome_screen.lua");
 
 		if (welcome.valid())
 		{
@@ -26,7 +26,7 @@ namespace swgtk
 
 			const auto size = buttons.size();
 
-			for (uint32_t index = 1; index <= size; ++index)
+			for (auto index = 1uz; index <= size; ++index)
 			{
 				const std::string& text = buttons[index]["text"].get<std::string>();
 				const auto& bounds = buttons[index]["bounds"].get<sol::table>();
@@ -35,10 +35,12 @@ namespace swgtk
 
 				_freeTextItems.emplace_back(Parent()->Renderer(), surf);
 				_freeTextBounds.emplace_back(SDL_Rect{ bounds["x"].get<int>(), bounds["y"].get<int>(), bounds["w"].get<int>(), bounds["h"].get<int>() });
+
+				SDL_FreeSurface(surf);
 			}
 		}
 		
-		return statusCode;
+		return GetSceneState();
 	}
 
 	SSC MenuScene::Update(float dt)
@@ -54,11 +56,32 @@ namespace swgtk
 
 		SDL_RenderCopy(Parent()->Renderer(), _background.Get(), &rect, nullptr);
 
-		for (uint32_t index = 0u; index < _freeTextItems.size(); ++index)
+		for (auto index = 0uz; index < _freeTextItems.size(); ++index)
 		{			
 			SDL_RenderCopy(Parent()->Renderer(), _freeTextItems[index].Get(), nullptr, &_freeTextBounds[index]);
 		}
 		
-		return statusCode;
+		return GetSceneState();
+	}
+
+	void MenuScene::MainMenuScripts()
+	{
+		auto& lua = Lua();
+		{
+			lua["GetScroll"] = [this]() -> float
+				{
+					return GetScroll();
+				};
+
+			lua["OpenMenu"] = [this](sol::optional<std::string> name)
+				{
+					Parent()->OpenMenu(*name);
+				};
+
+			lua["CloseMenu"] = [this](sol::optional<std::string> name)
+				{
+					Parent()->CloseMenu(*name);
+				};
+		}
 	}
 }

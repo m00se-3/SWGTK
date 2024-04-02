@@ -51,12 +51,11 @@ namespace swgtk
 		virtual SSC Create() = 0;
 		virtual SSC Update(float dt) = 0;
 
-		SceneFactory GetNextScene();
+		[[nodiscard]] SceneFactory GetNextScene();
+		[[nodiscard]] SSC GetSceneState() const;
 
 		/*
 			Input state and event polling for the derived scene class.
-
-			TODO: GetMousePosition like function returning a vector of the mouse position.
 		*/
 
 		float GetScroll() const;
@@ -69,7 +68,7 @@ namespace swgtk
 		bool IsButtonHeld(MButton button) const;
 		int GetMouseX() const;
 		int GetMouseY() const;
-
+		SDL_Point GetMousePos() const;
 
 		/*
 			Internal input state and event management.
@@ -85,31 +84,36 @@ namespace swgtk
 		void ResetKeyEvent();
 		void SetKeyEvent(LayoutCode code, bool pressed);
 
-		SSC statusCode = SSC::ok; // NOLINT
-
 	protected:
 		/*
 			To change scenes you simply:
 
-			this->nextScene = SwitchToScene<[your scene class]>([pass optional arguments]);
-			this->statusCode = SSC::change_scene;
+			SwitchToScene<[your scene class]>([pass optional arguments]);
+
+			Note: The Scene change will take effect after returning from Update().
 		*/
 		template<SceneObject T, typename... Args>
-		SceneFactory SwitchToScene(Args&&... args) // NOLINT
+		void SwitchToScene(Args&&... args) // NOLINT
 		{
-			return [&]() -> std::unique_ptr<T>{
+			sceneState = SSC::change_scene;
+			nextScene = [&]() -> std::unique_ptr<T>{
 				return std::make_unique<T>(std::forward<Args>(args)...);
 				};
 		}
 
 		SDLApp* Parent();
-		void InitLua();
 
-		sol::state lua; // NOLINT
-		SceneFactory nextScene; // NOLINT
+		/*
+			Initializes the Lua state by passing event handlers and basic SDL utilities common to all games.
+		*/
+		void InitLua();
+		sol::state& Lua();
 
 	private:
 		SDLApp* _parent = nullptr;
+		sol::state _lua{}; 
+		SSC sceneState = SSC::ok;
+		SceneFactory nextScene{};
 
 		/*
 			State management variables for inpuit polling.

@@ -16,6 +16,16 @@ namespace swgtk
 		return nextScene;
 	}
 
+	sol::state& Scene::Lua() 
+	{
+		return _lua;
+	}
+
+	SSC Scene::GetSceneState() const 
+	{
+		return sceneState;
+	}
+
 	float Scene::GetScroll() const
 	{
 		return _scroll;
@@ -64,6 +74,11 @@ namespace swgtk
 	int Scene::GetMouseY() const
 	{
 		return _mouseState.y;
+	}
+
+	SDL_Point Scene::GetMousePos() const
+	{
+		return SDL_Point{ _mouseState.x, _mouseState.y };
 	}
 
 	void Scene::SetMouseState(const MouseState& event)
@@ -125,13 +140,13 @@ namespace swgtk
 
 	void Scene::InitLua()
 	{
-		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
+		_lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
 		// Define useful enums and types.
 
 		{
 
-			lua.new_enum<MButton>("Btn",
+			_lua.new_enum<MButton>("Btn",
 				{
 					std::make_pair("None", MButton::None),
 					std::make_pair("Left", MButton::Left),
@@ -142,7 +157,7 @@ namespace swgtk
 				}
 			);
 
-			lua.new_enum<KeyMod>("KMod",
+			_lua.new_enum<KeyMod>("KMod",
 				{
 					std::make_pair("None", KeyMod::None),
 					std::make_pair("LShift", KeyMod::LShift),
@@ -159,7 +174,7 @@ namespace swgtk
 				}
 			);
 
-			lua.new_enum<KeyCode>("KValue",
+			_lua.new_enum<KeyCode>("KValue",
 				{
 					std::make_pair("Unknown", KeyCode::Unknown), std::make_pair("Back", KeyCode::Back), std::make_pair("Tab", KeyCode::Tab), std::make_pair("Enter", KeyCode::Enter),
 					std::make_pair("Esc", KeyCode::Esc), std::make_pair("Space", KeyCode::Space), std::make_pair("Exlaim", KeyCode::Exlaim), std::make_pair("DblQuote", KeyCode::DblQuote),
@@ -182,7 +197,7 @@ namespace swgtk
 				}
 			);
 
-			lua.new_enum<LayoutCode>("Code",
+			_lua.new_enum<LayoutCode>("KCode",
 				{
 					std::make_pair("Unknown", LayoutCode::Unknown), std::make_pair("A", LayoutCode::A), std::make_pair("B", LayoutCode::B),
 					std::make_pair("C", LayoutCode::C), std::make_pair("D", LayoutCode::D), std::make_pair("E", LayoutCode::E),
@@ -220,17 +235,9 @@ namespace swgtk
 					std::make_pair("RShift", LayoutCode::RShift), std::make_pair("RAlt", LayoutCode::RAlt),
 				}
 			);
-
-			lua.new_enum<SSC>("SSC",
-				{
-					std::make_pair("Ok", SSC::ok),
-					std::make_pair("Fail", SSC::fail),
-					std::make_pair("ChangeScene", SSC::change_scene),
-				}
-			);
 		}
 
-		auto point = lua.new_usertype<SDL_FPoint>("Vec2f",
+		auto point = _lua.new_usertype<SDL_FPoint>("Vec2f",
 			"x", &SDL_FPoint::x, "y", &SDL_FPoint::y
 		);
 		
@@ -239,7 +246,7 @@ namespace swgtk
 				return SDL_FPoint{ *nx, *ny };
 			};
 
-		auto rect = lua.new_usertype<SDL_FRect>("Rect",
+		auto rect = _lua.new_usertype<SDL_FRect>("Rect",
 			"x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
 		);
 
@@ -248,79 +255,52 @@ namespace swgtk
 				return SDL_FRect{ *nx, *ny, *nw, *nh };
 			};
 
-		// auto render = lua.new_usertype<SDL_Renderer>("SDL_Renderer", sol::no_constructor);
-		// lua["Render"] = Parent()->Renderer();
-
-
 		// Define functions for Lua.
 
-		{
+		_lua["IsKeyPressed"] = [this](sol::optional<LayoutCode> key) -> bool
+			{
+				return IsKeyPressed(*key);
+			};
 
-			lua["SetSceneStatus"] = [this](sol::optional<SSC> ssc)
-				{
-					statusCode = *ssc;
-				};
+		_lua["IsKeyReleased"] = [this](sol::optional<LayoutCode> key) -> bool
+			{
+				return IsKeyReleased(*key);
+			};
 
-			lua["GetScroll"] = [this]() -> float
-				{
-					return GetScroll();
-				};
+		_lua["IsKeyHeld"] = [this](sol::optional<LayoutCode> key) -> bool
+			{
+				return IsKeyHeld(*key);
+			};
 
-			lua["IsKeyPressed"] = [this](sol::optional<LayoutCode> key) -> bool
-				{
-					return IsKeyPressed(*key);
-				};
+		_lua["IsButtonPressed"] = [this](sol::optional<MButton> btn) -> bool
+			{
+				return IsButtonPressed(*btn);
+			};
 
-			lua["IsKeyReleased"] = [this](sol::optional<LayoutCode> key) -> bool
-				{
-					return IsKeyReleased(*key);
-				};
+		_lua["IsButtonReleased"] = [this](sol::optional<MButton> btn) -> bool
+			{
+				return IsButtonReleased(*btn);
+			};
 
-			lua["IsKeyHeld"] = [this](sol::optional<LayoutCode> key) -> bool
-				{
-					return IsKeyHeld(*key);
-				};
+		_lua["IsButtonHeld"] = [this](sol::optional<MButton> btn) -> bool
+			{
+				return IsButtonHeld(*btn);
+			};
 
-			lua["IsButtonPressed"] = [this](sol::optional<MButton> btn) -> bool
-				{
-					return IsButtonPressed(*btn);
-				};
+		_lua["GetKeyMods"] = [this]() -> KeyMod
+			{
+				return GetKeyMods();
+			};
 
-			lua["IsButtonReleased"] = [this](sol::optional<MButton> btn) -> bool
-				{
-					return IsButtonReleased(*btn);
-				};
+		_lua["GetMouseX"] = [this]() -> int
+			{
+				return GetMouseX();
+			};
 
-			lua["IsButtonHeld"] = [this](sol::optional<MButton> btn) -> bool
-				{
-					return IsButtonHeld(*btn);
-				};
-
-			lua["GetKeyMods"] = [this]() -> KeyMod
-				{
-					return GetKeyMods();
-				};
-
-			lua["GetMouseX"] = [this]() -> int
-				{
-					return GetMouseX();
-				};
-
-			lua["GetMouseY"] = [this]() -> int
-				{
-					return GetMouseY();
-				};
-
-			lua["OpenMenu"] = [this](sol::optional<std::string> name)
-				{
-					Parent()->OpenMenu(*name);
-				};
-
-			lua["CloseMenu"] = [this](sol::optional<std::string> name)
-				{
-					Parent()->CloseMenu(*name);
-				};
-		}
+		_lua["GetMouseY"] = [this]() -> int
+			{
+				return GetMouseY();
+			};
 
 	}
 }
