@@ -22,8 +22,8 @@
 #include "nuklear/nuklear.h"
 #include "SDL2/SDL.h"
 
-#include "scenes/Scene.hpp"
-#include "systems/UI.hpp"
+#include "Scene.hpp"
+#include "UI.hpp"
 #include "Font.hpp"
 
 extern "C" {

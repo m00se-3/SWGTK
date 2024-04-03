@@ -1,4 +1,4 @@
-#include "scenes/Scene.hpp"
+#include "Scene.hpp"
 
 #include "SDLApp.hpp"
 #include "SDL2/SDL.h"

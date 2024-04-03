@@ -1,7 +1,7 @@
 ﻿#define SDL_MAIN_HANDLED
 #include "SDLApp.hpp"
 
-#include "scenes/MenuScene.hpp"
+#include "MenuScene.hpp"
 
 
 int main(int argc, const char** argv)
