@@ -18,14 +18,16 @@ namespace swgtk
 		InitGraphical();
 	}
 #else
-	SDLApp::SDLApp(std::span<const char*> argv)
+	SDLApp::SDLApp(int argc, const char** argv)
 		: _assetsDir(SWGTK_ASSETS), _configDir(SWGTK_CONFIG),
 		_lastFrameTime(std::chrono::high_resolution_clock::now()),
 		_currentFrameTime()
 	{
+		const std::span<const char*> args{argv, static_cast<size_t>(argc)};		
+
 		// Because I plan on eventually having a headless version, I'm guarding
 		// window creation with the --headless cmd flag.
-		if (argv.size() > 1u && strcmp(argv[1], "--headless") == 0)
+		if (args.size() > 1u && strcmp(args[1], "--headless") == 0)
 		{
 			InitHeadless();
 		}

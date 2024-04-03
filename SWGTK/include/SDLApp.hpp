@@ -46,7 +46,7 @@ namespace swgtk
 		SDLApp& operator=(const SDLApp&) = delete;
 		SDLApp& operator=(SDLApp&&) = delete;
 #else
-		SDLApp(std::span<const char*> argv);
+		SDLApp(int argc, const char** argv);
 		SDLApp(const SDLApp&) = delete;
 		SDLApp(SDLApp&&) = delete;
 		SDLApp& operator=(const SDLApp&) = delete;
