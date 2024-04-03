@@ -11,7 +11,7 @@ namespace swgtk
 	template<typename T>
 	struct speed
 	{
-		T value{};
+		T value;
 
 		speed() = default;
 		speed(T v) : value(v) {}
@@ -20,7 +20,7 @@ namespace swgtk
 	template<typename T>
 	struct health
 	{
-		T value{};
+		T value;
 
 		health() = default;
 		health(T v) : value(v) {}
@@ -29,7 +29,7 @@ namespace swgtk
 	template<typename T>
 	struct score
 	{
-		T value{};
+		T value;
 		
 		score() = default;
 		score(T v) : value(v) {}
@@ -38,7 +38,7 @@ namespace swgtk
 	template<typename T>
 	struct basic_value
 	{
-		T value{};
+		T value;
 
 		basic_value() = default;
 		basic_value(T v) : value(v) {}
@@ -47,8 +47,8 @@ namespace swgtk
 	template<typename TFirst, typename TSecond>
 	struct basic_pair
 	{
-		TFirst first{};
-		TSecond second{};
+		TFirst first;
+		TSecond second;
 
 		basic_pair() = default;
 		basic_pair(TFirst f, TSecond s) : first(f), second(s) {}
@@ -56,7 +56,7 @@ namespace swgtk
 
 	struct angle
 	{
-		float value = 0.f;
+		float value;
 
 		angle() = default;
 		angle(float v);
@@ -64,7 +64,7 @@ namespace swgtk
 	
 	struct position
 	{
-		float x = 0.f, y = 0.f;
+		float x, y;
 
 		position() = default;
 		position(float x, float y);
@@ -72,7 +72,7 @@ namespace swgtk
 
 	struct velocity
 	{
-		float x = 0.f, y = 0.f;
+		float x, y;
 
 		velocity() = default;
 		velocity(float x, float y);
@@ -80,7 +80,7 @@ namespace swgtk
 
 	struct acceleration
 	{
-		float x = 0.f, y = 0.f;
+		float x, y;
 
 		acceleration() = default;
 		acceleration(float x, float y);
@@ -88,8 +88,7 @@ namespace swgtk
 
 	struct sprite
 	{
-		float x = 0.f, y = 0.f,
-			w = 0.f, h = 0.f;
+		float x, y,	w, h;
 
 		sprite() = default;
 		sprite(float x, float y, float w, float h);
@@ -97,8 +96,7 @@ namespace swgtk
 
 	struct bounding_box
 	{
-		float x = 0.f, y = 0.f,
-			w = 0.f, h = 0.f;
+		float x, y, w, h;
 
 		bounding_box() = default;
 		bounding_box(float x, float y, float w, float h);
@@ -106,7 +104,7 @@ namespace swgtk
 
 	struct bounding_circle
 	{
-		float x = 0.f, y = 0.f, radius = 0.f;
+		float x, y, radius;
 
 		bounding_circle() = default;
 		bounding_circle(float x, float y, float r);
@@ -114,8 +112,7 @@ namespace swgtk
 
 	struct area_box
 	{
-		float x = 0.f, y = 0.f,
-			w = 0.f, h = 0.f;
+		float x, y, w, h;
 
 		area_box() = default;
 		area_box(float x, float y, float w, float h);
@@ -123,7 +120,7 @@ namespace swgtk
 
 	struct area_circle
 	{
-		float x = 0.f, y = 0.f, radius = 0.f;
+		float x, y, radius;
 
 		area_circle() = default;
 		area_circle(float x, float y, float r);
@@ -131,7 +128,7 @@ namespace swgtk
 
 	struct fov
 	{
-		float x = 0.f, y = 0.f, radius = 0.f;
+		float x, y, radius;
 
 		fov() = default;
 		fov(float x, float y, float r);
@@ -139,7 +136,7 @@ namespace swgtk
 
 	struct texture
 	{
-		SDL_Texture* tex = nullptr;
+		SDL_Texture* tex;
 
 		texture() = default;
 		texture(SDL_Texture* in_tex);

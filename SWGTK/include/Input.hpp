@@ -64,8 +64,8 @@ namespace swgtk
 	*/
 	struct MouseState
 	{
-		MButton buttons = MButton::None;
-		int x = 0, y = 0;
+		MButton buttons;
+		int x, y;
 	};
 }
 
