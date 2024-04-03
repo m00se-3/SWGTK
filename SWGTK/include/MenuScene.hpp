@@ -19,9 +19,6 @@ namespace swgtk
 
 
 	private:
-
-		void MainMenuScripts();	
-
 		Texture _background;
 		std::vector<Texture> _freeTextItems;
 		std::vector<SDL_Rect> _freeTextBounds;

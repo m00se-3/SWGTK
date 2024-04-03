@@ -257,6 +257,23 @@ namespace swgtk
 
 		// Define functions for Lua.
 
+		{
+			_lua["GetScroll"] = [this]() -> float
+				{
+					return GetScroll();
+				};
+
+			_lua["OpenMenu"] = [this](sol::optional<std::string> name)
+				{
+					Parent()->OpenMenu(*name);
+				};
+
+			_lua["CloseMenu"] = [this](sol::optional<std::string> name)
+				{
+					Parent()->CloseMenu(*name);
+				};
+		}
+		
 		_lua["IsKeyPressed"] = [this](sol::optional<LayoutCode> key) -> bool
 			{
 				return IsKeyPressed(*key);

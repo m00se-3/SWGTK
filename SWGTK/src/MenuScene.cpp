@@ -63,25 +63,4 @@ namespace swgtk
 		
 		return GetSceneState();
 	}
-
-	void MenuScene::MainMenuScripts()
-	{
-		auto& lua = Lua();
-		{
-			lua["GetScroll"] = [this]() -> float
-				{
-					return GetScroll();
-				};
-
-			lua["OpenMenu"] = [this](sol::optional<std::string> name)
-				{
-					Parent()->OpenMenu(*name);
-				};
-
-			lua["CloseMenu"] = [this](sol::optional<std::string> name)
-				{
-					Parent()->CloseMenu(*name);
-				};
-		}
-	}
 }
