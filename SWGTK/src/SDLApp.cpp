@@ -57,54 +57,6 @@ namespace swgtk
 		}
 	}
 
-	void SDLApp::Run(std::unique_ptr<Scene> opener)
-	{
-		if (!_headless)
-		{
-			SDL_ShowWindow(_window);
-			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u); // NOLINT
-
-			_currentScene.reset(opener.release());
-			
-			if (_currentScene->Create() != SSC::ok)
-			{
-				return;
-			}
-
-#ifdef __EMSCRIPTEN__
-			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
-
-	#else
-
-			while (_running)
-			{
-				if (_currentSSC == SSC::fail)
-				{
-					break;
-				}
-
-				if (_currentSSC == SSC::change_scene)
-				{
-					auto factory = _currentScene->GetNextScene();
-
-					_currentScene = factory();
-					_currentSSC = _currentScene->Create();
-
-					continue;
-				}
-				
-				EventsAndTimeStep();
-			}
-
-#endif // __EMSCRIPTEN__
-		}
-		else
-		{
-			
-		}
-
-	}
-
 	void SDLApp::InitHeadless()
 	{
 		_headless = true;
@@ -112,9 +64,9 @@ namespace swgtk
 
 	void SDLApp::InitGraphical()
 	{
-		const int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
-		const int ImageFlags = IMG_INIT_PNG;
-		const int MixFlags = 0;
+		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
+		constexpr int ImageFlags = IMG_INIT_PNG;
+		constexpr int MixFlags = 0;
 
 		if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
 		{
@@ -218,7 +170,7 @@ namespace swgtk
 		_currentScene->SetModState(SDL_GetModState());
 
 		{
-			MouseState mouse;
+			MouseState mouse{};
 			mouse.buttons = MButton{ SDL_GetMouseState(&mouse.x, &mouse.y) };
 
 			_currentScene->SetMouseState(mouse);
@@ -260,14 +212,14 @@ namespace swgtk
 		_ui->Close(name);
 	}
 
-	const std::string& SDLApp::AssetsDir() const
+	std::string SDLApp::AssetsDir() const
 	{
-		return _assetsDir;
+		return std::string{_assetsDir};
 	}
 
-	const std::string& SDLApp::ConfigDir() const
+	std::string SDLApp::ConfigDir() const
 	{
-		return _configDir;
+		return std::string{_configDir};
 	}
 
 #ifdef __EMSCRIPTEN__
@@ -352,7 +304,7 @@ namespace swgtk
 		return -1;
 	}
 
-	const SSC SDLApp::GetSceneStatus() const
+	SSC SDLApp::GetSceneStatus() const
 	{
 		return _currentSSC;
 	}

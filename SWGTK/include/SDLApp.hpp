@@ -53,8 +53,55 @@ namespace swgtk
 		SDLApp& operator=(SDLApp&&) = delete;
 #endif
 		~SDLApp();
+		
+		template<SceneObject T>
+		void Run()
+		{
+			if (!_headless)
+			{
+				SDL_ShowWindow(_window);
+				SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u); // NOLINT
 
-		void Run(std::unique_ptr<Scene> opener);
+				_currentScene = std::make_unique<T>(this);
+				
+				if (_currentScene->Create() != SSC::ok)
+				{
+					return;
+				}
+
+#ifdef __EMSCRIPTEN__
+				emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
+
+#else
+
+				while (_running)
+				{
+					if (_currentSSC == SSC::fail)
+					{
+						break;
+					}
+
+					if (_currentSSC == SSC::change_scene)
+					{
+						auto factory = _currentScene->GetNextScene();
+
+						_currentScene = factory();
+						_currentSSC = _currentScene->Create();
+
+						continue;
+					}
+					
+					EventsAndTimeStep();
+				}
+
+#endif // __EMSCRIPTEN__
+			}
+			else
+			{
+				
+			}
+		}
+
 		void InitHeadless();
 		void InitGraphical();
 		void EventsAndTimeStep();
@@ -65,13 +112,13 @@ namespace swgtk
 
 		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
 		int SDLButtontoNKButton(uint8_t button);
-		const std::string& AssetsDir() const;
-		const std::string& ConfigDir() const;
-		const SSC GetSceneStatus() const;
+		[[nodiscard]] std::string AssetsDir() const;
+		[[nodiscard]] std::string ConfigDir() const;
+		[[nodiscard]] SSC GetSceneStatus() const;
 
 		[[nodiscard]] FontGroup& GetFontGroup();
-		[[nodiscard]]nk_font* GetNKFont(FontStyle style, int size);
-		[[nodiscard]]TTF_Font* GetTTF(FontStyle style, int size);
+		[[nodiscard]] nk_font* GetNKFont(FontStyle style, int size);
+		[[nodiscard]] TTF_Font* GetTTF(FontStyle style, int size);
 
 		[[nodiscard]] nk_context* GetNKContext();
 		[[nodiscard]] SDL_Renderer* Renderer();
