@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.25)
 project ("SWGTK")
 
 # Clang compiler warning flags go here.
-list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion")
+list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion" "-Wshadow" "-Wnon-virtual-dtor")
 set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 
 # If building for emscripten, we want to add the cmake folder for our local dependencies to the search path.
@@ -30,6 +30,7 @@ find_package(SDL2_image CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(SDL2_mixer CONFIG REQUIRED)
 find_package(unofficial-nuklear CONFIG REQUIRED)
+find_package(gsl-lite CONFIG REQUIRED)
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")

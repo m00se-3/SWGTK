@@ -9,7 +9,8 @@
     "sdl2-mixer",
     "lua",
     "sol2",
-    "nuklear"
+    "nuklear",
+    "gsl-lite"
   ]
 
 }
