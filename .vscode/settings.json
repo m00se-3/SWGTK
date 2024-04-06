@@ -23,6 +23,6 @@
     "C_Cpp.codeAnalysis.runAutomatically": true,
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
     "C_Cpp.codeAnalysis.exclude": {
-        "build/*": true
+        "build/": true
     }
 }
