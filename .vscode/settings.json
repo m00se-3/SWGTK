@@ -24,5 +24,6 @@
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
     "C_Cpp.codeAnalysis.exclude": {
         "build/": true
-    }
+    },
+    "C_Cpp.codeAnalysis.clangTidy.codeAction.formatFixes": false
 }
