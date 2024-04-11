@@ -34,8 +34,15 @@ namespace swgtk
             struct nk_font* temp = nk_font_atlas_add_from_file(&_atlas, str.c_str(), static_cast<float>(size), nullptr);
             TTF_Font* ttf = TTF_OpenFont(str.c_str(), size);
 
-            if (temp) _nkFonts.insert_or_assign(hash, temp);
-            if (ttf) _ttfFonts.insert_or_assign(hash, ttf);
+            if (temp != nullptr) 
+            {
+                _nkFonts.insert_or_assign(hash, temp);
+            }
+
+            if (ttf != nullptr) 
+            {
+                _ttfFonts.insert_or_assign(hash, ttf);
+            }
         }
     }
 
@@ -98,10 +105,4 @@ namespace swgtk
     [[nodiscard]] nk_font_atlas* FontGroup::GetAtlas() { return &_atlas; }
 
     [[nodiscard]] const nk_font_atlas* FontGroup::GetAtlas() const { return &_atlas; }
-
-    int64_t FontGroup::Hash(FontStyle style, int size) const
-    {
-        constexpr const int styleOffset = 32;
-        return (int64_t)style << styleOffset | (int64_t)size;
-    }
 }

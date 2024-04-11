@@ -110,8 +110,9 @@ namespace swgtk
 		void OpenMenu(const std::string& name);
 		void CloseMenu(const std::string& name);
 
-		nk_keys SDLKeytoNKKey(int key, uint16_t mods);
-		int SDLButtontoNKButton(uint8_t button);
+		static nk_keys SDLKeytoNKKey(int key, uint16_t mods);
+		static int SDLButtontoNKButton(uint8_t button);
+
 		[[nodiscard]] std::string AssetsDir() const;
 		[[nodiscard]] std::string ConfigDir() const;
 		[[nodiscard]] SSC GetSceneStatus() const;

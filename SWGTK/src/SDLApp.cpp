@@ -1,11 +1,22 @@
 #include "SDLApp.hpp"
 
+#include <chrono>
+#include <cstdint>
 #include <format>
+#include <memory>
 #include <print>
+#include <span>
+#include <string>
+#include <utility>
 
+#include "SDL.h"
+#include "Input.hpp"
+#include "Font.hpp"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL_mixer.h"
+#include "UI.hpp"
+#include "Scene.hpp"
 
 namespace swgtk
 {
@@ -19,9 +30,7 @@ namespace swgtk
 	}
 #else
 	SDLApp::SDLApp(int argc, const char** argv)
-		: _assetsDir(SWGTK_ASSETS), _configDir(SWGTK_CONFIG),
-		_lastFrameTime(std::chrono::high_resolution_clock::now()),
-		_currentFrameTime()
+		: _assetsDir(SWGTK_ASSETS), _configDir(SWGTK_CONFIG)
 	{
 		const std::span<const char*> args{argv, static_cast<size_t>(argc)};		
 
@@ -72,7 +81,7 @@ namespace swgtk
 		{
 			_window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1200, 900, SDL_WINDOW_HIDDEN); // NOLINT
 
-			if (_window)
+			if (_window != nullptr)
 			{
 				_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 			}
@@ -82,7 +91,7 @@ namespace swgtk
 				return;
 			}
 			
-			if (!_renderer)
+			if (_renderer != nullptr)
 			{
 				std::print("Failed to initialize renderer. - {}\n", SDL_GetError());
 				return;
@@ -109,7 +118,7 @@ namespace swgtk
 		_currentScene->ResetMouseEvents();
 		_currentScene->ResetKeyEvent();
 
-		while (SDL_PollEvent(&e))
+		while (SDL_PollEvent(&e) == 1)
 		{
 			switch (e.type)
 			{
@@ -129,7 +138,7 @@ namespace swgtk
 
 				if (button > -1)
 				{
-					nk_input_button(&_ctx, static_cast<nk_buttons>(button), e.button.x, e.button.y, (e.type == SDL_MOUSEBUTTONDOWN));
+					nk_input_button(&_ctx, static_cast<nk_buttons>(button), e.button.x, e.button.y, static_cast<nk_bool>(e.type == SDL_MOUSEBUTTONDOWN));
 				}
 				break;
 			}
@@ -143,7 +152,7 @@ namespace swgtk
 
 				if (key != NK_KEY_NONE)
 				{
-					nk_input_key(&_ctx, key, (e.type == SDL_KEYDOWN));
+					nk_input_key(&_ctx, key, static_cast<nk_bool>(e.type == SDL_KEYDOWN));
 				}
 				break;
 			}
@@ -178,7 +187,7 @@ namespace swgtk
 
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 
-		double timeDiff = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime).count());
+		const double timeDiff = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime).count());
 		_lastFrameTime = _currentFrameTime;
 
 		SDL_RenderClear(_renderer);
@@ -232,7 +241,7 @@ namespace swgtk
 	}
 #endif
 
-	nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods)
+	nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods) // NOLINT - nothing we can do about this right now.
 	{
 		switch (key)
 		{
@@ -288,9 +297,11 @@ namespace swgtk
 			return NK_KEY_UP;
 		}
 		
+		default: 
+		{
+			return NK_KEY_NONE; // Not an NK key
 		}
-
-		return NK_KEY_NONE;			// Not a nk_key.
+		}
 	}
 
 	int SDLApp::SDLButtontoNKButton(uint8_t button)
@@ -300,8 +311,8 @@ namespace swgtk
 		case SDL_BUTTON_LEFT:			return NK_BUTTON_LEFT;
 		case SDL_BUTTON_RIGHT:			return NK_BUTTON_RIGHT;
 		case SDL_BUTTON_MIDDLE:			return NK_BUTTON_MIDDLE;
+		default:						return -1;
 		}
-		return -1;
 	}
 
 	SSC SDLApp::GetSceneStatus() const

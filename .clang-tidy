@@ -1,2 +1,2 @@
-Checks: 'cppcoreguidelines-*,clang-analyzer-*'
+Checks: '-*, cppcoreguidelines-*,clang-analyzer-*, modernize-*, -modernize-use-trailing-return-type, bugprone-*, cert-*, misc-*, -misc-include-cleaner, performace-*, readability-*,-readability-uppercase-literal-suffix, -readability-identifier-length, -readability-isolate-declaration'
 HeaderFilterRegex: '.*'

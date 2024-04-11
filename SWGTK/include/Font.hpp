@@ -60,7 +60,11 @@ namespace swgtk
         [[nodiscard]] const nk_font_atlas* GetAtlas() const;
 
     private:
-        int64_t Hash(FontStyle style, int size) const;
+        [[nodiscard]] constexpr static int64_t Hash(FontStyle style, int size)
+        {
+            constexpr const int styleOffset = 32;
+            return (int64_t)style << styleOffset | (int64_t)size;
+        }
 
         struct nk_font_atlas _atlas{};
         std::unordered_map<int64_t, struct nk_font*> _nkFonts;
