@@ -5,7 +5,6 @@
 #include <cstdio>
 
 #include "SDLApp.hpp"
-#include "SDL2/SDL_surface.h"
 
 static const std::array<nk_draw_vertex_layout_element, 4u> vertex_layout = {
 	nk_draw_vertex_layout_element{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
@@ -69,7 +68,7 @@ namespace swgtk
 		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
 
-		if (!nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal, normalFontSize)->handle)) return;
+		if (nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal, normalFontSize)->handle) == nk_bool{1}) { return; }
 
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;
@@ -96,7 +95,7 @@ namespace swgtk
 
 		_dataTable.set("wWidth", size.first, "wHeight", size.second);
 		
-		for (auto& menu : _openMenus)
+		for (const auto& menu : _openMenus)
 		{
 			auto& err = _luaFunctions.at(menu);
 			
@@ -104,7 +103,7 @@ namespace swgtk
 
 			if (!result.valid())
 			{
-				std::fputs(std::format("Lua runtime error: Function {} - {}\n", menu, err).c_str(), stdout);
+				int _ = std::fputs(std::format("Lua runtime error: Function {} - {}\n", menu, err).c_str(), stdout);
 			}
 		}
 	}
@@ -124,12 +123,12 @@ namespace swgtk
 		const nk_draw_command* cmd = nullptr;
 		uint32_t offset = 0u;
 
-		const SDL_Vertex* vertices = static_cast<const SDL_Vertex*>(nk_buffer_memory_const(&_verts));
+		const auto* vertices = static_cast<const SDL_Vertex*>(nk_buffer_memory_const(&_verts));
 		const std::span<const int> elements{static_cast<const int*>(nk_buffer_memory_const(&_inds)), MaxVertexBuffer};
 
 		nk_draw_foreach(cmd, _ctx, &_cmds)
 		{
-			if (!cmd->elem_count) continue;
+			if (cmd->elem_count > 0u) { continue; }
 
 			SDL_RenderGeometry(_parent->Renderer(), static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, _verts.needed / sizeof(SDL_Vertex), &elements[offset], static_cast<int>(cmd->elem_count));  // NOLINT
 
@@ -145,15 +144,15 @@ namespace swgtk
 	{
 		if (!std::filesystem::exists(dir))
 		{
-			std::fputs(std::format("Error loading Lua script: no such file or directory - {}", dir).c_str(), stdout);
+			int _ = std::fputs(std::format("Error loading Lua script: no such file or directory - {}", dir).c_str(), stdout);
 			return LuaError::file_dir_404;
 		}
 
 		if (recursive)
 		{
-			for (auto& item : std::filesystem::recursive_directory_iterator(dir))
+			for (const auto& item : std::filesystem::recursive_directory_iterator(dir))
 			{
-				auto& path = item.path();
+				const auto& path = item.path();
 
 				if (path.extension() == ".lua")
 				{
@@ -161,7 +160,7 @@ namespace swgtk
 
 					if (err != LuaError::ok)
 					{
-						std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
+						int _ = std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
 						return err;
 					}
 				}
@@ -169,9 +168,9 @@ namespace swgtk
 		}
 		else
 		{
-			for (auto& item : std::filesystem::directory_iterator(dir))
+			for (const auto& item : std::filesystem::directory_iterator(dir))
 			{
-				auto& path = item.path();
+				const auto& path = item.path();
 
 				if (path.extension() == ".lua")
 				{
@@ -179,7 +178,7 @@ namespace swgtk
 
 					if (err != LuaError::ok)
 					{
-						std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
+						int _ = std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
 						return err;
 					}
 				}
@@ -200,10 +199,8 @@ namespace swgtk
 			
 			return LuaError::ok;
 		}
-		else
-		{
-			return LuaError::parsing_failed;
-		}
+		
+		return LuaError::parsing_failed;
 	}
 
 	void UI::InitLua()
@@ -544,7 +541,7 @@ namespace swgtk
 			{
 				const auto& str = text.value();
 
-				return static_cast<bool>(nk_check_text(*ctx, str.data(), static_cast<int>(str.size()), *active));
+				return static_cast<bool>(nk_check_text(*ctx, str.data(), static_cast<int>(str.size()), nk_bool{*active}));
 			};
 
 		context["CheckFlagLbl"] =
@@ -653,7 +650,7 @@ namespace swgtk
 		context["Progress"] =
 			[](sol::optional<nk_context*> ctx, sol::optional<uintptr_t*> current, sol::optional<uintptr_t> max, sol::optional<bool> mod) -> bool
 			{
-				return static_cast<bool>(nk_progress(*ctx, *current, *max, *mod));
+				return static_cast<bool>(nk_progress(*ctx, *current, *max, nk_bool{*mod}));
 			};
 
 		context["Prog"] = nk_prog;
