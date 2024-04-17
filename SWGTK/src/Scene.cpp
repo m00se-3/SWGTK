@@ -1,7 +1,7 @@
 #include "Scene.hpp"
 
 #include "SDLApp.hpp"
-#include "SDL2/SDL.h"
+#include <utility>
 
 namespace swgtk
 {
@@ -33,12 +33,12 @@ namespace swgtk
 
 	bool Scene::IsKeyPressed(LayoutCode code) const
 	{
-		return (_keyEvent.first == code && _keyEvent.second == true);
+		return (_keyEvent.first == code && _keyEvent.second);
 	}
 
 	bool Scene::IsKeyReleased(LayoutCode code) const
 	{
-		return (_keyEvent.first == code && _keyEvent.second == false);
+		return (_keyEvent.first == code && _keyEvent.second);
 	}
 
 	bool Scene::IsKeyHeld(LayoutCode code) const
@@ -63,7 +63,7 @@ namespace swgtk
 
 	bool Scene::IsButtonHeld(MButton button) const
 	{
-		return static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button);
+		return static_cast<bool>(std::to_underlying(_mouseState.buttons) & std::to_underlying(button));
 	}
 
 	int Scene::GetMouseX() const

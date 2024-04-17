@@ -24,14 +24,17 @@ namespace swgtk
 
 	Texture& Texture::operator=(SDL_Texture* tex)
 	{
-		if (_texture) SDL_DestroyTexture(_texture);
+		if (_texture != nullptr) 
+		{
+			SDL_DestroyTexture(_texture);
+		}
 		_texture = tex;
 		return *this;
 	}
 
 	Texture::~Texture()
 	{
-		if(_texture) SDL_DestroyTexture(_texture);
+		if(_texture != nullptr) { SDL_DestroyTexture(_texture); }
 	}
 
 	SDL_Texture* Texture::Get() const { return _texture; }
@@ -49,14 +52,14 @@ namespace swgtk
 
 	void Texture::Create(SDL_Renderer* ren, const std::string& filepath)
 	{
-		if (_texture) SDL_DestroyTexture(_texture);
+		if (_texture != nullptr) { SDL_DestroyTexture(_texture); }
 		_texture = IMG_LoadTexture(ren, filepath.c_str());
 		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
 	void Texture::Create(SDL_Renderer* ren, SDL_Surface* surface)
 	{
-		if (_texture) SDL_DestroyTexture(_texture);
+		if (_texture != nullptr) { SDL_DestroyTexture(_texture); }
 		_texture = SDL_CreateTextureFromSurface(ren, surface);
 		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
