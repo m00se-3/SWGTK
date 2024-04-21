@@ -112,9 +112,9 @@ namespace swgtk
 
 	private:
 		SDLApp* _parent = nullptr;
-		sol::state _lua{}; 
+		sol::state _lua; 
 		SSC sceneState = SSC::ok;
-		SceneFactory nextScene{};
+		SceneFactory nextScene;
 
 		/*
 			State management variables for inpuit polling.
@@ -122,7 +122,7 @@ namespace swgtk
 
 		MouseState _mouseState{};
 		KeyMod _modifiers = KeyMod::None;
-		std::span<const uint8_t>_keyboardState{};
+		std::span<const uint8_t>_keyboardState;
 
 		/*
 			Variables for processing input events.
@@ -174,7 +174,7 @@ namespace swgtk
 		[[nodiscard]] inline KeyMod GetKeyMods() const { return _modifiers; }
 		[[nodiscard]] inline bool IsButtonPressed(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Pressed; }
 		[[nodiscard]] inline bool IsButtonReleased(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Released; }
-		[[nodiscard]] inline bool IsButtonHeld(MButton button) const { return static_cast<bool>(std::to_underlying(_mouseState.buttons) & std::to_underlying(button)); }
+		[[nodiscard]] inline bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button)); }
 		[[nodiscard]] inline int GetMouseX() const { return _mouseState.x; }
 		[[nodiscard]] inline int GetMouseY() const { return _mouseState.y; }
 		[[nodiscard]] inline SDL_Point GetMousePos() const { return SDL_Point{ _mouseState.x, _mouseState.y }; }
@@ -218,7 +218,7 @@ namespace swgtk
 	private:
 		SDLApp* _parent = nullptr;
 		std::unique_ptr<SceneLogic> _pimpl;
-		sol::state _lua{}; 
+		sol::state _lua; 
 		SSC sceneState = SSC::ok;
 
 		/*
@@ -227,7 +227,7 @@ namespace swgtk
 
 		MouseState _mouseState{};
 		KeyMod _modifiers = KeyMod::None;
-		std::span<const uint8_t>_keyboardState{};
+		std::span<const uint8_t>_keyboardState;
 
 		/*
 			Variables for processing input events.

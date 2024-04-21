@@ -63,7 +63,7 @@ namespace swgtk
 
 	bool Scene::IsButtonHeld(MButton button) const
 	{
-		return static_cast<bool>(std::to_underlying(_mouseState.buttons) & std::to_underlying(button));
+		return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button));
 	}
 
 	int Scene::GetMouseX() const

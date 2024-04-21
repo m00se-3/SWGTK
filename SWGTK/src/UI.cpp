@@ -30,7 +30,7 @@ namespace swgtk
 	}
 
 	UI::UI(SDLApp* app, const std::string& fontsDir)
-		: _parent(app), _ctx(app->GetNKContext())
+		: _parent(app), _ctx(app->GetNKContext()), _lua()
 	{
 		auto& fontGroup = _parent->GetFontGroup();
 
@@ -93,7 +93,9 @@ namespace swgtk
 	{
 		auto size = _parent->GetWindowSize();
 
-		_dataTable.set("wWidth", size.first, "wHeight", size.second);
+		// TODO: Why is this not holding a valid lua_State pointer anymore?
+		// _dataTable["wWidth"] = size.first;
+		// _dataTable["wHeight"] = size.second;
 		
 		for (const auto& menu : _openMenus)
 		{
@@ -208,7 +210,7 @@ namespace swgtk
 		_lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
 		// Create a reference table for the nuklear functions.
-		_dataTable = _lua.create_named_table("Host");
+		_dataTable = _lua["Host"];
 
 		// Useful types
 		{

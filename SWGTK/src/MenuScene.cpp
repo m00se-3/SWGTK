@@ -1,5 +1,6 @@
 #include "MenuScene.hpp"
 
+#include <cstdio>
 #include <string>
 
 #include "Font.hpp"
@@ -15,7 +16,7 @@
 
 namespace swgtk 
 {
-	MenuScene::MenuScene(SDLApp *app) : Scene(app) {}
+	MenuScene::MenuScene(SDLApp *app) : Scene(app) { InitLua(); }
 
 	SSC MenuScene::Create() {
 	auto *font = Parent()->GetTTF(FontStyle::Bold, normalFontSize);

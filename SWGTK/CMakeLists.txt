@@ -68,6 +68,10 @@ target_link_libraries(
 
 endif(EMSCRIPTEN)
 
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+	target_compile_options(SWGTK PRIVATE "-g")
+endif()
+
 target_sources(
 	SWGTK
 

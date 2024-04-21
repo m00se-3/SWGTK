@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <format>
 #include <memory>
-#include <print>
+#include <cstdio>
 #include <span>
 #include <string>
 #include <utility>
@@ -87,25 +87,25 @@ namespace swgtk
 			}
 			else
 			{
-				std::print("Failed to create window. - {}\n", SDL_GetError());
+			int _ = std::fputs(std::format("Failed to create window. - {}\n", SDL_GetError()).c_str(), stdout);
 				return;
 			}
 			
-			if (_renderer != nullptr)
+			if (_renderer == nullptr)
 			{
-				std::print("Failed to initialize renderer. - {}\n", SDL_GetError());
+				int _ = std::fputs(std::format("Failed to initialize renderer. - {}\n", SDL_GetError()).c_str(), stdout);
 				return;
 			}
 
 		}
 		else
 		{
-			std::print("An SDL Library failed to initialize. - {}\n", SDL_GetError());
+			int _ = std::fputs(std::format("An SDL Library failed to initialize. - {}\n", SDL_GetError()).c_str(), stdout);
 			return;
 		}
 
 		_ui = std::make_unique<UI>(this, _assetsDir + "/fonts");
-		_ui->LoadScriptsFromDirectory(_configDir + "/ui");
+		// _ui->LoadScriptsFromDirectory(_configDir + "/ui");
 	}
 
 	void SDLApp::EventsAndTimeStep()
