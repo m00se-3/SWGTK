@@ -1,6 +1,8 @@
 #include "Scene.hpp"
 
 #include "SDLApp.hpp"
+#include <filesystem>
+#include <gsl/gsl-lite.hpp>
 #include <utility>
 
 namespace swgtk
@@ -137,8 +139,66 @@ namespace swgtk
 	{
 		return _parent;
 	}
+	
+/*
+*	Begin defining the functions for the new GameScene class.
+* */
 
-	void Scene::InitLua()
+	GameScene::GameScene(gsl::not_null<SDLApp*> parent, gsl::owner<SceneNode*> node)
+	: _parent(parent), _pimpl(node)
+	{
+		InitLua();
+	}
+
+	SSC GameScene::Create()
+	{
+		return _pimpl->_createFunc(*this);
+	}
+
+	SSC GameScene::Update(float dt)
+	{
+		return _pimpl->_updateFunc(*this, dt);
+	}
+
+	void GameScene::Destroy()
+	{
+		if(_pimpl->_destroyFunc.has_value())
+		{
+			(_pimpl->_destroyFunc.value())(*this);
+		}
+	}
+
+	gsl::owner<GameScene::SceneNode*> CreateLuaScene(const std::string& luaFileName)
+	{
+		sol::state lua{};
+
+		if(std::filesystem::exists(luaFileName))
+		{
+			sol::protected_function_result file = lua.script_file(luaFileName);
+
+			if(file.vaild())
+			{
+				sol::table functions = file;
+
+				sol::optional<std::function<void(GameScene&)>> dest = functions["OnDestroy"];
+				sol::optional<std::function<SSC(GameScene&, float)>> up = functions["OnUpdate"];
+				sol::optional<std::function<SSC(GameScene&)>> cr = functions["OnCreate"];
+				
+				if(up && cr)
+				{
+					return new GameScene::SceneNode{
+						static_cast<std::function<SSC(GameScene&, float)>>(*up),
+						static_cast<std::function<SSC(GameScene&)>>(*cr),
+						std::optional<std::function<void(GameScene&)>>{static_cast<std::function<void(GameScene&)>>(*dest)}
+					};
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
+	void GameScene::InitLua()
 	{
 		_lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
@@ -265,12 +325,12 @@ namespace swgtk
 
 			_lua["OpenMenu"] = [this](sol::optional<std::string> name)
 				{
-					Parent()->OpenMenu(*name);
+					AppRoot()->OpenMenu(*name);
 				};
 
 			_lua["CloseMenu"] = [this](sol::optional<std::string> name)
 				{
-					Parent()->CloseMenu(*name);
+					AppRoot()->CloseMenu(*name);
 				};
 		}
 		

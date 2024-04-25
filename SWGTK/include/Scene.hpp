@@ -154,48 +154,50 @@ namespace swgtk
 	class GameScene
 	{
 	public:
-		GameScene(gsl::not_null<SDLApp*> parent) : _parent(parent) {};
+		struct SceneNode;
+	
+		GameScene(gsl::not_null<SDLApp*> parent, gsl::owner<SceneNode*> node);
 
 		[[nodiscard]] SSC Create();
 		[[nodiscard]] SSC Update(float dt);
 		void Destroy();
 		void InitLua();
 
-		[[nodiscard]] inline SDLApp* AppRoot() { return _parent; }
+		[[nodiscard]] constexpr SDLApp* AppRoot() { return _parent; }
 
 		/*
 			Input state and event polling for the derived scene class.
 		*/
 
-		[[nodiscard]] inline float GetScroll() const { return _scroll; }
-		[[nodiscard]] inline bool IsKeyPressed(LayoutCode code) const { return (_keyEvent.first == code && _keyEvent.second); }
-		[[nodiscard]] inline bool IsKeyReleased(LayoutCode code) const { return (_keyEvent.first == code && !_keyEvent.second); }
-		[[nodiscard]] inline bool IsKeyHeld(LayoutCode code) const{ return _keyboardState[size_t(code)] == 1; }
-		[[nodiscard]] inline KeyMod GetKeyMods() const { return _modifiers; }
-		[[nodiscard]] inline bool IsButtonPressed(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Pressed; }
-		[[nodiscard]] inline bool IsButtonReleased(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Released; }
-		[[nodiscard]] inline bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button)); }
-		[[nodiscard]] inline int GetMouseX() const { return _mouseState.x; }
-		[[nodiscard]] inline int GetMouseY() const { return _mouseState.y; }
-		[[nodiscard]] inline SDL_Point GetMousePos() const { return SDL_Point{ _mouseState.x, _mouseState.y }; }
+		[[nodiscard]] constexpr float GetScroll() const { return _scroll; }
+		[[nodiscard]] constexpr bool IsKeyPressed(LayoutCode code) const { return (_keyEvent.first == code && _keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyReleased(LayoutCode code) const { return (_keyEvent.first == code && !_keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _keyboardState[size_t(code)] == 1; }
+		[[nodiscard]] constexpr KeyMod GetKeyMods() const { return _modifiers; }
+		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Pressed; }
+		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Released; }
+		[[nodiscard]] constexpr bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button)); }
+		[[nodiscard]] constexpr int GetMouseX() const { return _mouseState.x; }
+		[[nodiscard]] constexpr int GetMouseY() const { return _mouseState.y; }
+		[[nodiscard]] constexpr SDL_Point GetMousePos() const { return SDL_Point{ _mouseState.x, _mouseState.y }; }
 
 		/*
 			Input state and event management.
 		*/
 
-		inline void SetMouseState(const MouseState& event) { _mouseState = event; }
-		inline void SetModState(const SDL_Keymod& state) { _modifiers = static_cast<KeyMod>(state); }
-		inline void ResetScroll() { _scroll = 0.0f; }
-		inline void AddScroll(float amount) { _scroll = amount; }
-		inline void SetMouseEvent(MButton button, MButtonState state) { _mouseEvents.at(size_t(button)) = state; }
+		constexpr void SetMouseState(const MouseState& event) { _mouseState = event; }
+		constexpr void SetModState(const SDL_Keymod& state) { _modifiers = static_cast<KeyMod>(state); }
+		constexpr void ResetScroll() { _scroll = 0.0f; }
+		constexpr void AddScroll(float amount) { _scroll = amount; }
+		constexpr void SetMouseEvent(MButton button, MButtonState state) { _mouseEvents.at(size_t(button)) = state; }
 
-		inline void ResetKeyEvent()
+		constexpr void ResetKeyEvent()
 		{
 			_keyEvent.first = LayoutCode::Unknown;
 			_keyEvent.second = false;	
 		}
 
-		inline void SetKeyEvent(LayoutCode code, bool pressed)
+		constexpr void SetKeyEvent(LayoutCode code, bool pressed)
 		{	
 			_keyEvent.first = code;
 			_keyEvent.second = pressed;
@@ -210,14 +212,16 @@ namespace swgtk
 		
 		void ResetMouseEvents();
 
-		struct SceneLogic
+		struct SceneNode
 		{
-			
+			std::function<SSC(GameScene&, float)> _updateFunc;
+			std::function<SSC(GameScene&)> _createFunc;
+			std::optional<std::function<void(GameScene&)>> _destroyFunc;
 		};
 
 	private:
 		SDLApp* _parent = nullptr;
-		std::unique_ptr<SceneLogic> _pimpl;
+		std::unique_ptr<SceneNode> _pimpl;
 		sol::state _lua; 
 		SSC sceneState = SSC::ok;
 
@@ -238,6 +242,8 @@ namespace swgtk
 		float _scroll = 0.0f;
 
 	};
+
+	[[nodiscard]] gsl::owner<GameScene::SceneNode*> CreateLuaScene(const std::string& luaFileName);
 
 }
 
