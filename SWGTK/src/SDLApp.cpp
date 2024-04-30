@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdint>
 #include <format>
+#include <gsl/gsl-lite.hpp>
 #include <memory>
 #include <cstdio>
 #include <span>
@@ -110,6 +111,13 @@ namespace swgtk
 
 	void SDLApp::EventsAndTimeStep()
 	{
+		// If a scene change occurs, that is all we want to do for this frame.
+		if(_currentSSC == SSC::change_scene)
+		{
+			_currentSSC = _currentScene->Create();
+			return;
+		}
+
 		nk_input_begin(&_ctx);
 		
 		SDL_Event e;
@@ -201,6 +209,46 @@ namespace swgtk
 
 	}
 
+	void SDLApp::Run(gsl::owner<GameScene::Node*> logicNode)
+	{
+		if (!_headless)
+		{
+			SDL_ShowWindow(_window);
+			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u); // NOLINT
+
+			_currentScene = std::make_unique<GameScene>(gsl::make_not_null(this), logicNode);
+			
+			if (_currentScene->Create() != SSC::ok)
+			{
+				return;
+			}
+
+#ifdef __EMSCRIPTEN__
+			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
+
+#else
+
+			while (_running)
+			{
+				if (_currentSSC == SSC::fail)
+				{
+					break;
+				}
+
+				if(_nextSceneNode != nullptr)
+				{
+					_currentScene->SetNewScene(_nextSceneNode);
+					_nextSceneNode = nullptr;
+					_currentSSC = SSC::change_scene;
+				}
+					
+				EventsAndTimeStep();
+			}
+
+#endif // __EMSCRIPTEN__
+		}
+	}
+
 	void SDLApp::CloseApp()
 	{
 #ifdef __EMSCRIPTEN__
@@ -229,6 +277,11 @@ namespace swgtk
 	std::string SDLApp::ConfigDir() const
 	{
 		return std::string{_configDir};
+	}
+
+	void SDLApp::GetNewSceneNode(gsl::owner<GameScene::Node*> ptr)
+	{
+		_nextSceneNode = ptr;	
 	}
 
 #ifdef __EMSCRIPTEN__

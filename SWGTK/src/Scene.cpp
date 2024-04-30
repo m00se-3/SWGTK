@@ -1,163 +1,50 @@
 #include "Scene.hpp"
 
-#include "SDLApp.hpp"
 #include <filesystem>
+
+#include "SDLApp.hpp"
 #include <gsl/gsl-lite.hpp>
 #include <utility>
 
 namespace swgtk
 {
-	Scene::Scene(SDLApp* app)
-		: _parent(app)
-	{
-
-	}
-
-	SceneFactory Scene::GetNextScene()
-	{
-		return nextScene;
-	}
-
-	sol::state& Scene::Lua() 
-	{
-		return _lua;
-	}
-
-	SSC Scene::GetSceneState() const 
-	{
-		return sceneState;
-	}
-
-	float Scene::GetScroll() const
-	{
-		return _scroll;
-	}
-
-	bool Scene::IsKeyPressed(LayoutCode code) const
-	{
-		return (_keyEvent.first == code && _keyEvent.second);
-	}
-
-	bool Scene::IsKeyReleased(LayoutCode code) const
-	{
-		return (_keyEvent.first == code && _keyEvent.second);
-	}
-
-	bool Scene::IsKeyHeld(LayoutCode code) const
-	{
-		return _keyboardState[size_t(code)] == 1;
-	}
-
-	KeyMod Scene::GetKeyMods() const
-	{
-		return _modifiers;
-	}
-
-	bool Scene::IsButtonPressed(MButton button) const
-	{
-		return _mouseEvents.at(size_t(button)) == MButtonState::Pressed;
-	}
-
-	bool Scene::IsButtonReleased(MButton button) const
-	{
-		return _mouseEvents.at(size_t(button)) == MButtonState::Released;
-	}
-
-	bool Scene::IsButtonHeld(MButton button) const
-	{
-		return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button));
-	}
-
-	int Scene::GetMouseX() const
-	{
-		return _mouseState.x;
-	}
-
-	int Scene::GetMouseY() const
-	{
-		return _mouseState.y;
-	}
-
-	SDL_Point Scene::GetMousePos() const
-	{
-		return SDL_Point{ _mouseState.x, _mouseState.y };
-	}
-
-	void Scene::SetMouseState(const MouseState& event)
-	{
-		_mouseState = event;
-	}
-
-	void Scene::SetModState(const SDL_Keymod& state)
-	{
-		_modifiers = static_cast<KeyMod>(state);
-	}
-
-	void Scene::SetKeyboardState()
-	{
-		int numKeys{};
-		const uint8_t* state = SDL_GetKeyboardState(&numKeys);
-		_keyboardState = std::span<const uint8_t>{ state, static_cast<size_t>(numKeys) };
-	}
-
-	void Scene::ResetScroll()
-	{
-		_scroll = 0.0f;
-	}
-
-	void Scene::AddScroll(float amount)
-	{
-		_scroll = amount;
-	}
-
-	void Scene::SetMouseEvent(MButton button, MButtonState state)
-	{
-		_mouseEvents.at(size_t(button)) = state;
-	}
-
-	void Scene::ResetMouseEvents()
-	{
-		for (auto& s : _mouseEvents)
-		{
-			s = MButtonState::None;
-		}
-	}
-
-	void Scene::ResetKeyEvent()
-	{
-		_keyEvent.first = LayoutCode::Unknown;
-		_keyEvent.second = false;
-	}
-
-	void Scene::SetKeyEvent(LayoutCode code, bool pressed)
-	{
-		_keyEvent.first = code;
-		_keyEvent.second = pressed;
-	}
-	
-	SDLApp* Scene::Parent()
-	{
-		return _parent;
-	}
-	
-/*
-*	Begin defining the functions for the new GameScene class.
-* */
-
-	GameScene::GameScene(gsl::not_null<SDLApp*> parent, gsl::owner<SceneNode*> node)
+	GameScene::GameScene(gsl::not_null<SDLApp*> parent, gsl::owner<Node*> node)
 	: _parent(parent), _pimpl(node)
 	{
 		InitLua();
 	}
 
+	void GameScene::SetNewScene(gsl::owner<Node*> scene)
+	{
+		if(_pimpl->_destroyFunc.has_value())
+		{
+			_pimpl->_destroyFunc.value()(*this);
+		}
+
+		_pimpl.reset(scene);
+	}
+
+	void GameScene::GenerateNewscene(gsl::owner<Node*> ptr)
+	{
+		_parent->GetNewSceneNode(ptr);
+	}
+
 	SSC GameScene::Create()
 	{
-		return _pimpl->_createFunc(*this);
+		_sceneState = _pimpl->_createFunc(*this);
+		return _sceneState;
 	}
 
 	SSC GameScene::Update(float dt)
 	{
-		return _pimpl->_updateFunc(*this, dt);
+		auto result = _pimpl->_updateFunc(*this, dt);
+
+		if(_sceneState != SSC::change_scene)
+		{
+			_sceneState = result;
+		}
+
+		return result;
 	}
 
 	void GameScene::Destroy()
@@ -168,15 +55,23 @@ namespace swgtk
 		}
 	}
 
-	gsl::owner<GameScene::SceneNode*> CreateLuaScene(const std::string& luaFileName)
+	void GameScene::ResetMouseEvents()
+	{
+		for (auto& s : _mouseEvents)
+		{
+			s = MButtonState::None;
+		}
+	}
+
+	gsl::owner<GameScene::Node*> CreateLuaScene(const std::string& luaFileName)
 	{
 		sol::state lua{};
 
 		if(std::filesystem::exists(luaFileName))
 		{
-			sol::protected_function_result file = lua.script_file(luaFileName);
+			const sol::protected_function_result file = lua.script_file(luaFileName);
 
-			if(file.vaild())
+			if(file.valid())
 			{
 				sol::table functions = file;
 
@@ -186,7 +81,7 @@ namespace swgtk
 				
 				if(up && cr)
 				{
-					return new GameScene::SceneNode{
+					return new GameScene::Node{
 						static_cast<std::function<SSC(GameScene&, float)>>(*up),
 						static_cast<std::function<SSC(GameScene&)>>(*cr),
 						std::optional<std::function<void(GameScene&)>>{static_cast<std::function<void(GameScene&)>>(*dest)}

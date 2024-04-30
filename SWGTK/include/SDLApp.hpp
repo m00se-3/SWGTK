@@ -2,6 +2,8 @@
 #define SDLAPP_HPP
 
 #include <chrono>
+#include <concepts>
+#include <gsl/gsl-lite.hpp>
 #include <memory>
 #include <string>
 #include <span>
@@ -54,54 +56,7 @@ namespace swgtk
 #endif
 		~SDLApp();
 		
-		template<SceneObject T>
-		void Run()
-		{
-			if (!_headless)
-			{
-				SDL_ShowWindow(_window);
-				SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u); // NOLINT
-
-				_currentScene = std::make_unique<T>(this);
-				
-				if (_currentScene->Create() != SSC::ok)
-				{
-					return;
-				}
-
-#ifdef __EMSCRIPTEN__
-				emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
-
-#else
-
-				while (_running)
-				{
-					if (_currentSSC == SSC::fail)
-					{
-						break;
-					}
-
-					if (_currentSSC == SSC::change_scene)
-					{
-						auto factory = _currentScene->GetNextScene();
-
-						_currentScene = factory();
-						_currentSSC = _currentScene->Create();
-
-						continue;
-					}
-					
-					EventsAndTimeStep();
-				}
-
-#endif // __EMSCRIPTEN__
-			}
-			else
-			{
-				
-			}
-		}
-
+		void Run(gsl::owner<GameScene::Node*> logicNode);
 		void InitHeadless();
 		void InitGraphical();
 		void EventsAndTimeStep();
@@ -126,6 +81,7 @@ namespace swgtk
 		[[nodiscard]] SDL_Window* Window();
 
 		std::pair<int, int> GetWindowSize();
+		void GetNewSceneNode(gsl::owner<GameScene::Node*> ptr);
 
 		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__
@@ -141,11 +97,12 @@ namespace swgtk
 
 		SDL_Window* _window = nullptr;
 		SDL_Renderer* _renderer = nullptr;
+		gsl::owner<GameScene::Node*> _nextSceneNode = nullptr;
 
 		nk_context _ctx{};
 		FontGroup _fonts;
 
-		std::unique_ptr<Scene> _currentScene;
+		std::unique_ptr<GameScene> _currentScene;
 		std::unique_ptr<UI> _ui;
 
 		SSC _currentSSC = SSC::ok;

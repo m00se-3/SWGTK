@@ -19,11 +19,4 @@
     "Lua.completion.showWord": "Enable",
     "Lua.completion.workspaceWord": true,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
-    "C_Cpp.codeAnalysis.runAutomatically": true,
-    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
-    "C_Cpp.codeAnalysis.exclude": {
-        "build/": true
-    },
-    "C_Cpp.codeAnalysis.clangTidy.codeAction.formatFixes": false
 }
