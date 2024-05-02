@@ -8,7 +8,6 @@
     "sdl2-ttf",
     "sdl2-mixer",
     "lua",
-    "sol2",
     "nuklear",
     "gsl-lite"
   ]

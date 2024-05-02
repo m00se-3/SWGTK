@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 3.25)
 
 project ("SWGTK")
 
+include("CPM.cmake")
+
 # Clang compiler warning flags go here.
 list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion" "-Wshadow" "-Wnon-virtual-dtor")
 set(CMAKE_CXX_CLANG_TIDY clang-tidy)
@@ -21,10 +23,10 @@ else()
 
 include(FindLua)
 find_package(Lua REQUIRED)
-find_package(sol2 CONFIG REQUIRED)
 
 endif()
 
+CPMAddPackage("gh:m00se-3/sol2#fix-clang_18")
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
