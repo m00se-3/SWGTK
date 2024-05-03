@@ -27,12 +27,12 @@ find_package(Lua REQUIRED)
 endif()
 
 CPMAddPackage("gh:m00se-3/sol2#fix-clang_18")
-find_package(SDL2 CONFIG REQUIRED)
-find_package(SDL2_image CONFIG REQUIRED)
-find_package(SDL2_ttf CONFIG REQUIRED)
-find_package(SDL2_mixer CONFIG REQUIRED)
-find_package(unofficial-nuklear CONFIG REQUIRED)
-find_package(gsl-lite CONFIG REQUIRED)
+CPMFindPackage(NAME "SDL2" DOWNLOAD_NAME "SDL" GIT_TAG "release-2.30.x" FIND_PACAKGE_ARGUMENTS "CONFIG REQUIRED")
+CPMFindPackage(NAME "SDL2_image" DOWNLOAD_NAME "SDL_image" GIT_TAG "release-2.8.x" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
+CPMFindPackage(NAME "SDL2_ttf" DOWNLOAD_NAME "SDL_ttf" GIT_TAG "release-2.22.x" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
+CPMFindPackage(NAME "SDL2_mixer"DOWNLOAD_NAME "SDL_mixer" GIT_TAG "release-2.8.x" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
+CPMFindPackage(NAME "unofficial-nuklear" DOWNLOAD_NAME "Nuklear" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
+CPMFindPackage(NAME "gsl-lite" VERSION "0.41.0" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")
