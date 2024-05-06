@@ -17,10 +17,7 @@
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "enableClangTidyCodeAnalysis": true,
-          "cacheRoot": "${sourceDir}/build/${presetName}",
-          "disableExternalAnalysis": true,
-          "cmakeGenerateCommand": "${sourceDir}/compile-commands.json"
+          "enableClangTidyCodeAnalysis": true
         }
       }
     },
