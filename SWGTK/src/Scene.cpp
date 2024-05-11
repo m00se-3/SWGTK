@@ -190,6 +190,12 @@ namespace swgtk
 					std::make_pair("RShift", LayoutCode::RShift), std::make_pair("RAlt", LayoutCode::RAlt),
 				}
 			);
+
+			_lua.new_enum<SSC>("SSC", {
+				std::make_pair("ok", SSC::ok),
+				std::make_pair("change_scene", SSC::change_scene),
+				std::make_pair("fail", SSC::fail)
+			});
 		}
 
 		auto point = _lua.new_usertype<SDL_FPoint>("Vec2f",

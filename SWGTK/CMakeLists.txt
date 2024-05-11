@@ -84,6 +84,8 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/include/Font.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Input.hpp
 	${CMAKE_CURRENT_LIST_DIR}/include/Component.hpp
+	${CMAKE_CURRENT_LIST_DIR}/include/RenderWrap.hpp
+
 
 	${CMAKE_CURRENT_LIST_DIR}/include/Scene.hpp
 
