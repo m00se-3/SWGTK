@@ -99,6 +99,7 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/src/Font.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/Input.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/Component.cpp
+	${CMAKE_CURRENT_LIST_DIR}/src/RenderWrap.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/nuklear.cpp
 
 	${CMAKE_CURRENT_LIST_DIR}/src/Scene.cpp

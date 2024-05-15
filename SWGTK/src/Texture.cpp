@@ -1,17 +1,18 @@
 #include "Texture.hpp"
 
 #include "SDL2/SDL_image.h"
+#include <gsl/gsl-lite.hpp>
 
 namespace swgtk
 {
 
-	Texture::Texture(SDL_Renderer* ren, const std::string& filepath)
+	Texture::Texture(gsl::not_null<SDL_Renderer*> ren, const std::string& filepath)
 		: _texture(IMG_LoadTexture(ren, filepath.c_str()))
 	{
 		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
-	Texture::Texture(SDL_Renderer* ren, SDL_Surface* surface)
+	Texture::Texture(gsl::not_null<SDL_Renderer*> ren, gsl::not_null<SDL_Surface*> surface)
 		: _texture(SDL_CreateTextureFromSurface(ren, surface))
 	{
 		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
@@ -28,7 +29,18 @@ namespace swgtk
 		{
 			SDL_DestroyTexture(_texture);
 		}
-		_texture = tex;
+		_texture = gsl::owner<SDL_Texture*>(tex);
+		return *this;
+	}
+
+	Texture& Texture::operator=(Texture&& other) noexcept
+	{
+		if(_texture != nullptr)
+		{
+			SDL_DestroyTexture(_texture);
+		}
+
+		_texture = other.Release();
 		return *this;
 	}
 
@@ -37,7 +49,7 @@ namespace swgtk
 		if(_texture != nullptr) { SDL_DestroyTexture(_texture); }
 	}
 
-	SDL_Texture* Texture::Get() const { return _texture; }
+	SDL_Texture* Texture::Get() const { return _texture; } // NOLINT
 
 	void Texture::SetBlend(const SDL_BlendMode& mode)
 	{
@@ -53,14 +65,14 @@ namespace swgtk
 	void Texture::Create(SDL_Renderer* ren, const std::string& filepath)
 	{
 		if (_texture != nullptr) { SDL_DestroyTexture(_texture); }
-		_texture = IMG_LoadTexture(ren, filepath.c_str());
+		_texture = gsl::owner<SDL_Texture*>(IMG_LoadTexture(ren, filepath.c_str()));
 		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
 	void Texture::Create(SDL_Renderer* ren, SDL_Surface* surface)
 	{
 		if (_texture != nullptr) { SDL_DestroyTexture(_texture); }
-		_texture = SDL_CreateTextureFromSurface(ren, surface);
+		_texture = gsl::owner<SDL_Texture*>(SDL_CreateTextureFromSurface(ren, surface));
 		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
@@ -79,7 +91,7 @@ namespace swgtk
 		return c;
 	}
 
-	SDL_Texture* Texture::Release()
+	gsl::owner<SDL_Texture*> Texture::Release()
 	{
 		SDL_Texture* temp = _texture;
 		_texture = nullptr;

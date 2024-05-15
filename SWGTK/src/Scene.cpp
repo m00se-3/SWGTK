@@ -196,6 +196,19 @@ namespace swgtk
 				std::make_pair("change_scene", SSC::change_scene),
 				std::make_pair("fail", SSC::fail)
 			});
+
+			_lua.new_enum<FontStyle>("FontStyle",
+				{
+					std::make_pair("Normal", FontStyle::Normal),
+					std::make_pair("Bold", FontStyle::Bold),
+					std::make_pair("Italic", FontStyle::Italic),
+					std::make_pair("Underlined", FontStyle::Underlined),
+					std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
+					std::make_pair("Bold_Underlinded", FontStyle::Bold_Underlinded),
+					std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
+					std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
+				}
+			);
 		}
 
 		auto point = _lua.new_usertype<SDL_FPoint>("Vec2f",
