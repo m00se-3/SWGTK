@@ -14,6 +14,9 @@
 
 namespace swgtk
 {
+/*
+ * TODO: Write a function that returns a rendered text texture instead of drawing the text and deleting the texture.
+*/
     class RenderWrapper
     {
     public:
