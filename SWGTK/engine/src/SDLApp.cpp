@@ -1,22 +1,17 @@
 #include "SDLApp.hpp"
 
 #include <chrono>
-#include <cstdint>
 #include <format>
 #include <gsl/gsl-lite.hpp>
 #include <memory>
 #include <cstdio>
 #include <span>
 #include <string>
-#include <utility>
 
 #include "SDL.h"
 #include "Input.hpp"
-#include "Font.hpp"
 #include "SDL2/SDL_image.h"
-#include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL_mixer.h"
-#include "UI.hpp"
 #include "Scene.hpp"
 
 namespace swgtk
@@ -55,7 +50,6 @@ namespace swgtk
 		{
 			_fonts.ClearTTFFonts();
 			
-			nk_free(&_ctx);
 			
 			SDL_DestroyRenderer(_renderer);
 			SDL_DestroyWindow(_window);
@@ -105,8 +99,6 @@ namespace swgtk
 			return;
 		}
 
-		_ui = std::make_unique<UI>(this, _assetsDir + "/fonts");
-		// _ui->LoadScriptsFromDirectory(_configDir + "/ui");
 	}
 
 	void SDLApp::EventsAndTimeStep()
@@ -117,8 +109,6 @@ namespace swgtk
 			_currentSSC = _currentScene->Create();
 			return;
 		}
-
-		nk_input_begin(&_ctx);
 		
 		SDL_Event e;
 
@@ -137,17 +127,17 @@ namespace swgtk
 			{
 				_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_MOUSEBUTTONDOWN) ? MButtonState::Pressed : MButtonState::Released);
 
-				auto button = SDLButtontoNKButton(e.button.button);
+			//	auto button = SDLButtontoNKButton(e.button.button);
 
-				if (e.type == SDL_MOUSEMOTION)
-				{
-					nk_input_motion(&_ctx, e.motion.x, e.motion.y);
-				}
+			//	if (e.type == SDL_MOUSEMOTION)
+			//	{
+			//		nk_input_motion(&_ctx, e.motion.x, e.motion.y);
+			//	}
 
-				if (button > -1)
-				{
-					nk_input_button(&_ctx, static_cast<nk_buttons>(button), e.button.x, e.button.y, static_cast<nk_bool>(e.type == SDL_MOUSEBUTTONDOWN));
-				}
+			//	if (button > -1)
+			//	{
+			//		nk_input_button(&_ctx, static_cast<nk_buttons>(button), e.button.x, e.button.y, static_cast<nk_bool>(e.type == SDL_MOUSEBUTTONDOWN));
+			//	}
 				break;
 			}
 
@@ -156,12 +146,12 @@ namespace swgtk
 			{
 				_currentScene->SetKeyEvent(LayoutCode{ e.key.keysym.scancode }, (e.type == SDL_KEYDOWN));
 				
-				auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
+			//	auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
 
-				if (key != NK_KEY_NONE)
-				{
-					nk_input_key(&_ctx, key, static_cast<nk_bool>(e.type == SDL_KEYDOWN));
-				}
+			//	if (key != NK_KEY_NONE)
+			//	{
+			//		nk_input_key(&_ctx, key, static_cast<nk_bool>(e.type == SDL_KEYDOWN));
+			//	}
 				break;
 			}
 
@@ -169,7 +159,7 @@ namespace swgtk
 			{
 				_currentScene->AddScroll(e.wheel.preciseY);
 				
-				nk_input_scroll(&_ctx, nk_vec2(e.wheel.preciseX, e.wheel.preciseY));
+			//	nk_input_scroll(&_ctx, nk_vec2(e.wheel.preciseX, e.wheel.preciseY));
 				break;
 			}
 
@@ -181,7 +171,6 @@ namespace swgtk
 			}
 		}
 
-		nk_input_end(&_ctx);
 
 		_currentScene->SetKeyboardState();
 		_currentScene->SetModState(SDL_GetModState());
@@ -202,8 +191,6 @@ namespace swgtk
 
 		_currentScene->Update(static_cast<float>(timeDiff * 0.000001)); //NOLINT
 
-		_ui->Update();
-		_ui->Draw();
 
 		SDL_RenderPresent(_renderer);
 
@@ -261,12 +248,12 @@ namespace swgtk
 
 	void SDLApp::OpenMenu(const std::string& name)
 	{
-		_ui->Open(name);
+		//_ui->Open(name);
 	}
 
 	void SDLApp::CloseMenu(const std::string& name)
 	{
-		_ui->Close(name);
+		//_ui->Close(name);
 	}
 
 	std::string SDLApp::AssetsDir() const
@@ -294,103 +281,77 @@ namespace swgtk
 	}
 #endif
 
-	nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods) // NOLINT - nothing we can do about this right now.
-	{
-		switch (key)
-		{
-		case SDLK_LSHIFT:
-		case SDLK_RSHIFT:
-		{
-			return NK_KEY_SHIFT;
-		}
+	//nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods) // NOLINT - nothing we can do about this right now.
+	//{
+	//	switch (key)
+	//	{
+	//	case SDLK_LSHIFT:
+	//	case SDLK_RSHIFT:
+	//	{
+	//		return NK_KEY_SHIFT;
+	//	}
 
-		case SDLK_LCTRL:
-		case SDLK_RCTRL:
-		{
-			return NK_KEY_CTRL;
-		}
+	//	case SDLK_LCTRL:
+	//	case SDLK_RCTRL:
+	//	{
+	//		return NK_KEY_CTRL;
+	//	}
 
-		case SDLK_RETURN:
-		{
-			return NK_KEY_ENTER;
-		}
+	//	case SDLK_RETURN:
+	//	{
+	//		return NK_KEY_ENTER;
+	//	}
 
-		case SDLK_BACKSPACE:
-		{
-			return NK_KEY_BACKSPACE;
-		}
+	//	case SDLK_BACKSPACE:
+	//	{
+	//		return NK_KEY_BACKSPACE;
+	//	}
 
-		case SDLK_TAB:
-		{
-			return NK_KEY_TAB;
-		}
+	//	case SDLK_TAB:
+	//	{
+	//		return NK_KEY_TAB;
+	//	}
 
-		case SDLK_DELETE:
-		{
-			return NK_KEY_DEL;
-		}
+	//	case SDLK_DELETE:
+	//	{
+	//		return NK_KEY_DEL;
+	//	}
 
-		case SDLK_RIGHT:
-		{
-			return NK_KEY_RIGHT;
-		}
+	//	case SDLK_RIGHT:
+	//	{
+	//		return NK_KEY_RIGHT;
+	//	}
 
-		case SDLK_LEFT:
-		{
-			return NK_KEY_LEFT;
-		}
+	//	case SDLK_LEFT:
+	//	{
+	//		return NK_KEY_LEFT;
+	//	}
 
-		case SDLK_DOWN:
-		{
-			return NK_KEY_DOWN;
-		}
+	//	case SDLK_DOWN:
+	//	{
+	//		return NK_KEY_DOWN;
+	//	}
 
-		case SDLK_UP:
-		{
-			return NK_KEY_UP;
-		}
+	//	case SDLK_UP:
+	//	{
+	//		return NK_KEY_UP;
+	//	}
 		
-		default: 
-		{
-			return NK_KEY_NONE; // Not an NK key
-		}
-		}
-	}
-
-	int SDLApp::SDLButtontoNKButton(uint8_t button)
-	{
-		switch (button)
-		{
-		case SDL_BUTTON_LEFT:			return NK_BUTTON_LEFT;
-		case SDL_BUTTON_RIGHT:			return NK_BUTTON_RIGHT;
-		case SDL_BUTTON_MIDDLE:			return NK_BUTTON_MIDDLE;
-		default:						return -1;
-		}
-	}
+	//	default: 
+	//	{
+	//		return NK_KEY_NONE; // Not an NK key
+	//	}
+	//	}
+	//}
 
 	SSC SDLApp::GetSceneStatus() const
 	{
 		return _currentSSC;
 	}
 
-	FontGroup& SDLApp::GetFontGroup()
-	{
-		return _fonts;
-	}
-
-	nk_font* SDLApp::GetNKFont(FontStyle style, int size)
-	{
-		return _fonts.GetNK(style, size);
-	}
-
-	TTF_Font* SDLApp::GetTTF(FontStyle style, int size)
+	TTF_Font* SDLApp::GetTTF(sdl::FontStyle style, int size)
 	{
 		return _fonts.GetTTF(style, size);
-	}
-
-	nk_context* SDLApp::GetNKContext()
-	{
-		return &_ctx;
 	}
 
 	SDL_Renderer* SDLApp::Renderer()

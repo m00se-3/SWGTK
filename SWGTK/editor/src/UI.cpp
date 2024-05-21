@@ -32,7 +32,7 @@ namespace swgtk
 	UI::UI(SDLApp* app, const std::string& fontsDir)
 		: _parent(app), _ctx(app->GetNKContext())
 	{
-		auto& fontGroup = _parent->GetFontGroup();
+		auto& fontGroup = _parent->GetEditorFonts();
 
 		// Assign the white texture to _nullTexture.
 
@@ -48,11 +48,11 @@ namespace swgtk
 
 		fontGroup.Create();
 
-		fontGroup.AddFont(FontStyle::Normal, normalFontSize , fontsDir + "/roboto/Roboto-Medium.ttf");
-		fontGroup.AddFont(FontStyle::Bold, normalFontSize , fontsDir + "/roboto/Roboto-Bold.ttf");
-		fontGroup.AddFont(FontStyle::Bold_Italic, normalFontSize , fontsDir + "/roboto/Roboto-BoldItalic.ttf");
-		fontGroup.AddFont(FontStyle::Italic, normalFontSize , fontsDir + "/roboto/Roboto-Italic.ttf");
-		fontGroup.AddFont(FontStyle::Bold, largeFontSize, fontsDir + "/roboto/Roboto-Bold.ttf");
+		fontGroup.AddFont(nk::FontStyle::Normal, normalFontSize , fontsDir + "/roboto/Roboto-Medium.ttf");
+		fontGroup.AddFont(nk::FontStyle::Bold, normalFontSize , fontsDir + "/roboto/Roboto-Bold.ttf");
+		fontGroup.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , fontsDir + "/roboto/Roboto-BoldItalic.ttf");
+		fontGroup.AddFont(nk::FontStyle::Italic, normalFontSize , fontsDir + "/roboto/Roboto-Italic.ttf");
+		fontGroup.AddFont(nk::FontStyle::Bold, largeFontSize, fontsDir + "/roboto/Roboto-Bold.ttf");
 
 
 		// Bake the fonts.
@@ -68,7 +68,7 @@ namespace swgtk
 		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
 
-		if (nk_init_default(_ctx, &fontGroup.GetNK(FontStyle::Normal, normalFontSize)->handle) == nk_bool{1}) { return; }
+		if (nk_init_default(_ctx, &fontGroup.GetNK(nk::FontStyle::Normal, normalFontSize)->handle) == nk_bool{1}) { return; }
 
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;
@@ -263,16 +263,16 @@ namespace swgtk
 			scroll["y"] = &nk_scroll::y;
 
 
-			_lua.new_enum<FontStyle>("FontStyle",
+			_lua.new_enum<nk::FontStyle>("FontStyle",
 				{
-					std::make_pair("Normal", FontStyle::Normal),
-					std::make_pair("Bold", FontStyle::Bold),
-					std::make_pair("Italic", FontStyle::Italic),
-					std::make_pair("Underlined", FontStyle::Underlined),
-					std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
-					std::make_pair("Bold_Underlinded", FontStyle::Bold_Underlinded),
-					std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
-					std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
+					std::make_pair("Normal", nk::FontStyle::Normal),
+					std::make_pair("Bold", nk::FontStyle::Bold),
+					std::make_pair("Italic", nk::FontStyle::Italic),
+					std::make_pair("Underlined", nk::FontStyle::Underlined),
+					std::make_pair("Bold_Italic", nk::FontStyle::Bold_Italic),
+					std::make_pair("Bold_Underlinded", nk::FontStyle::Bold_Underlinded),
+					std::make_pair("Bold_Italic_Underlined", nk::FontStyle::Bold_Italic_Underlined),
+					std::make_pair("Italic_Underlined", nk::FontStyle::Italic_Underlined)
 				}
 			);
 
@@ -735,7 +735,7 @@ namespace swgtk
 
 		// Styles
 
-		context["StylePushFont"] = [this](sol::optional<FontStyle> style, sol::optional<int> size) -> bool {
+		context["StylePushFont"] = [this](sol::optional<nk::FontStyle> style, sol::optional<int> size) -> bool {
 			if (style)
 			{
 				return static_cast<bool>(nk_style_push_font(_ctx, &_parent->GetNKFont(*style, *size)->handle));

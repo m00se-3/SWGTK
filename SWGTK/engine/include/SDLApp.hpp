@@ -12,21 +12,8 @@
 #include "emscripten.h"
 #endif
 
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_STANDARD_IO
-
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_UINT_DRAW_INDEX
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_FIXED_TYPES
-
-#undef NK_IMPLEMENTATION
-#include "nuklear/nuklear.h"
-#include "SDL2/SDL.h"
-
+#include "TTFFont.hpp"
 #include "Scene.hpp"
-#include "UI.hpp"
-#include "Font.hpp"
 
 extern "C" {
 	struct SDL_Window;
@@ -65,18 +52,14 @@ namespace swgtk
 		void OpenMenu(const std::string& name);
 		void CloseMenu(const std::string& name);
 
-		static nk_keys SDLKeytoNKKey(int key, uint16_t mods);
-		static int SDLButtontoNKButton(uint8_t button);
+		// static nk_keys SDLKeytoNKKey(int key, uint16_t mods);
+		//static int SDLButtontoNKButton(uint8_t button);
 
 		[[nodiscard]] std::string AssetsDir() const;
 		[[nodiscard]] std::string ConfigDir() const;
 		[[nodiscard]] SSC GetSceneStatus() const;
 
-		[[nodiscard]] FontGroup& GetFontGroup();
-		[[nodiscard]] nk_font* GetNKFont(FontStyle style, int size);
-		[[nodiscard]] TTF_Font* GetTTF(FontStyle style, int size);
-
-		[[nodiscard]] nk_context* GetNKContext();
+		[[nodiscard]] TTF_Font* GetTTF(sdl::FontStyle style, int size);
 		[[nodiscard]] SDL_Renderer* Renderer();
 		[[nodiscard]] SDL_Window* Window();
 
@@ -99,11 +82,8 @@ namespace swgtk
 		SDL_Renderer* _renderer = nullptr;
 		gsl::owner<GameScene::Node*> _nextSceneNode = nullptr;
 
-		nk_context _ctx{};
-		FontGroup _fonts;
-
 		std::unique_ptr<GameScene> _currentScene;
-		std::unique_ptr<UI> _ui;
+		sdl::FontGroup _fonts;
 
 		SSC _currentSSC = SSC::ok;
 

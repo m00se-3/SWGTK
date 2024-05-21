@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <unordered_map> 
 
+#define NK_INCLUDE_DEFAULT_FONT
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_STANDARD_IO
 
@@ -15,18 +16,19 @@
 // We have to explicitly undefine NK_IMPLEMENTATION here to avoid linking errors.
 #undef NK_IMPLEMENTATION
 #include "nuklear/nuklear.h"
-#include "SDL2/SDL_ttf.h"
 
-namespace swgtk
+#include "SDL_render.h"
+
+namespace swgtk::nk
 {
     enum class FontStyle : int32_t
     {
         None = 32,
-        Normal = TTF_STYLE_NORMAL,
-        Bold = TTF_STYLE_BOLD,
-        Italic = TTF_STYLE_ITALIC,
-        Underlined = TTF_STYLE_UNDERLINE,
-        Strikethrough = TTF_STYLE_STRIKETHROUGH,
+        Normal = 1,
+        Bold = 2,
+        Italic = 4,
+        Underlined = 8,
+        Strikethrough = 16,
         Bold_Italic = Bold | Italic,
         Bold_Strike = Bold | Strikethrough,
         Bold_Underlinded = Bold | Underlined,
@@ -50,12 +52,9 @@ namespace swgtk
         void Create();
         void Finalize(SDL_Texture* texture);
         void AddFont(FontStyle styleMask, int size, const std::filesystem::path& filename);
-        void ClearTTFFonts();
 
         [[nodiscard]] nk_font* GetNK(FontStyle mask, int size);
         [[nodiscard]] const nk_font* GetNK(FontStyle mask, int size) const;
-        [[nodiscard]] TTF_Font* GetTTF(FontStyle mask, int size);
-        [[nodiscard]] const TTF_Font* GetTTF(FontStyle mask, int size) const;
         [[nodiscard]] nk_font_atlas* GetAtlas();
         [[nodiscard]] const nk_font_atlas* GetAtlas() const;
 
@@ -68,7 +67,6 @@ namespace swgtk
 
         struct nk_font_atlas _atlas{};
         std::unordered_map<int64_t, struct nk_font*> _nkFonts;
-        std::unordered_map<int64_t, TTF_Font*> _ttfFonts;
     };
 }
 

@@ -1,6 +1,6 @@
-#include "Font.hpp"
+#include "NKFont.hpp"
 
-namespace swgtk
+namespace swgtk::nk
 {
     FontGroup::FontGroup()
     {
@@ -32,27 +32,15 @@ namespace swgtk
             auto str = filename.string();
             
             struct nk_font* temp = nk_font_atlas_add_from_file(&_atlas, str.c_str(), static_cast<float>(size), nullptr);
-            TTF_Font* ttf = TTF_OpenFont(str.c_str(), size);
 
             if (temp != nullptr) 
             {
                 _nkFonts.insert_or_assign(hash, temp);
             }
 
-            if (ttf != nullptr) 
-            {
-                _ttfFonts.insert_or_assign(hash, ttf);
-            }
         }
     }
 
-    void FontGroup::ClearTTFFonts()
-    {
-        for (auto& font : _ttfFonts)
-        {
-            TTF_CloseFont(font.second);
-        }
-    }
 
     nk_font* FontGroup::GetNK(FontStyle mask, int size)
     {
@@ -73,30 +61,6 @@ namespace swgtk
         if (_nkFonts.contains(key))
         {
             return _nkFonts.at(key);
-        }
-
-        return nullptr;
-    }
-
-    TTF_Font* FontGroup::GetTTF(FontStyle mask, int size)
-    {
-        const auto key = Hash(mask, size);
-        
-        if (_ttfFonts.contains(key))
-        {
-            return _ttfFonts.at(key);
-        }
-
-        return nullptr;
-    }
-
-    const TTF_Font* FontGroup::GetTTF(FontStyle mask, int size) const
-    {
-        const auto key = Hash(mask, size);
-        
-        if (_ttfFonts.contains(key))
-        {
-            return _ttfFonts.at(key);
         }
 
         return nullptr;

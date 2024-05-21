@@ -1,0 +1,5 @@
+#ifndef SWGTK_FONT_STYLE_HPP
+#define SWGTK_FONT_STYLE_HPP
+
+
+#endif // !SWGTK_FONT_STYLE_HPP

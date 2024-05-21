@@ -22,7 +22,7 @@
 
 #include "Texture.hpp"
 #include "ErrCodes.hpp"
-#include "Font.hpp"
+#include "NKFont.hpp"
 
 namespace swgtk
 {
