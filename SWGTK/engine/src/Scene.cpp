@@ -3,7 +3,7 @@
 #include <filesystem>
 
 #include "SDLApp.hpp"
-#include <gsl/gsl-lite.hpp>
+#include "gsl-lite/gsl-lite.hpp"
 #include <utility>
 
 namespace swgtk
@@ -24,7 +24,7 @@ namespace swgtk
 		_pimpl.reset(scene);
 	}
 
-	void GameScene::GenerateNewscene(gsl::owner<Node*> ptr)
+	void GameScene::GenerateNewScene(gsl::owner<Node*> ptr)
 	{
 		_parent->GetNewSceneNode(ptr);
 	}
@@ -197,16 +197,16 @@ namespace swgtk
 				std::make_pair("fail", SSC::fail)
 			});
 
-			_lua.new_enum<FontStyle>("FontStyle",
+			_lua.new_enum<sdl::FontStyle>("FontStyle",
 				{
-					std::make_pair("Normal", FontStyle::Normal),
-					std::make_pair("Bold", FontStyle::Bold),
-					std::make_pair("Italic", FontStyle::Italic),
-					std::make_pair("Underlined", FontStyle::Underlined),
-					std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
-					std::make_pair("Bold_Underlinded", FontStyle::Bold_Underlinded),
-					std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
-					std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
+					std::make_pair("Normal", sdl::FontStyle::Normal),
+					std::make_pair("Bold", sdl::FontStyle::Bold),
+					std::make_pair("Italic", sdl::FontStyle::Italic),
+					std::make_pair("Underlined", sdl::FontStyle::Underlined),
+					std::make_pair("Bold_Italic", sdl::FontStyle::Bold_Italic),
+					std::make_pair("Bold_Underlinded", sdl::FontStyle::Bold_Underlinded),
+					std::make_pair("Bold_Italic_Underlined", sdl::FontStyle::Bold_Italic_Underlined),
+					std::make_pair("Italic_Underlined", sdl::FontStyle::Italic_Underlined)
 				}
 			);
 		}

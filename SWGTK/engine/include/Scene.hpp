@@ -47,7 +47,13 @@ namespace swgtk
 	class GameScene
 	{
 	public:
-		struct Node;
+
+		struct Node
+		{
+			std::function<SSC(GameScene&, float)> _updateFunc;
+			std::function<SSC(GameScene&)> _createFunc;
+			std::optional<std::function<void(GameScene&)>> _destroyFunc;
+		};
 	
 		GameScene(gsl::not_null<SDLApp*> parent, gsl::owner<Node*> node);
 
@@ -56,7 +62,7 @@ namespace swgtk
 		void Destroy();
 		void InitLua();
 		void SetNewScene(gsl::owner<Node*> scene);
-		void GenerateNewscene(gsl::owner<Node*> ptr);
+		void GenerateNewScene(gsl::owner<Node*> ptr);
 
 		[[nodiscard]] constexpr SDLApp* AppRoot() { return _parent; }
 
@@ -106,13 +112,6 @@ namespace swgtk
 		}
 		
 		void ResetMouseEvents();
-
-		struct Node
-		{
-			std::function<SSC(GameScene&, float)> _updateFunc;
-			std::function<SSC(GameScene&)> _createFunc;
-			std::optional<std::function<void(GameScene&)>> _destroyFunc;
-		};
 
 	private:
 		SDLApp* _parent = nullptr;

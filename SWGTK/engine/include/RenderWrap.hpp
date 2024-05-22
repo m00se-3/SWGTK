@@ -1,7 +1,7 @@
 #ifndef SWGTK_RENDER_WRAP_HPP
 #define SWGTK_RENDER_WRAP_HPP
 
-#include "Font.hpp"
+#include "TTFFont.hpp"
 #include "Texture.hpp"
 #include "SDL2/SDL.h"
 
