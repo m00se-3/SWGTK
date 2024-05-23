@@ -30,10 +30,8 @@ namespace swgtk
 	}
 
 	UI::UI(SDLApp* app, const std::string& fontsDir)
-		: _parent(app), _ctx(app->GetNKContext())
+		: _parent(app)
 	{
-		auto& fontGroup = _parent->GetEditorFonts();
-
 		// Assign the white texture to _nullTexture.
 
 		constexpr const uint32_t value = 0xFFFFFFFF;
@@ -46,29 +44,29 @@ namespace swgtk
 		
 		// Add Fonts to the FontGroup.
 
-		fontGroup.Create();
+		_fonts.Create();
 
-		fontGroup.AddFont(nk::FontStyle::Normal, normalFontSize , fontsDir + "/roboto/Roboto-Medium.ttf");
-		fontGroup.AddFont(nk::FontStyle::Bold, normalFontSize , fontsDir + "/roboto/Roboto-Bold.ttf");
-		fontGroup.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , fontsDir + "/roboto/Roboto-BoldItalic.ttf");
-		fontGroup.AddFont(nk::FontStyle::Italic, normalFontSize , fontsDir + "/roboto/Roboto-Italic.ttf");
-		fontGroup.AddFont(nk::FontStyle::Bold, largeFontSize, fontsDir + "/roboto/Roboto-Bold.ttf");
+		_fonts.AddFont(nk::FontStyle::Normal, normalFontSize , fontsDir + "/roboto/Roboto-Medium.ttf");
+		_fonts.AddFont(nk::FontStyle::Bold, normalFontSize , fontsDir + "/roboto/Roboto-Bold.ttf");
+		_fonts.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , fontsDir + "/roboto/Roboto-BoldItalic.ttf");
+		_fonts.AddFont(nk::FontStyle::Italic, normalFontSize , fontsDir + "/roboto/Roboto-Italic.ttf");
+		_fonts.AddFont(nk::FontStyle::Bold, largeFontSize, fontsDir + "/roboto/Roboto-Bold.ttf");
 
 
 		// Bake the fonts.
 
 		int imgWidth = 0, imgHeight = 0;
-		const void* img = nk_font_atlas_bake(fontGroup.GetAtlas(), &imgWidth, &imgHeight, NK_FONT_ATLAS_RGBA32);
+		const void* img = nk_font_atlas_bake(_fonts.GetAtlas(), &imgWidth, &imgHeight, NK_FONT_ATLAS_RGBA32);
 
 		_fontTexture = SDL_CreateTexture(_parent->Renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, imgWidth, imgHeight);
 		SDL_UpdateTexture(_fontTexture, nullptr, img, imgWidth * 4);
 
-		fontGroup.Finalize(_fontTexture);
+		_fonts.Finalize(_fontTexture);
 
 		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
 
-		if (nk_init_default(_ctx, &fontGroup.GetNK(nk::FontStyle::Normal, normalFontSize)->handle) == nk_bool{1}) { return; }
+		if (nk_init_default(&_ctx, &_fonts.GetNK(nk::FontStyle::Normal, normalFontSize)->handle) == nk_bool{1}) { return; }
 
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;
@@ -120,7 +118,7 @@ namespace swgtk
 		nk_buffer_init_fixed(&_verts, _buffer.data(), MaxVertexBuffer);
 		nk_buffer_init_fixed(&_inds, _elements.data(), MaxVertexBuffer);
 
-		nk_convert(_ctx, &_cmds, &_verts, &_inds, &_configurator);
+		nk_convert(&_ctx, &_cmds, &_verts, &_inds, &_configurator);
 		
 		const nk_draw_command* cmd = nullptr;
 		uint32_t offset = 0u;
@@ -128,7 +126,7 @@ namespace swgtk
 		const auto* vertices = static_cast<const SDL_Vertex*>(nk_buffer_memory_const(&_verts));
 		const std::span<const int> elements{static_cast<const int*>(nk_buffer_memory_const(&_inds)), MaxVertexBuffer};
 
-		nk_draw_foreach(cmd, _ctx, &_cmds)
+		nk_draw_foreach(cmd, &_ctx, &_cmds)
 		{
 			if (cmd->elem_count > 0u) { continue; }
 
@@ -137,7 +135,7 @@ namespace swgtk
 			offset += cmd->elem_count;
 		}
 
-		nk_buffer_clear(&_cmds); nk_clear(_ctx);
+		nk_buffer_clear(&_cmds); nk_clear(&_ctx);
 		nk_buffer_free(&_verts);
 		nk_buffer_free(&_inds);
 	}
@@ -738,7 +736,7 @@ namespace swgtk
 		context["StylePushFont"] = [this](sol::optional<nk::FontStyle> style, sol::optional<int> size) -> bool {
 			if (style)
 			{
-				return static_cast<bool>(nk_style_push_font(_ctx, &_parent->GetNKFont(*style, *size)->handle));
+				return static_cast<bool>(nk_style_push_font(&_ctx, &_fonts.GetNK(*style, *size)->handle));
 			}
 
 			return false;

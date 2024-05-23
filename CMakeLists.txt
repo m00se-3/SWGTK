@@ -33,6 +33,7 @@ CPMFindPackage(NAME "SDL2_ttf" DOWNLOAD_NAME "SDL_ttf" GIT_TAG "release-2.22.x" 
 CPMFindPackage(NAME "SDL2_mixer" DOWNLOAD_NAME "SDL_mixer" GIT_TAG "release-2.8.x" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
 CPMFindPackage(NAME "unofficial-nuklear" DOWNLOAD_NAME "Nuklear" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
 CPMFindPackage(NAME "gsl-lite" VERSION "0.41.0" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
+CPMFindPackage(NAME "fmt" FIND_PACKAGE_ARGUMENTS "CONFIG REQUIRED")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")

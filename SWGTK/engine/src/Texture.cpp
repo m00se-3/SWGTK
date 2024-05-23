@@ -1,28 +1,8 @@
 #include "Texture.hpp"
-
-#include "SDL2/SDL_image.h"
 #include <gsl/gsl-lite.hpp>
 
 namespace swgtk
 {
-
-	Texture::Texture(gsl::not_null<SDL_Renderer*> ren, const std::string& filepath)
-		: _texture(IMG_LoadTexture(ren, filepath.c_str()))
-	{
-		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
-	}
-
-	Texture::Texture(gsl::not_null<SDL_Renderer*> ren, gsl::not_null<SDL_Surface*> surface)
-		: _texture(SDL_CreateTextureFromSurface(ren, surface))
-	{
-		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
-	}
-
-	Texture::Texture(Texture&& tex) noexcept
-		: _texture(tex.Release())
-	{
-	}
-
 	Texture& Texture::operator=(SDL_Texture* tex)
 	{
 		if (_texture != nullptr) 
@@ -60,20 +40,6 @@ namespace swgtk
 	{
 		SDL_SetTextureColorMod(_texture, r, g, b);
 		SDL_SetTextureAlphaMod(_texture, a);
-	}
-
-	void Texture::Create(SDL_Renderer* ren, const std::string& filepath)
-	{
-		if (_texture != nullptr) { SDL_DestroyTexture(_texture); }
-		_texture = gsl::owner<SDL_Texture*>(IMG_LoadTexture(ren, filepath.c_str()));
-		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
-	}
-
-	void Texture::Create(SDL_Renderer* ren, SDL_Surface* surface)
-	{
-		if (_texture != nullptr) { SDL_DestroyTexture(_texture); }
-		_texture = gsl::owner<SDL_Texture*>(SDL_CreateTextureFromSurface(ren, surface));
-		SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 	}
 
 	SDL_BlendMode Texture::GetBlend() const

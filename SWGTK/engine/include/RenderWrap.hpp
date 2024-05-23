@@ -3,10 +3,9 @@
 
 #include "TTFFont.hpp"
 #include "Texture.hpp"
-#include "SDL2/SDL.h"
 
-#include <SDL_pixels.h>
-#include <SDL_rect.h>
+#include "SDL2/SDL_image.h"
+#include "SDL2/SDL.h"
 #include <SDL_render.h>
 #include <gsl/gsl-lite.hpp>
 #include <unordered_map>
@@ -22,13 +21,15 @@ namespace swgtk
     public:
 	RenderWrapper(SDL_Renderer* ren) : _render(ren) {}
 
-        void CreateTexture(const std::string& name, const std::string& file) { _textures.insert_or_assign(name, Texture{ gsl::make_not_null(_render), file }); }
+        void CreateTexture(const std::string& name, const std::string& file) { _textures.insert_or_assign(name, IMG_LoadTexture(_render, file.c_str())); }
         void SetDrawColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255u) { SDL_SetRenderDrawColor(_render, r, g, b, a); } // NOLINT
 
 	void DrawTexture(gsl::not_null<SDL_Texture*> texture, SDL_Rect src, SDL_FRect dest);
 	void DrawTextureEx(gsl::not_null<SDL_Texture*> texture, SDL_Rect src, SDL_FRect dest, double angle = 0.0, SDL_FPoint center = SDL_FPoint{0.f, 0.f});
 
 	void DrawText(const std::string& text, SDL_Rect spot, gsl::not_null<TTF_Font*> font);
+
+	[[nodiscard]] gsl::owner<SDL_Texture*> RenderTextChunk(const std::string& text, gsl::not_null<TTF_Font*> font);
 
         [[nodiscard]] bool TextureExists(const std::string& name) const { return _textures.contains(name); }
 	[[nodiscard]] SDL_Texture* GetTexture(const std::string& name) const 

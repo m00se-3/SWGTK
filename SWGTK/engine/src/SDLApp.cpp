@@ -13,6 +13,7 @@
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
 #include "Scene.hpp"
+#include "fmt/format.h"
 
 namespace swgtk
 {
@@ -82,20 +83,20 @@ namespace swgtk
 			}
 			else
 			{
-			int _ = std::fputs(std::format("Failed to create window. - {}\n", SDL_GetError()).c_str(), stdout);
+				fmt::print("Failed to create window. - {}\n", SDL_GetError());
 				return;
 			}
 			
 			if (_renderer == nullptr)
 			{
-				int _ = std::fputs(std::format("Failed to initialize renderer. - {}\n", SDL_GetError()).c_str(), stdout);
+				fmt::print("Failed to initialize renderer. - {}\n", SDL_GetError());
 				return;
 			}
 
 		}
 		else
 		{
-			int _ = std::fputs(std::format("An SDL Library failed to initialize. - {}\n", SDL_GetError()).c_str(), stdout);
+			fmt::print("An SDL Library failed to initialize. - {}\n", SDL_GetError());
 			return;
 		}
 
@@ -189,7 +190,7 @@ namespace swgtk
 
 		SDL_RenderClear(_renderer);
 
-		_currentScene->Update(static_cast<float>(timeDiff * 0.000001)); //NOLINT
+		_currentSSC = _currentScene->Update(static_cast<float>(timeDiff * 0.000001)); // NOLINT
 
 
 		SDL_RenderPresent(_renderer);

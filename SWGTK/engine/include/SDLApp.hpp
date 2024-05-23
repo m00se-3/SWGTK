@@ -2,11 +2,9 @@
 #define SDLAPP_HPP
 
 #include <chrono>
-#include <concepts>
 #include <gsl/gsl-lite.hpp>
 #include <memory>
 #include <string>
-#include <span>
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"

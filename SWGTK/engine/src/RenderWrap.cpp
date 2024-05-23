@@ -21,9 +21,20 @@ namespace swgtk
 		auto* surface = TTF_RenderUTF8_Solid(font, text.c_str(), GetDrawColor());
 		
 		// This texture will get cleaned up at end of function.
-		Texture textTexture{gsl::make_not_null(_render), gsl::make_not_null(surface)};
+		Texture textTexture{SDL_CreateTextureFromSurface(_render, surface)};
 		SDL_FreeSurface(surface);
 
 		SDL_RenderCopy(_render, textTexture.Get(), nullptr, &spot);
 	}						
+	
+	gsl::owner<SDL_Texture*> RenderWrapper::RenderTextChunk(const std::string& text, gsl::not_null<TTF_Font*> font)
+	{
+		auto* surface = TTF_RenderUTF8_Solid(font, text.c_str(), GetDrawColor());
+
+		auto* textTexture = SDL_CreateTextureFromSurface(_render, surface);
+		SDL_FreeSurface(surface);
+
+		return textTexture;
+	}
+
 }

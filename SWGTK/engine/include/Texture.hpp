@@ -2,27 +2,26 @@
 #define SWGTK_TEXTURE_HPP
 
 #include <gsl/gsl-lite.hpp>
-#include <string>
-
 #include "SDL2/SDL_render.h"
-
-#include "gsl-lite.hpp"
 
 namespace swgtk
 {
 	/*
-		A simple wrapper class for SDL_Texture.
+		A simple RAII container class for SDL_Texture. This will delete the underlying SDL_Texure upon calling
+		the destructor.
+
+		The texture class is not responsible for creating any textures, however it can be used to modify existing
+		ones.
 
 		The class is able to reassign itself and release ownership of the pointer to another object.
-		The copy constructor and copy assignment operators have been deleted to avoid needed to use reference
-		counting for the underlying texture.
+		The copy constructor and copy assignment operators have been deleted to avoid the need for reference
+		counting.
 	*/
 	class Texture {
 	public:
 		Texture() = default;
-		Texture(gsl::not_null<SDL_Renderer*> ren, const std::string& filepath);
-		Texture(gsl::not_null<SDL_Renderer*> ren, gsl::not_null<SDL_Surface*> surface);
-		Texture(Texture&& tex) noexcept;
+		explicit Texture(gsl::owner<SDL_Texture*> ptr) : _texture(ptr) {}
+		Texture(Texture&& tex) noexcept : _texture(tex.Release()) {}
 		~Texture();
 
 		// This will clean up the previous SDL_Texture, if it holds one, before taking ownership of the new SDL_Texture.
@@ -35,9 +34,6 @@ namespace swgtk
 
 		void SetBlend(const SDL_BlendMode& mode);
 		void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-
-		void Create(SDL_Renderer* ren, const std::string& filepath);
-		void Create(SDL_Renderer* ren, SDL_Surface* surface);
 
 		[[nodiscard]] SDL_BlendMode GetBlend() const;
 		[[nodiscard]] SDL_Color GetColor() const;

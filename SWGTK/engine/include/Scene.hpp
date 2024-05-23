@@ -3,7 +3,6 @@
 
 #include <functional>
 #include <memory>
-#include <concepts>
 #include <span>
 
 #include "sol/sol.hpp"

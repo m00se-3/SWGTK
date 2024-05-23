@@ -50,7 +50,7 @@ target_link_libraries(
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
 	${LUA_LIBRARIES}
-
+	fmt::fmt
 )
 
 target_include_directories(
@@ -144,7 +144,7 @@ target_link_libraries(
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
 	${LUA_LIBRARIES}
 	sol2
-	nuklear
+	fmt::fmt	
 )
 endif(EMSCRIPTEN)
 
