@@ -30,7 +30,8 @@ namespace swgtk
 	}
 
 	UI::UI(SDLApp* app, const std::string& fontsDir)
-		: _parent(app)
+		: _ctx(), _configurator(), _parent(app),
+			_cmds(), _verts(), _inds(), _nullTexture()
 	{
 		// Assign the white texture to _nullTexture.
 
