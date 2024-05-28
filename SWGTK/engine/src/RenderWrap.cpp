@@ -3,6 +3,7 @@
 #include <SDL_surface.h>
 #include <SDL_ttf.h>
 #include <gsl/gsl-lite.hpp>
+#include "Texture.hpp"
 
 namespace swgtk
 {
@@ -11,9 +12,9 @@ namespace swgtk
 		SDL_RenderCopyF(_render, texture, &src, &dest);
 	}
 
-	void RenderWrapper::DrawTextureEx(gsl::not_null<SDL_Texture*> texture, SDL_Rect src, SDL_FRect dest, double angle, SDL_FPoint center)
+	void RenderWrapper::DrawTextureEx(gsl::not_null<SDL_Texture*> texture, SDL_Rect src, SDL_FRect dest, double angle, SDL_FPoint center, SDL_RendererFlip flip)
 	{
-		SDL_RenderCopyExF(_render, texture, &src, &dest, angle, &center, SDL_FLIP_NONE);
+		SDL_RenderCopyExF(_render, texture, &src, &dest, angle, &center, flip);
 	}
 
 	void RenderWrapper::DrawText(const std::string& text, SDL_Rect spot, gsl::not_null<TTF_Font*> font)

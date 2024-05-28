@@ -1,7 +1,6 @@
 #include "SDLApp.hpp"
 
 #include <chrono>
-#include <format>
 #include <gsl/gsl-lite.hpp>
 #include <memory>
 #include <cstdio>
@@ -14,6 +13,12 @@
 #include "SDL2/SDL_mixer.h"
 #include "Scene.hpp"
 #include "fmt/format.h"
+
+#ifdef _DEBUG
+#define DEBUG_PRINT(Debug_Format, Debug_Message) fmt::print(Debug_Format, Debug_Message);
+#else
+#define DEBUG_PRINT(Debug_Format, Debug_Message)
+#endif
 
 namespace swgtk
 {
@@ -83,20 +88,20 @@ namespace swgtk
 			}
 			else
 			{
-				fmt::print("Failed to create window. - {}\n", SDL_GetError());
+				DEBUG_PRINT("Failed to create window. - {}\n", SDL_GetError())
 				return;
 			}
 			
 			if (_renderer == nullptr)
 			{
-				fmt::print("Failed to initialize renderer. - {}\n", SDL_GetError());
+				DEBUG_PRINT("Failed to initialize renderer. - {}\n", SDL_GetError())
 				return;
 			}
 
 		}
 		else
 		{
-			fmt::print("An SDL Library failed to initialize. - {}\n", SDL_GetError());
+			DEBUG_PRINT("An SDL Library failed to initialize. - {}\n", SDL_GetError())
 			return;
 		}
 
@@ -116,6 +121,10 @@ namespace swgtk
 		_currentScene->ResetScroll();
 		_currentScene->ResetMouseEvents();
 		_currentScene->ResetKeyEvent();
+
+		/*
+		* TODO: Figure out how to allow the 'Editor' application to bridge the mouse and keyboard events before officially removing the commented out code below.
+		*/
 
 		while (SDL_PollEvent(&e) == 1)
 		{

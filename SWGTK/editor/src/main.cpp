@@ -15,12 +15,12 @@ public:
 
 	void Update(swgtk::GameScene& app)
 	{
-		SDL_RenderCopy(app.AppRoot()->Renderer(), texture, nullptr, &rect);
+		SDL_RenderCopy(app.AppRoot()->Renderer(), texture.Get(), nullptr, &rect);
 	}
 
 private:
 
-	SDL_Texture* texture = nullptr;
+	swgtk::Texture texture;
 	SDL_Rect rect = SDL_Rect { 100, 100, 100, 100 };
 
 	std::string img = "C:/CppProjects/SWGTK/assets/Card Assets/Backgrounds/background_1.png";

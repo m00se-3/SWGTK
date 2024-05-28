@@ -1,15 +1,15 @@
 #include "Scene.hpp"
 
 #include <filesystem>
+#include <utility>
 
 #include "SDLApp.hpp"
 #include "gsl-lite/gsl-lite.hpp"
-#include <utility>
 
 namespace swgtk
 {
 	GameScene::GameScene(gsl::not_null<SDLApp*> parent, gsl::owner<Node*> node)
-	: _parent(parent), _pimpl(node)
+	: _parent(parent), _renderer(parent->Renderer()), _pimpl(node)
 	{
 		InitLua();
 	}

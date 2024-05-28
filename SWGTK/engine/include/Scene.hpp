@@ -9,6 +9,7 @@
 #include "gsl-lite/gsl-lite.hpp"
 
 #include "Input.hpp"
+#include "RenderWrap.hpp"
 
 namespace swgtk
 {
@@ -64,6 +65,7 @@ namespace swgtk
 		void GenerateNewScene(gsl::owner<Node*> ptr);
 
 		[[nodiscard]] constexpr SDLApp* AppRoot() { return _parent; }
+		[[nodiscard]] constexpr RenderWrapper& Renderer() { return _renderer; }
 
 		/*
 			Input state and event polling for the derived scene class.
@@ -114,6 +116,7 @@ namespace swgtk
 
 	private:
 		SDLApp* _parent = nullptr;
+		RenderWrapper _renderer;
 		std::unique_ptr<Node> _pimpl;
 		sol::state _lua; 
 		SSC _sceneState = SSC::ok;
