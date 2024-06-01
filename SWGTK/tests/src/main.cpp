@@ -1,27 +1,29 @@
-﻿#include <SDL_render.h>
-#define SDL_MAIN_HANDLED
+﻿#define SDL_MAIN_HANDLED
 #include "SDLApp.hpp"
 
+#include "Texture.hpp"
 #include "Scene.hpp"
 #include "SDL_image.h"
 
 class WelcomeScreen
 {
 public:
-	void Create(swgtk::GameScene& app)
+	swgtk::SSC Create(swgtk::GameScene& app)
 	{
 		texture = IMG_LoadTexture(app.AppRoot()->Renderer(), img.c_str());
+		return swgtk::SSC::ok;
 	}
 
-	void Update(swgtk::GameScene& app)
+	swgtk::SSC Update(swgtk::GameScene& app, [[maybe_unused]] float dt)
 	{
-		SDL_RenderCopy(app.AppRoot()->Renderer(), texture.Get(), nullptr, &rect);
+		app.Renderer().DrawTexture(gsl::make_not_null(texture.Get()), std::nullopt, rect);
+		return swgtk::SSC::ok;
 	}
 
 private:
 
 	swgtk::Texture texture;
-	SDL_Rect rect = SDL_Rect { 100, 100, 100, 100 };
+	SDL_FRect rect = SDL_Rect { 100.f, 100.f, 100.f, 100.f };
 
 	std::string img = "C:/CppProjects/SWGTK/assets/Card Assets/Backgrounds/background_1.png";
 
@@ -34,13 +36,11 @@ int main(int argc, const char** argv)
 
 	app.Run(new swgtk::GameScene::Node {
 		._updateFunc = [client = &client]([[maybe_unused]] swgtk::GameScene& app, [[maybe_unused]] float dt) {
-			client->Update(app);
-			return swgtk::SSC::ok;
+			return client->Update(app, dt);
 		},
 
 		._createFunc = [client = &client](swgtk::GameScene& app){ 
-			client->Create(app);
-			return swgtk::SSC::ok;
+			return client->Create(app);
 		}
 	});
 

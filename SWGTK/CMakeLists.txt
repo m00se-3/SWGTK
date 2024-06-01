@@ -1,4 +1,4 @@
-﻿add_executable(Editor)
+﻿add_executable(Test_Suite)
 add_library(SWGTK)
 
 list(
@@ -54,18 +54,18 @@ target_link_libraries(
 )
 
 target_include_directories(
-	Editor	
+	Test_Suite	
 
 	PUBLIC 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/include
-	${CMAKE_CURRENT_LIST_DIR}/editor/include
+	${CMAKE_CURRENT_LIST_DIR}/tests/include
 	${LUA_INCLUDE_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/external
 )
 
 target_link_libraries(
-	Editor	
+	Test_Suite	
 
 	PRIVATE 
 
@@ -94,17 +94,17 @@ target_compile_definitions(
 )
 
 target_include_directories(
-	Editor
+	Test_Suite
 
 	PUBLIC 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/include
-	${CMAKE_CURRENT_LIST_DIR}/editor/include
+	${CMAKE_CURRENT_LIST_DIR}/tests/include
 	${LUA_INCLUDE_DIR}
 )
 
 target_link_libraries(
-	Editor
+	Test_Suite
 
 	PRIVATE 
 
@@ -149,7 +149,7 @@ target_link_libraries(
 endif(EMSCRIPTEN)
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-	target_compile_options(Editor PRIVATE "-g")
+	target_compile_options(Test_Suite PRIVATE "-g")
 endif()
 
 target_sources(
@@ -165,19 +165,19 @@ target_sources(
 )
 
 target_sources(
-	Editor
+	Test_Suite
 
 	PUBLIC 
 
 	${Engine_Headers}
 	
-	${CMAKE_CURRENT_LIST_DIR}/editor/include/NKFont.hpp
-	${CMAKE_CURRENT_LIST_DIR}/editor/include/UI.hpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/include/NKFont.hpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/include/UI.hpp
 
 	PRIVATE 
 
-	${CMAKE_CURRENT_LIST_DIR}/editor/src/main.cpp
-	${CMAKE_CURRENT_LIST_DIR}/editor/src/nuklear.cpp
-	${CMAKE_CURRENT_LIST_DIR}/editor/src/NKFont.cpp
-	${CMAKE_CURRENT_LIST_DIR}/editor/src/UI.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/src/main.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/src/nuklear.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/src/NKFont.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/src/UI.cpp
 )

@@ -19,29 +19,35 @@ namespace swgtk
 	*/
 	class Texture {
 	public:
-		Texture() = default;
-		explicit Texture(gsl::owner<SDL_Texture*> ptr) : _texture(ptr) {}
-		Texture(Texture&& tex) noexcept : _texture(tex.Release()) {}
-		~Texture();
+		constexpr Texture() = default;
+		explicit constexpr Texture(gsl::owner<SDL_Texture*> ptr) : _texture(ptr) {}
+		constexpr Texture(Texture&& tex) noexcept : _texture(tex.Release()) {}
+		constexpr ~Texture() 
+		{ 
+			if(_texture != nullptr)
+			{	
+				SDL_DestroyTexture(_texture);
+			}
+		}
 
 		// This will clean up the previous SDL_Texture, if it holds one, before taking ownership of the new SDL_Texture.
-		Texture& operator=(SDL_Texture* tex);
-		Texture& operator=(Texture&& other) noexcept;
+		constexpr Texture& operator=(SDL_Texture* tex);
+		constexpr Texture& operator=(Texture&& other) noexcept;
 
 		// This class should never copy, this is so that we don't have to worry about reference counting.
 		Texture(const Texture&) = delete;
 		Texture& operator=(const Texture&) = delete;
 
-		void SetBlend(const SDL_BlendMode& mode);
-		void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+		constexpr void SetBlend(const SDL_BlendMode& mode);
+		constexpr void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-		[[nodiscard]] SDL_BlendMode GetBlend() const;
-		[[nodiscard]] SDL_Color GetColor() const;
+		[[nodiscard]] constexpr SDL_BlendMode GetBlend() const;
+		[[nodiscard]] constexpr SDL_Color GetColor() const;
 
 		[[nodiscard]] SDL_Texture* Get() const;
 
 		// Releases control of the SDL_Texture pointer to the caller.
-		[[nodiscard]] gsl::owner<SDL_Texture*> Release();
+		[[nodiscard]] constexpr gsl::owner<SDL_Texture*> Release();
 
 	private:
 		gsl::owner<SDL_Texture*> _texture = nullptr;
