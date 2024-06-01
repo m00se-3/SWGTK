@@ -16,10 +16,8 @@ list(
 list(
 	APPEND Engine_Sources
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/SDLApp.cpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/Texture.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Input.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Component.cpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/RenderWrap.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
 )

@@ -23,7 +23,7 @@ public:
 private:
 
 	swgtk::Texture texture;
-	SDL_FRect rect = SDL_Rect { 100.f, 100.f, 100.f, 100.f };
+	SDL_FRect rect = SDL_FRect { 100.f, 100.f, 100.f, 100.f };
 
 	std::string img = "C:/CppProjects/SWGTK/assets/Card Assets/Backgrounds/background_1.png";
 

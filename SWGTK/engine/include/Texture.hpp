@@ -31,8 +31,28 @@ namespace swgtk
 		}
 
 		// This will clean up the previous SDL_Texture, if it holds one, before taking ownership of the new SDL_Texture.
-		constexpr Texture& operator=(SDL_Texture* tex);
-		constexpr Texture& operator=(Texture&& other) noexcept;
+
+		constexpr Texture& operator=(SDL_Texture* tex)
+		{
+			if(_texture != nullptr)
+			{
+				SDL_DestroyTexture(_texture);
+			}
+
+			_texture = gsl::owner<SDL_Texture*>(tex);
+			return *this;
+		}
+
+		constexpr Texture& operator=(Texture&& other) noexcept
+		{
+			if(_texture != nullptr)
+			{
+				SDL_DestroyTexture(_texture);
+			}
+
+			_texture = other.Release();
+			return *this;
+		}
 
 		// This class should never copy, this is so that we don't have to worry about reference counting.
 		Texture(const Texture&) = delete;
@@ -41,13 +61,34 @@ namespace swgtk
 		constexpr void SetBlend(const SDL_BlendMode& mode);
 		constexpr void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-		[[nodiscard]] constexpr SDL_BlendMode GetBlend() const;
-		[[nodiscard]] constexpr SDL_Color GetColor() const;
+		[[nodiscard]] constexpr SDL_BlendMode GetBlend() const
+		{
+			SDL_BlendMode blend{};
 
-		[[nodiscard]] SDL_Texture* Get() const;
+			SDL_GetTextureBlendMode(_texture, &blend);
+			return blend;
+		}
+
+		[[nodiscard]] constexpr SDL_Color GetColor() const 
+		{
+			SDL_Color color{};
+
+			SDL_GetTextureColorMod(_texture, &color.r, &color.g, &color.b);
+			SDL_GetTextureAlphaMod(_texture, &color.a);
+
+			return color;
+		}
+
+		[[nodiscard]] constexpr SDL_Texture* Get() const { return _texture; } // NOLINT
 
 		// Releases control of the SDL_Texture pointer to the caller.
-		[[nodiscard]] constexpr gsl::owner<SDL_Texture*> Release();
+		[[nodiscard]] constexpr gsl::owner<SDL_Texture*> Release()
+		{
+			auto* temp = _texture;
+			
+			_texture = nullptr;
+			return temp;
+		}
 
 	private:
 		gsl::owner<SDL_Texture*> _texture = nullptr;
