@@ -20,6 +20,7 @@ list(
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Component.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/src/RenderWrap.cpp
 )
 
 # If we are building for emscripten.

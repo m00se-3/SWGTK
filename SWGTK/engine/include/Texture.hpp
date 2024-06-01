@@ -32,7 +32,7 @@ namespace swgtk
 
 		// This will clean up the previous SDL_Texture, if it holds one, before taking ownership of the new SDL_Texture.
 
-		constexpr Texture& operator=(SDL_Texture* tex)
+		constexpr Texture& operator=(gsl::owner<SDL_Texture*> tex)
 		{
 			if(_texture != nullptr)
 			{

@@ -64,8 +64,8 @@ namespace swgtk
 		void SetNewScene(gsl::owner<Node*> scene);
 		void GenerateNewScene(gsl::owner<Node*> ptr);
 
-		[[nodiscard]] constexpr SDLApp* AppRoot() { return _parent; }
-		[[nodiscard]] constexpr RenderWrapper& Renderer() { return _renderer; }
+		[[nodiscard]] constexpr SDLApp* AppRoot(this GameScene& self) { return self._parent; }
+		[[nodiscard]] constexpr RenderWrapper& Renderer(this GameScene& self) { return self._renderer; }
 
 		/*
 			Input state and event polling for the derived scene class.

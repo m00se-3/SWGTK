@@ -1,6 +1,7 @@
 #ifndef SDLAPP_HPP
 #define SDLAPP_HPP
 
+#include <SDL_video.h>
 #include <chrono>
 #include <gsl/gsl-lite.hpp>
 #include <memory>
@@ -53,16 +54,23 @@ namespace swgtk
 		// static nk_keys SDLKeytoNKKey(int key, uint16_t mods);
 		//static int SDLButtontoNKButton(uint8_t button);
 
-		[[nodiscard]] std::string AssetsDir() const;
-		[[nodiscard]] std::string ConfigDir() const;
-		[[nodiscard]] SSC GetSceneStatus() const;
+		[[nodiscard]] constexpr std::string AssetsDir(this SDLApp& self) { return self._assetsDir; }
+		[[nodiscard]] constexpr std::string ConfigDir(this SDLApp& self) { return self._configDir; }
+		[[nodiscard]] constexpr SSC GetSceneStatus(this SDLApp& self) { return self._currentSSC; }
 
-		[[nodiscard]] TTF_Font* GetTTF(sdl::FontStyle style, int size);
-		[[nodiscard]] SDL_Renderer* Renderer();
-		[[nodiscard]] SDL_Window* Window();
+		[[nodiscard]] constexpr TTF_Font* GetTTF(this SDLApp& self, sdl::FontStyle style, int size) { return self._fonts.GetTTF(style, size); }
+		[[nodiscard]] constexpr SDL_Renderer* Renderer(this SDLApp& self) { return self._renderer; }
+		[[nodiscard]] constexpr SDL_Window* Window(this SDLApp& self) { return self._window; }
 
-		std::pair<int, int> GetWindowSize();
-		void GetNewSceneNode(gsl::owner<GameScene::Node*> ptr);
+		[[nodiscard]] constexpr std::pair<int, int> GetWindowSize(this SDLApp& self)
+		{
+			int width{}, height{};
+			SDL_GetWindowSize(self._window, &width, &height);
+
+			return std::make_pair(width, height);
+		}
+
+		void SetNewSceneNode(gsl::owner<GameScene::Node*> ptr);
 
 		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__

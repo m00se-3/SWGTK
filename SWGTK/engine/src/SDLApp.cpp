@@ -1,20 +1,19 @@
 #include "SDLApp.hpp"
 
 #include <chrono>
-#include <gsl/gsl-lite.hpp>
 #include <memory>
-#include <cstdio>
 #include <span>
 #include <string>
 
+#include "gsl-lite/gsl-lite.hpp"
 #include "SDL.h"
 #include "Input.hpp"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
 #include "Scene.hpp"
-#include "fmt/format.h"
 
 #ifdef _DEBUG
+#include "fmt/format.h"
 #define DEBUG_PRINT(Debug_Format, Debug_Message) fmt::print(Debug_Format, Debug_Message);
 #else
 #define DEBUG_PRINT(Debug_Format, Debug_Message)
@@ -123,7 +122,7 @@ namespace swgtk
 		_currentScene->ResetKeyEvent();
 
 		/*
-		* TODO: Figure out how to allow the 'Editor' application to bridge the mouse and keyboard events before officially removing the commented out code below.
+		* TODO: Figure out how to allow the 'Test_Suite' application to bridge the mouse and keyboard events before officially removing the commented out code below.
 		*/
 
 		while (SDL_PollEvent(&e) == 1)
@@ -266,17 +265,7 @@ namespace swgtk
 		//_ui->Close(name);
 	}
 
-	std::string SDLApp::AssetsDir() const
-	{
-		return std::string{_assetsDir};
-	}
-
-	std::string SDLApp::ConfigDir() const
-	{
-		return std::string{_configDir};
-	}
-
-	void SDLApp::GetNewSceneNode(gsl::owner<GameScene::Node*> ptr)
+	void SDLApp::SetNewSceneNode(gsl::owner<GameScene::Node*> ptr)
 	{
 		_nextSceneNode = ptr;	
 	}
@@ -353,34 +342,5 @@ namespace swgtk
 	//	}
 	//	}
 	//}
-
-	SSC SDLApp::GetSceneStatus() const
-	{
-		return _currentSSC;
-	}
-
-	TTF_Font* SDLApp::GetTTF(sdl::FontStyle style, int size)
-	{
-		return _fonts.GetTTF(style, size);
-	}
-
-	SDL_Renderer* SDLApp::Renderer()
-	{
-		return _renderer;
-	}
-
-	SDL_Window* SDLApp::Window()
-	{
-		return _window;
-	}
-
-	std::pair<int, int> SDLApp::GetWindowSize()
-	{
-		int w = 0, h = 0;
-		
-		SDL_GetWindowSize(_window, &w, &h);
-
-		return std::make_pair(w, h);
-	}
 
 }

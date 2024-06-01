@@ -3,20 +3,19 @@
 
 #include "Texture.hpp"
 #include "Scene.hpp"
-#include "SDL_image.h"
 
 class WelcomeScreen
 {
 public:
 	swgtk::SSC Create(swgtk::GameScene& app)
 	{
-		texture = IMG_LoadTexture(app.AppRoot()->Renderer(), img.c_str());
+		texture = app.Renderer().LoadTextureImg(img);
 		return swgtk::SSC::ok;
 	}
 
 	swgtk::SSC Update(swgtk::GameScene& app, [[maybe_unused]] float dt)
 	{
-		app.Renderer().DrawTexture(gsl::make_not_null(texture.Get()), std::nullopt, rect);
+		app.Renderer().DrawTexture(gsl::make_not_null(texture.Get()), nullptr, &rect);
 		return swgtk::SSC::ok;
 	}
 

@@ -26,7 +26,7 @@ namespace swgtk
 
 	void GameScene::GenerateNewScene(gsl::owner<Node*> ptr)
 	{
-		_parent->GetNewSceneNode(ptr);
+		_parent->SetNewSceneNode(ptr);
 	}
 
 	SSC GameScene::Create()
