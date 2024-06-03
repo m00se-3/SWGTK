@@ -2,12 +2,12 @@
 #define SWGTK_RENDER_WRAP_HPP
 
 #include "Texture.hpp"
-#include "TTFFont.hpp"
-#include "SDL2/SDL_image.h"
-#include "SDL2/SDL.h"
-#include <SDL_blendmode.h>
-#include <SDL_render.h>
-#include <gsl/gsl-lite.hpp>
+
+#include "SDL2/SDL_ttf.h"
+#include "SDL_blendmode.h"
+#include "SDL_render.h"
+#include "gsl/gsl-lite.hpp"
+
 #include <string_view>
 
 namespace swgtk
@@ -26,17 +26,17 @@ namespace swgtk
 	*/
 	constexpr void DrawTexture(gsl::not_null<SDL_Texture*> texture, SDL_Rect* src, SDL_FRect* dest)
 	{
-		SDL_RenderCopyF(_render, texture, src, dest);
+	    SDL_RenderCopyF(_render, texture, src, dest);
 	}
 
 	/*
 	    Texture source rectangles are taken with integers while the destination and center are set with floats.
 
-	    It is okay to allow nullptr for the soruce and destination, since SDL handles nullptr for us.
+	    It is okay to allow nullptr for the source, destination, and center, since SDL handles nullptr for us.
 	*/
-	constexpr void DrawTextureEx(gsl::not_null<SDL_Texture*> texture, SDL_Rect* src, SDL_FRect* dest, double angle = 0.0, SDL_FPoint center = SDL_FPoint{0.f, 0.f}, SDL_RendererFlip flip = SDL_FLIP_NONE)
+	constexpr void DrawTexture(gsl::not_null<SDL_Texture*> texture, SDL_Rect* src, SDL_FRect* dest, double angle, SDL_FPoint* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE)
 	{
-		SDL_RenderCopyExF(_render, texture, src, dest, angle, &center, flip);
+	    SDL_RenderCopyExF(_render, texture, src, dest, angle, center, flip);
 	}
  
 	/*
@@ -44,23 +44,23 @@ namespace swgtk
 	*/
 	constexpr void DrawText(const std::string_view& text, SDL_Rect* dest, gsl::not_null<TTF_Font*> font)
 	{		
-		auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
-		
-		// This texture will get cleaned up at end of function.
-		const Texture textTexture{SDL_CreateTextureFromSurface(_render, surface)};
-		SDL_FreeSurface(surface);
+	    auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
+	    
+	    // This texture will get cleaned up at end of function.
+	    const Texture textTexture{SDL_CreateTextureFromSurface(_render, surface)};
+	    SDL_FreeSurface(surface);
 
-		SDL_RenderCopy(_render, textTexture.Get(), nullptr, dest);
+	    SDL_RenderCopy(_render, textTexture.Get(), nullptr, dest);
 	}						
 
 	[[nodiscard]] constexpr gsl::owner<SDL_Texture*> RenderTextChunk(const std::string_view& text, gsl::not_null<TTF_Font*> font)
 	{
-		auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
+	    auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
 
-		auto* textTexture = SDL_CreateTextureFromSurface(_render, surface);
-		SDL_FreeSurface(surface);
+	    auto* textTexture = SDL_CreateTextureFromSurface(_render, surface);
+	    SDL_FreeSurface(surface);
 
-		return textTexture;
+	    return textTexture;
 	}
 
 	[[nodiscard]] gsl::owner<SDL_Texture*> LoadTextureImg(const std::string_view& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND);

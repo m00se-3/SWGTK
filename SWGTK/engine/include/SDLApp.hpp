@@ -14,6 +14,13 @@
 #include "TTFFont.hpp"
 #include "Scene.hpp"
 
+#ifdef _DEBUG
+#include "fmt/format.h"
+#define DEBUG_PRINT(Debug_Format, Debug_Message) fmt::print(Debug_Format, Debug_Message);
+#else
+#define DEBUG_PRINT(Debug_Format, Debug_Message)
+#endif
+
 extern "C" {
 	struct SDL_Window;
 	struct SDL_Renderer;

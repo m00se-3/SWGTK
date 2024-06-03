@@ -105,7 +105,7 @@ namespace swgtk
 			_keyEvent.second = pressed;
 		}
 
-		inline void SetKeyboardState() 
+		void SetKeyboardState() 
 		{
 			int numKeys{};
 			const uint8_t* state = SDL_GetKeyboardState(&numKeys);

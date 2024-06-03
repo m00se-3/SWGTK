@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "SDLApp.hpp"
-#include "gsl-lite/gsl-lite.hpp"
+#include "gsl/gsl-lite.hpp"
 
 namespace swgtk
 {
@@ -191,11 +191,13 @@ namespace swgtk
 				}
 			);
 
-			_lua.new_enum<SSC>("SSC", {
-				std::make_pair("ok", SSC::ok),
-				std::make_pair("change_scene", SSC::change_scene),
-				std::make_pair("fail", SSC::fail)
-			});
+			_lua.new_enum<SSC>("SSC", 
+				{
+					std::make_pair("ok", SSC::ok),
+					std::make_pair("change_scene", SSC::change_scene),
+					std::make_pair("fail", SSC::fail)
+				}
+			);
 
 			_lua.new_enum<sdl::FontStyle>("FontStyle",
 				{
@@ -211,8 +213,8 @@ namespace swgtk
 			);
 		}
 
-		auto point = _lua.new_usertype<SDL_FPoint>("Vec2f",
-			"x", &SDL_FPoint::x, "y", &SDL_FPoint::y
+		auto point = _lua.new_usertype<SDL_FPoint>(
+		"Vec2f", "x", &SDL_FPoint::x, "y", &SDL_FPoint::y
 		);
 		
 		point["new"] = [](sol::optional<float> nx, sol::optional<float> ny) -> SDL_FPoint
@@ -220,8 +222,8 @@ namespace swgtk
 				return SDL_FPoint{ *nx, *ny };
 			};
 
-		auto rect = _lua.new_usertype<SDL_FRect>("Rect",
-			"x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
+		auto rect = _lua.new_usertype<SDL_FRect>(
+		"Rect",	"x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
 		);
 
 		rect["new"] = [](sol::optional<float> nx, sol::optional<float> ny, sol::optional<float> nw, sol::optional<float> nh) -> SDL_FRect
@@ -231,22 +233,20 @@ namespace swgtk
 
 		// Define functions for Lua.
 
-		{
-			_lua["GetScroll"] = [this]() -> float
-				{
-					return GetScroll();
-				};
+		_lua["GetScroll"] = [this]() -> float
+			{
+				return GetScroll();
+			};
 
-			_lua["OpenMenu"] = [this](sol::optional<std::string> name)
-				{
-					AppRoot()->OpenMenu(*name);
-				};
+		_lua["OpenMenu"] = [this](sol::optional<std::string> name)
+			{
+				AppRoot()->OpenMenu(*name);
+			};
 
-			_lua["CloseMenu"] = [this](sol::optional<std::string> name)
-				{
-					AppRoot()->CloseMenu(*name);
-				};
-		}
+		_lua["CloseMenu"] = [this](sol::optional<std::string> name)
+			{
+				AppRoot()->CloseMenu(*name);
+			};
 		
 		_lua["IsKeyPressed"] = [this](sol::optional<LayoutCode> key) -> bool
 			{

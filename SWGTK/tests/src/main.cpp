@@ -34,11 +34,13 @@ int main(int argc, const char** argv)
 	auto client = WelcomeScreen{};
 
 	app.Run(new swgtk::GameScene::Node {
-		._updateFunc = [client = &client]([[maybe_unused]] swgtk::GameScene& app, [[maybe_unused]] float dt) {
+		._updateFunc = [client = &client]([[maybe_unused]] swgtk::GameScene& app, [[maybe_unused]] float dt) -> auto 
+		{
 			return client->Update(app, dt);
 		},
 
-		._createFunc = [client = &client](swgtk::GameScene& app){ 
+		._createFunc = [client = &client](swgtk::GameScene& app) -> auto
+		{ 
 			return client->Create(app);
 		}
 	});

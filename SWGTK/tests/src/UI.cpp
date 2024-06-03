@@ -1,17 +1,9 @@
 #include "UI.hpp"
 
 #include <filesystem>
-#include <format>
-#include <cstdio>
+#include <string>
 
 #include "SDLApp.hpp"
-
-static const std::array<nk_draw_vertex_layout_element, 4u> vertex_layout = {
-	nk_draw_vertex_layout_element{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
-	nk_draw_vertex_layout_element{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, tex_coord)}, 
-	nk_draw_vertex_layout_element{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
-	nk_draw_vertex_layout_element{NK_VERTEX_LAYOUT_END}
-}; 
 
 namespace swgtk
 {
@@ -20,6 +12,13 @@ namespace swgtk
 	*/
 
 	constexpr uint64_t MaxVertexBuffer = 32ull * 1024ull;
+
+	constexpr std::array<nk_draw_vertex_layout_element, 4u> vertex_layout = {
+		nk_draw_vertex_layout_element{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
+		nk_draw_vertex_layout_element{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, tex_coord)}, 
+		nk_draw_vertex_layout_element{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
+		nk_draw_vertex_layout_element{NK_VERTEX_LAYOUT_END}
+	}; 
 
 	UI::~UI()
 	{
@@ -104,7 +103,8 @@ namespace swgtk
 
 			if (!result.valid())
 			{
-				int _ = std::fputs(std::format("Lua runtime error: Function {} - {}\n", menu, err).c_str(), stdout);
+				auto msg = menu + std::string{" - "} + err;
+				DEBUG_PRINT("Lua runtime error: Function {}\n", msg)
 			}
 		}
 	}
@@ -145,7 +145,7 @@ namespace swgtk
 	{
 		if (!std::filesystem::exists(dir))
 		{
-			int _ = std::fputs(std::format("Error loading Lua script: no such file or directory - {}", dir).c_str(), stdout);
+			DEBUG_PRINT("Error loading Lua script: no such file or directory - {}", dir)
 			return LuaError::file_dir_404;
 		}
 
@@ -161,7 +161,7 @@ namespace swgtk
 
 					if (err != LuaError::ok)
 					{
-						int _ = std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
+						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - {}", path.string())
 						return err;
 					}
 				}
@@ -179,7 +179,7 @@ namespace swgtk
 
 					if (err != LuaError::ok)
 					{
-						int _ = std::fputs(std::format("Failed to parse Lua script: possibly a syntax error - {}", path.string()).c_str(), stdout);
+						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - {}", path.string())
 						return err;
 					}
 				}

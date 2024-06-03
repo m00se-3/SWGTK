@@ -39,7 +39,7 @@ namespace swgtk
 				SDL_DestroyTexture(_texture);
 			}
 
-			_texture = gsl::owner<SDL_Texture*>(tex);
+			_texture = tex;
 			return *this;
 		}
 
