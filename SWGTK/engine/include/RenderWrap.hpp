@@ -9,6 +9,7 @@
 #include "gsl/gsl-lite.hpp"
 
 #include <string_view>
+#include <span>
 
 namespace swgtk
 {
@@ -53,6 +54,17 @@ namespace swgtk
 	    SDL_RenderCopy(_render, textTexture.Get(), nullptr, dest);
 	}						
 
+	/*
+	    Used to draw arbitray shapes from a list of verticies. This is helpful when drawing things like particles.
+
+	    It's okay to allow for nullptr in 'texture' because SDL handles it for us.
+	*/ 
+	constexpr void DrawGeomerty(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies)
+	{
+	    [[maybe_unused]] auto result = SDL_RenderGeometry(_render, texture, verticies.data(), static_cast<int>(std::ssize(verticies)),
+								indicies.data(), static_cast<int>(std::ssize(indicies)));
+	}
+
 	[[nodiscard]] constexpr gsl::owner<SDL_Texture*> RenderTextChunk(const std::string_view& text, gsl::not_null<TTF_Font*> font)
 	{
 	    auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
@@ -66,7 +78,7 @@ namespace swgtk
 	[[nodiscard]] gsl::owner<SDL_Texture*> LoadTextureImg(const std::string_view& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND);
 
         [[nodiscard]] constexpr SDL_Color GetDrawColor() const 
-        {
+	{
 	    SDL_Color res;
 	    SDL_GetRenderDrawColor(_render, &res.r, &res.g, &res.b, &res.a);
 
