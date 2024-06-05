@@ -238,16 +238,6 @@ namespace swgtk
 				return GetScroll();
 			};
 
-		_lua["OpenMenu"] = [this](sol::optional<std::string> name)
-			{
-				AppRoot()->OpenMenu(*name);
-			};
-
-		_lua["CloseMenu"] = [this](sol::optional<std::string> name)
-			{
-				AppRoot()->CloseMenu(*name);
-			};
-		
 		_lua["IsKeyPressed"] = [this](sol::optional<LayoutCode> key) -> bool
 			{
 				return IsKeyPressed(*key);

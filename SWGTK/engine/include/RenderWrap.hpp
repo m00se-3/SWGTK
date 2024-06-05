@@ -75,7 +75,7 @@ namespace swgtk
 	    return textTexture;
 	}
 
-	[[nodiscard]] gsl::owner<SDL_Texture*> LoadTextureImg(const std::string_view& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND);
+	[[nodiscard]] Texture LoadTextureImg(const std::string_view& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND);
 
         [[nodiscard]] constexpr SDL_Color GetDrawColor() const 
 	{

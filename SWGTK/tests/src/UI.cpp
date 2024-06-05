@@ -189,6 +189,8 @@ namespace swgtk
 		return LuaError::ok;
 	}
 
+	nk_context* UI::Context(this UI& self) { return &self._ctx; }
+
 	LuaError UI::LoadScript(const std::string& file)
 	{
 		sol::protected_function_result result = _lua.script_file(file);
@@ -744,6 +746,17 @@ namespace swgtk
 			};
 
 		context["StylePopFont"] = nk_style_pop_font;
+	
+		context["OpenMenu"] = [this](sol::optional<std::string> name)
+			{
+				Open(*name);
+			};
+
+		context["CloseMenu"] = [this](sol::optional<std::string> name)
+			{
+				Close(*name);
+			};
+		
 	}
 
 	void UI::Open(const std::string& name)

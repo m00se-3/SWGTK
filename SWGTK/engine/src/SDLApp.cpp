@@ -5,7 +5,7 @@
 #include <span>
 #include <string>
 
-#include "gsl-lite/gsl-lite.hpp"
+#include "gsl/gsl-lite.hpp"
 #include "SDL.h"
 #include "Input.hpp"
 #include "SDL2/SDL_image.h"
@@ -129,18 +129,6 @@ namespace swgtk
 			case SDL_MOUSEBUTTONUP:
 			{
 				_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_MOUSEBUTTONDOWN) ? MButtonState::Pressed : MButtonState::Released);
-
-			//	auto button = SDLButtontoNKButton(e.button.button);
-
-			//	if (e.type == SDL_MOUSEMOTION)
-			//	{
-			//		nk_input_motion(&_ctx, e.motion.x, e.motion.y);
-			//	}
-
-			//	if (button > -1)
-			//	{
-			//		nk_input_button(&_ctx, static_cast<nk_buttons>(button), e.button.x, e.button.y, static_cast<nk_bool>(e.type == SDL_MOUSEBUTTONDOWN));
-			//	}
 				break;
 			}
 
@@ -148,21 +136,12 @@ namespace swgtk
 			case SDL_KEYUP:
 			{
 				_currentScene->SetKeyEvent(LayoutCode{ e.key.keysym.scancode }, (e.type == SDL_KEYDOWN));
-				
-			//	auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
-
-			//	if (key != NK_KEY_NONE)
-			//	{
-			//		nk_input_key(&_ctx, key, static_cast<nk_bool>(e.type == SDL_KEYDOWN));
-			//	}
 				break;
 			}
 
 			case SDL_MOUSEWHEEL:
 			{
 				_currentScene->AddScroll(e.wheel.preciseY);
-				
-			//	nk_input_scroll(&_ctx, nk_vec2(e.wheel.preciseX, e.wheel.preciseY));
 				break;
 			}
 
@@ -249,16 +228,6 @@ namespace swgtk
 #endif
 	}
 
-	void SDLApp::OpenMenu(const std::string& name)
-	{
-		//_ui->Open(name);
-	}
-
-	void SDLApp::CloseMenu(const std::string& name)
-	{
-		//_ui->Close(name);
-	}
-
 	void SDLApp::SetNewSceneNode(gsl::owner<GameScene::Node*> ptr)
 	{
 		_nextSceneNode = ptr;	
@@ -274,67 +243,5 @@ namespace swgtk
 	}
 #endif
 
-	//nk_keys SDLApp::SDLKeytoNKKey(int key, uint16_t mods) // NOLINT - nothing we can do about this right now.
-	//{
-	//	switch (key)
-	//	{
-	//	case SDLK_LSHIFT:
-	//	case SDLK_RSHIFT:
-	//	{
-	//		return NK_KEY_SHIFT;
-	//	}
-
-	//	case SDLK_LCTRL:
-	//	case SDLK_RCTRL:
-	//	{
-	//		return NK_KEY_CTRL;
-	//	}
-
-	//	case SDLK_RETURN:
-	//	{
-	//		return NK_KEY_ENTER;
-	//	}
-
-	//	case SDLK_BACKSPACE:
-	//	{
-	//		return NK_KEY_BACKSPACE;
-	//	}
-
-	//	case SDLK_TAB:
-	//	{
-	//		return NK_KEY_TAB;
-	//	}
-
-	//	case SDLK_DELETE:
-	//	{
-	//		return NK_KEY_DEL;
-	//	}
-
-	//	case SDLK_RIGHT:
-	//	{
-	//		return NK_KEY_RIGHT;
-	//	}
-
-	//	case SDLK_LEFT:
-	//	{
-	//		return NK_KEY_LEFT;
-	//	}
-
-	//	case SDLK_DOWN:
-	//	{
-	//		return NK_KEY_DOWN;
-	//	}
-
-	//	case SDLK_UP:
-	//	{
-	//		return NK_KEY_UP;
-	//	}
-		
-	//	default: 
-	//	{
-	//		return NK_KEY_NONE; // Not an NK key
-	//	}
-	//	}
-	//}
 
 }

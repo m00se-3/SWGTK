@@ -55,12 +55,6 @@ namespace swgtk
 		void EventsAndTimeStep();
 		void CloseApp();
 
-		void OpenMenu(const std::string& name);
-		void CloseMenu(const std::string& name);
-
-		// static nk_keys SDLKeytoNKKey(int key, uint16_t mods);
-		//static int SDLButtontoNKButton(uint8_t button);
-
 		[[nodiscard]] constexpr std::string AssetsDir(this SDLApp& self) { return self._assetsDir; }
 		[[nodiscard]] constexpr std::string ConfigDir(this SDLApp& self) { return self._configDir; }
 		[[nodiscard]] constexpr SSC GetSceneStatus(this SDLApp& self) { return self._currentSSC; }

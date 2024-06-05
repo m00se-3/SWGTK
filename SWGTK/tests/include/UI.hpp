@@ -51,7 +51,8 @@ namespace swgtk
 		void Open(const std::string& name);
 		void Close(const std::string& name);
 
-		LuaError LoadScriptsFromDirectory(const std::string& dir, bool recursive = false);
+		[[nodiscard]] LuaError LoadScriptsFromDirectory(const std::string& dir, bool recursive = false);
+		[[nodiscard]] nk_context* Context(this UI& self);
 
 	private:
 

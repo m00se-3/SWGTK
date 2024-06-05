@@ -172,6 +172,7 @@ target_sources(
 	
 	${CMAKE_CURRENT_LIST_DIR}/tests/include/NKFont.hpp
 	${CMAKE_CURRENT_LIST_DIR}/tests/include/UI.hpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/include/OpenScene.hpp
 
 	PRIVATE 
 
@@ -179,4 +180,5 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/tests/src/nuklear.cpp
 	${CMAKE_CURRENT_LIST_DIR}/tests/src/NKFont.cpp
 	${CMAKE_CURRENT_LIST_DIR}/tests/src/UI.cpp
+	${CMAKE_CURRENT_LIST_DIR}/tests/src/OpenScene.cpp
 )

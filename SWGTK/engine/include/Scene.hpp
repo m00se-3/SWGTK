@@ -122,7 +122,7 @@ namespace swgtk
 		SSC _sceneState = SSC::ok;
 
 		/*
-			State management variables for inpuit polling.
+			State management variables for input polling.
 		*/
 
 		MouseState _mouseState{};

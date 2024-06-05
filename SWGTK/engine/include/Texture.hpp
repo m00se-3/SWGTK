@@ -58,7 +58,7 @@ namespace swgtk
 		Texture(const Texture&) = delete;
 		Texture& operator=(const Texture&) = delete;
 
-		constexpr void SetBlend(const SDL_BlendMode& mode);
+		constexpr void SetBlend(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture, mode); }
 		constexpr void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 		[[nodiscard]] constexpr SDL_BlendMode GetBlend() const
