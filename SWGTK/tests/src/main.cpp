@@ -5,7 +5,7 @@
 int main(int argc, const char** argv)
 {
 	auto app = swgtk::SDLApp(argc, argv);
-	auto client = WelcomeScreen{};
+	auto client = OpenScene{};
 
 	app.Run(new swgtk::GameScene::Node {
 		._updateFunc = [&client](swgtk::GameScene& app, float dt) -> auto 

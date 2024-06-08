@@ -92,7 +92,7 @@ namespace swgtk
 		std::unique_ptr<GameScene> _currentScene;
 		sdl::FontGroup _fonts;
 
-		SSC _currentSSC = SSC::ok;
+		SSC _currentSSC = SSC::Ok;
 
 		std::string _assetsDir;
 		std::string _configDir;

@@ -39,7 +39,7 @@ namespace swgtk
 	{
 		auto result = _pimpl->_updateFunc(*this, dt);
 
-		if(_sceneState != SSC::change_scene)
+		if(_sceneState != SSC::ChangeScene)
 		{
 			_sceneState = result;
 		}
@@ -193,9 +193,9 @@ namespace swgtk
 
 			_lua.new_enum<SSC>("SSC", 
 				{
-					std::make_pair("ok", SSC::ok),
-					std::make_pair("change_scene", SSC::change_scene),
-					std::make_pair("fail", SSC::fail)
+					std::make_pair("Ok", SSC::Ok),
+					std::make_pair("ChangeScene", SSC::ChangeScene),
+					std::make_pair("Fail", SSC::Fail)
 				}
 			);
 
@@ -233,9 +233,14 @@ namespace swgtk
 
 		// Define functions for Lua.
 
-		_lua["GetScroll"] = [this]() -> float
+		_lua["GetScrollX"] = [this]() -> float
 			{
-				return GetScroll();
+				return GetScrollX();
+			};
+
+		_lua["GetScrollY"] = [this]() -> float
+			{
+				return GetScrollY();
 			};
 
 		_lua["IsKeyPressed"] = [this](sol::optional<LayoutCode> key) -> bool

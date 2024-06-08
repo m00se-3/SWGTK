@@ -103,7 +103,7 @@ namespace swgtk
 	void SDLApp::EventsAndTimeStep()
 	{
 		// If a scene change occurs, that is all we want to do for this frame.
-		if(_currentSSC == SSC::change_scene)
+		if(_currentSSC == SSC::ChangeScene)
 		{
 			_currentSSC = _currentScene->Create();
 			return;
@@ -123,33 +123,31 @@ namespace swgtk
 		{
 			switch (e.type)
 			{
-
-			case SDL_MOUSEMOTION:
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
-			{
-				_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_MOUSEBUTTONDOWN) ? MButtonState::Pressed : MButtonState::Released);
-				break;
-			}
+				{
+					_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_MOUSEBUTTONDOWN) ? MButtonState::Pressed : MButtonState::Released);
+					break;
+				}
 
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-			{
-				_currentScene->SetKeyEvent(LayoutCode{ e.key.keysym.scancode }, (e.type == SDL_KEYDOWN));
-				break;
-			}
+				{
+					_currentScene->SetKeyEvent(LayoutCode{ e.key.keysym.scancode }, (e.type == SDL_KEYDOWN));
+					break;
+				}
 
 			case SDL_MOUSEWHEEL:
-			{
-				_currentScene->AddScroll(e.wheel.preciseY);
-				break;
-			}
+				{
+					_currentScene->AddScroll(e.wheel.preciseX, e.wheel.preciseY);
+					break;
+				}
 
 			case SDL_QUIT:
-			{
-				CloseApp();
-				break;
-			}
+				{
+					CloseApp();
+					break;
+				}
 			}
 		}
 
@@ -187,7 +185,7 @@ namespace swgtk
 
 			_currentScene = std::make_unique<GameScene>(gsl::make_not_null(this), logicNode);
 			
-			if (_currentScene->Create() != SSC::ok)
+			if (_currentScene->Create() != SSC::Ok)
 			{
 				return;
 			}
@@ -199,7 +197,7 @@ namespace swgtk
 
 			while (_running)
 			{
-				if (_currentSSC == SSC::fail)
+				if (_currentSSC == SSC::Fail)
 				{
 					break;
 				}
@@ -208,7 +206,7 @@ namespace swgtk
 				{
 					_currentScene->SetNewScene(_nextSceneNode);
 					_nextSceneNode = nullptr;
-					_currentSSC = SSC::change_scene;
+					_currentSSC = SSC::ChangeScene;
 				}
 					
 				EventsAndTimeStep();

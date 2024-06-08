@@ -11,9 +11,9 @@ namespace swgtk
 		NOTE: If you experience rendering issues while building the ui, consider increasing this buffer size.
 	*/
 
-	constexpr uint64_t MaxVertexBuffer = 32ull * 1024ull;
+	constexpr uint64_t MaxVertexBuffer = 32uz * 1024uz;
 
-	constexpr std::array<nk_draw_vertex_layout_element, 4u> vertex_layout = {
+	constexpr std::array<nk_draw_vertex_layout_element, 4u> VertexLayout = {
 		nk_draw_vertex_layout_element{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
 		nk_draw_vertex_layout_element{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, tex_coord)}, 
 		nk_draw_vertex_layout_element{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
@@ -71,7 +71,7 @@ namespace swgtk
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;
 		_configurator.line_AA = NK_ANTI_ALIASING_ON;
-		_configurator.vertex_layout = vertex_layout.data();
+		_configurator.vertex_layout = VertexLayout.data();
 		_configurator.vertex_alignment = NK_ALIGNOF(SDL_Vertex);
 		_configurator.vertex_size = sizeof(SDL_Vertex);
 		_configurator.circle_segment_count = 20;//NOLINT

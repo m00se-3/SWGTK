@@ -1,33 +1,56 @@
 #include "OpenScene.hpp"
+#include "Input.hpp"
 #include "SDLApp.hpp"
+#include "UI.hpp"
 
-swgtk::SSC WelcomeScreen::Create(swgtk::GameScene& app)
+swgtk::SSC OpenScene::Create(swgtk::GameScene& app)
 {
 	auto* host = app.AppRoot();
 
 	_ui = std::make_unique<swgtk::UI>(host, host->ConfigDir() + "/ui");
 
 	_texture = app.Renderer().LoadTextureImg(_img);
-	return swgtk::SSC::ok;
+	return swgtk::SSC::Ok;
 }
 
-swgtk::SSC WelcomeScreen::Update(swgtk::GameScene& app, [[maybe_unused]] float dt)
+swgtk::SSC OpenScene::Update(swgtk::GameScene& app, [[maybe_unused]] float dt)
 {
-	//Forward mouse and keyboard events.
+	//Forward mouse and keyboard events to nuklear.
 	
-	// auto button = SDLButtontoNKButton(e.button.button);
+	auto mouseX = app.GetMouseX();
+	auto mouseY = app.GetMouseY();
 
-	nk_input_motion(_ui->Context(), app.GetMouseX(), app.GetMouseY());
-	// nk_input_button(_ui->Context(), static_cast<nk_buttons>(button), e.button.x, e.button.y, static_cast<nk_bool>(e.type == SDL_MOUSEBUTTONDOWN));
-	// nk_input_key(&_ctx, key, static_cast<nk_bool>(e.type == SDL_KEYDOWN));
-	// auto key = SDLKeytoNKKey(e.key.keysym.sym, e.key.keysym.mod);
-	// nk_input_scroll(&_ctx, nk_vec2(e.wheel.preciseX, e.wheel.preciseY));
+	nk_input_begin(_ui->Context());
+
+	nk_input_motion(_ui->Context(), mouseX, mouseY);
+
+	if(app.IsButtonPressed(swgtk::MButton::Left) || app.IsButtonReleased(swgtk::MButton::Left))
+	{
+		auto button = SDLButtontoNKButton(static_cast<int>(swgtk::MButton::Left)); 	
+		nk_input_button(_ui->Context(), static_cast<nk_buttons>(button), mouseX, mouseY, static_cast<nk_bool>(app.IsButtonPressed(swgtk::MButton::Left)));
+	}
+
+	if(app.IsButtonPressed(swgtk::MButton::Right) || app.IsButtonReleased(swgtk::MButton::Right))
+	{
+		auto button = SDLButtontoNKButton(static_cast<uint8_t>(swgtk::MButton::Right)); 	
+		nk_input_button(_ui->Context(), static_cast<nk_buttons>(button), mouseX, mouseY, static_cast<nk_bool>(app.IsButtonPressed(swgtk::MButton::Right)));
+	}
+
+	auto keyEvent = app.GetCurrentKeyEvent();
+	auto key = SDLKeytoNKKey(static_cast<int>(keyEvent.first), static_cast<uint16_t>(app.GetKeyMods()));
+	nk_input_key(_ui->Context(), key, static_cast<nk_bool>(keyEvent.second));
+
+	nk_input_scroll(_ui->Context(), nk_vec2(app.GetScrollX(), app.GetScrollY()));
+
+	nk_input_end(_ui->Context());
+
+	// Update the scene.
 
 	app.Renderer().DrawTexture(gsl::make_not_null(_texture.Get()), nullptr, &_rect);
-	return swgtk::SSC::ok;
+	return swgtk::SSC::Ok;
 }
 
-int WelcomeScreen::SDLButtontoNKButton(uint8_t button)
+int OpenScene::SDLButtontoNKButton(uint8_t button)
 {
 	switch(button)
 	{
@@ -38,7 +61,7 @@ int WelcomeScreen::SDLButtontoNKButton(uint8_t button)
 	}
 }
 
-nk_keys WelcomeScreen::SDLKeytoNKKey(int key, uint16_t mods) // NOLINT
+nk_keys OpenScene::SDLKeytoNKKey(int key, uint16_t mods) // NOLINT
 {
 	switch (key)
 	{

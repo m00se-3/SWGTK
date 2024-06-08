@@ -5,7 +5,7 @@
 #include "Scene.hpp"
 #include "UI.hpp"
 
-class WelcomeScreen
+class OpenScene
 {
 public:
 	swgtk::SSC Create(swgtk::GameScene& app);

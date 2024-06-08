@@ -1,6 +1,7 @@
 #ifndef SWGTK_SCENE_HPP
 #define SWGTK_SCENE_HPP
 
+#include <SDL_rect.h>
 #include <functional>
 #include <memory>
 #include <span>
@@ -22,9 +23,9 @@ namespace swgtk
 	*/
 	enum struct SceneStateCode : uint8_t
 	{
-		fail = 0,
-		ok,
-		change_scene
+		Fail = 0,
+		Ok,
+		ChangeScene
 	};
 
 	using SSC = SceneStateCode;
@@ -71,13 +72,15 @@ namespace swgtk
 			Input state and event polling for the derived scene class.
 		*/
 
-		[[nodiscard]] constexpr float GetScroll() const { return _scroll; }
+		[[nodiscard]] constexpr float GetScrollX() const { return _scroll.x; }
+		[[nodiscard]] constexpr float GetScrollY() const { return _scroll.y; }
 		[[nodiscard]] constexpr bool IsKeyPressed(LayoutCode code) const { return (_keyEvent.first == code && _keyEvent.second); }
 		[[nodiscard]] constexpr bool IsKeyReleased(LayoutCode code) const { return (_keyEvent.first == code && !_keyEvent.second); }
-		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _keyboardState[size_t(code)] == 1; }
+		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _keyboardState[static_cast<size_t>(code)] == 1; }
+		[[nodiscard]] constexpr std::pair<LayoutCode, bool> GetCurrentKeyEvent() const { return _keyEvent; }
 		[[nodiscard]] constexpr KeyMod GetKeyMods() const { return _modifiers; }
-		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Pressed; }
-		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _mouseEvents.at(size_t(button)) == MButtonState::Released; }
+		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _mouseEvents.at(static_cast<size_t>(button)) == MButtonState::Pressed; }
+		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _mouseEvents.at(static_cast<size_t>(button)) == MButtonState::Released; }
 		[[nodiscard]] constexpr bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button)); }
 		[[nodiscard]] constexpr int GetMouseX() const { return _mouseState.x; }
 		[[nodiscard]] constexpr int GetMouseY() const { return _mouseState.y; }
@@ -89,9 +92,9 @@ namespace swgtk
 
 		constexpr void SetMouseState(const MouseState& event) { _mouseState = event; }
 		constexpr void SetModState(const SDL_Keymod& state) { _modifiers = static_cast<KeyMod>(state); }
-		constexpr void ResetScroll() { _scroll = 0.0f; }
-		constexpr void AddScroll(float amount) { _scroll = amount; }
-		constexpr void SetMouseEvent(MButton button, MButtonState state) { _mouseEvents.at(size_t(button)) = state; }
+		constexpr void ResetScroll() { _scroll = { 0.f, 0.f }; }
+		constexpr void AddScroll(float amountX, float amountY) { _scroll = { amountX, amountY }; }
+		constexpr void SetMouseEvent(MButton button, MButtonState state) { _mouseEvents.at(static_cast<size_t>(button)) = state; }
 
 		constexpr void ResetKeyEvent()
 		{
@@ -119,7 +122,7 @@ namespace swgtk
 		RenderWrapper _renderer;
 		std::unique_ptr<Node> _pimpl;
 		sol::state _lua; 
-		SSC _sceneState = SSC::ok;
+		SSC _sceneState = SSC::Ok;
 
 		/*
 			State management variables for input polling.
@@ -135,7 +138,7 @@ namespace swgtk
 
 		std::array<MButtonState, 6u> _mouseEvents = { MButtonState::None }; //NOLINT
 		std::pair<LayoutCode, bool> _keyEvent = std::make_pair(LayoutCode::Unknown, false);
-		float _scroll = 0.0f;
+		SDL_FPoint _scroll{};
 
 	};
 
