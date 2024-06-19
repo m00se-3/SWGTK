@@ -11,7 +11,6 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": true
       },
       "environment": {
-        "External_Sources": "${sourceDir}/external",
         "Assets_Dir": "${sourceDir}/assets",
         "Config_Dir": "${sourceDir}/config"
       },

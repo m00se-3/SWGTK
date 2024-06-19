@@ -32,7 +32,7 @@ target_include_directories(
 	PUBLIC 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/include
-	${LUA_INCLUDE_DIR}
+	${lua_SOURCE_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/external
 )
 
@@ -48,7 +48,7 @@ target_link_libraries(
 	$<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
-	${LUA_LIBRARIES}
+	lua
 	fmt::fmt
 )
 
@@ -59,7 +59,7 @@ target_include_directories(
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/include
 	${CMAKE_CURRENT_LIST_DIR}/tests/include
-	${LUA_INCLUDE_DIR}
+	${lua_SOURCE_DIR}
 	${CMAKE_CURRENT_LIST_DIR}/external
 )
 
@@ -75,7 +75,7 @@ target_link_libraries(
 	$<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
-	${LUA_LIBRARIES}
+	lua
 	SWGTK
 
 )
@@ -99,7 +99,7 @@ target_include_directories(
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/include
 	${CMAKE_CURRENT_LIST_DIR}/tests/include
-	${LUA_INCLUDE_DIR}
+	${lua_SOURCE_DIR}
 )
 
 target_link_libraries(
@@ -114,7 +114,7 @@ target_link_libraries(
 	$<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
-	${LUA_LIBRARIES}
+	lua
 	sol2
 	nuklear
 	SWGTK
@@ -126,7 +126,7 @@ target_include_directories(
 	PUBLIC 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/include
-	${LUA_INCLUDE_DIR}
+	${lua_SOURCE_DIR}
 )
 
 target_link_libraries(
@@ -141,7 +141,7 @@ target_link_libraries(
 	$<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>
 	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
-	${LUA_LIBRARIES}
+	lua
 	sol2
 	fmt::fmt	
 )
