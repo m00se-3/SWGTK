@@ -19,7 +19,8 @@ private:
 	swgtk::Texture _texture;
 	SDL_FRect _rect = SDL_FRect { 100.f, 100.f, 100.f, 100.f };
 
-	std::string _img = "C:/CppProjects/SWGTK/assets/Card Assets/Backgrounds/background_1.png";
+	std::string _config = SWGTK_CONFIG;
+	std::string _assets = SWGTK_ASSETS;
 	std::unique_ptr<swgtk::UI> _ui;
 
 };

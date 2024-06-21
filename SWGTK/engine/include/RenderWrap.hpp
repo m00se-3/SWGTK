@@ -3,7 +3,7 @@
 
 #include "Texture.hpp"
 
-#include "SDL2/SDL_ttf.h"
+#include "SDL_ttf.h"
 #include "SDL_blendmode.h"
 #include "SDL_render.h"
 #include "gsl/gsl-lite.hpp"

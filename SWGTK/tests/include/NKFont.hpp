@@ -15,7 +15,7 @@
 
 // We have to explicitly undefine NK_IMPLEMENTATION here to avoid linking errors.
 #undef NK_IMPLEMENTATION
-#include "nuklear/nuklear.h"
+#include "nuklear.h"
 
 #include "SDL_render.h"
 

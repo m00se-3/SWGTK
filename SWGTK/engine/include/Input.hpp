@@ -1,8 +1,8 @@
 #ifndef SWGTK_INPUT_HPP
 #define SWGTK_INPUT_HPP
 
-#include "SDL2/SDL_mouse.h"
-#include "SDL2/SDL_keycode.h"
+#include "SDL_mouse.h"
+#include "SDL_keycode.h"
 
 namespace swgtk
 {

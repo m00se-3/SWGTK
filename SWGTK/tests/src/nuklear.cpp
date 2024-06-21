@@ -8,4 +8,4 @@
 #define NK_INCLUDE_FIXED_TYPES
 
 #define NK_IMPLEMENTATION // NOLINT
-#include "nuklear/nuklear.h" //NOLINT
+#include "nuklear.h" //NOLINT

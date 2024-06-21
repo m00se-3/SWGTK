@@ -7,6 +7,21 @@ project ("SWGTK")
 
 include("CPM.cmake")
 
+# Add CCache for build caching
+
+find_program(CCACHE_PROGRAM ccache)
+
+if(CCACHE_PROGRAM)
+
+CPMAddPackage(
+  NAME Ccache.cmake
+  GITHUB_REPOSITORY TheLartians/Ccache.cmake
+  VERSION 1.2
+)
+
+set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+endif()
+
 # Clang compiler warning flags go here.
 list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion" "-Wshadow" "-Wnon-virtual-dtor")
 set(CMAKE_CXX_CLANG_TIDY clang-tidy)
@@ -18,6 +33,8 @@ message("-- Emscripten build enabled!!!")
 set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/SWGTK)
 
 # Lua and sol2
 CPMAddPackage(
@@ -73,6 +90,9 @@ CPMAddPackage(
     "SDL2MIXER_MOD false"
     "SDL2MIXER_MIDI_FLUIDSYNTH false"
 )
+
+target_compile_definitions(SDL2_mixer PUBLIC HAVE_WAVPACK_H=1) # Make sure SDL_mixer uses the correct include path for wavpack
+target_include_directories(SDL2_mixer PUBLIC ${WavPack_SOURCE_DIR})
 
 #  Test_Suite specific
 CPMAddPackage("gh:Immediate-Mode-UI/Nuklear#4.12.0")

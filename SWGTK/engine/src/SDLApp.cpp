@@ -8,8 +8,8 @@
 #include "gsl/gsl-lite.hpp"
 #include "SDL.h"
 #include "Input.hpp"
-#include "SDL2/SDL_image.h"
-#include "SDL2/SDL_mixer.h"
+#include "SDL_image.h"
+#include "SDL_mixer.h"
 #include "Scene.hpp"
 
 
@@ -25,7 +25,6 @@ namespace swgtk
 	}
 #else
 	SDLApp::SDLApp(int argc, const char** argv)
-		: _assetsDir(SWGTK_ASSETS), _configDir(SWGTK_CONFIG)
 	{
 		const std::span<const char*> args{argv, static_cast<size_t>(argc)};		
 
@@ -114,10 +113,6 @@ namespace swgtk
 		_currentScene->ResetScroll();
 		_currentScene->ResetMouseEvents();
 		_currentScene->ResetKeyEvent();
-
-		/*
-		* TODO: Figure out how to allow the 'Test_Suite' application to bridge the mouse and keyboard events before officially removing the commented out code below.
-		*/
 
 		while (SDL_PollEvent(&e) == 1)
 		{

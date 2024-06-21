@@ -10,7 +10,7 @@
 #define NK_INCLUDE_FIXED_TYPES
 
 #undef NK_IMPLEMENTATION
-#include "nuklear/nuklear.h"
+#include "nuklear.h"
 
 #include <string>
 #include <memory>

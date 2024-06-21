@@ -9,7 +9,7 @@ swgtk::SSC OpenScene::Create(swgtk::GameScene& app)
 
 	_ui = std::make_unique<swgtk::UI>(host, host->ConfigDir() + "/ui");
 
-	_texture = app.Renderer().LoadTextureImg(_img);
+	_texture = app.Renderer().LoadTextureImg(_assets + "/Card Assets/Standard 52 Cards/solitaire/individuals/heart/1_heart.png");
 	return swgtk::SSC::Ok;
 }
 

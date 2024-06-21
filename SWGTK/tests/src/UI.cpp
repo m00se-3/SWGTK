@@ -78,7 +78,7 @@ namespace swgtk
 		_configurator.curve_segment_count = 20;//NOLINT
 		_configurator.arc_segment_count = 20;//NOLINT
 		_configurator.global_alpha = 1.0f; //NOLINT
-		_configurator.null = _nullTexture;
+		_configurator.tex_null = _nullTexture;
 
 		nk_buffer_init_default(&_cmds);
 		_buffer.resize(MaxVertexBuffer);

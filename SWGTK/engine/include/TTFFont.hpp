@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include <cstdint>
-#include "SDL2/SDL_ttf.h"
+#include "SDL_ttf.h"
 
 namespace swgtk::sdl
 {
