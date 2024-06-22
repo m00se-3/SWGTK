@@ -46,7 +46,6 @@ target_include_directories(
 	${CMAKE_CURRENT_LIST_DIR}/tests/include
 	${lua_SOURCE_DIR}
 	${SDL2_SOURCE_DIR}/include
-	${fmt_SOURCE_DIR}/include
 	${Nuklear_SOURCE_DIR}
 )
 
@@ -63,7 +62,6 @@ target_link_libraries(
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
 	lua
 	sol2
-	fmt::fmt
 	SWGTK
 )
 
@@ -78,7 +76,6 @@ target_include_directories(
 	${SDL2_mixer_SOURCE_DIR}/include
 	${SDL2_image_SOURCE_DIR}/include
 	${SDL2_ttf_SOURCE_DIR}
-	${fmt_SOURCE_DIR}/include
 )
 
 target_link_libraries(
@@ -94,7 +91,6 @@ target_link_libraries(
 	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
 	lua
 	sol2
-	fmt::fmt	
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")

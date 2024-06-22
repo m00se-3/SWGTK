@@ -85,6 +85,8 @@ namespace swgtk
 	    return res;
 	}
 
+	constexpr void SetDrawTarget(SDL_Texture* ptr = nullptr) { [[maybe_unused]] auto _ = SDL_SetRenderTarget(_render, ptr); }
+
     private:
 	SDL_Renderer* _render = nullptr;
     };

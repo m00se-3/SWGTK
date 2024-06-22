@@ -1,7 +1,4 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-#
-cmake_minimum_required (VERSION 3.25)
+﻿cmake_minimum_required (VERSION 3.25)
 
 project ("SWGTK")
 
@@ -22,11 +19,16 @@ CPMAddPackage(
 set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
 endif()
 
-# Clang compiler warning flags go here.
+# Compiler warning flags go here.
+if(NOT CMAKE_CXX_COMPILER_ID  MATCHES MSVC)
 list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion" "-Wshadow" "-Wnon-virtual-dtor")
+else()
+  list(APPEND WarningFlags "/Wall", "/permissive-")
+endif()
+
 set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 
-# If building for emscripten, we want to add the cmake folder for our local dependencies to the search path.
+# If building for emscripten
 if(EMSCRIPTEN)
 message("-- Emscripten build enabled!!!")
 
@@ -99,7 +101,6 @@ CPMAddPackage("gh:Immediate-Mode-UI/Nuklear#4.12.0")
 
 # Misc
 CPMAddPackage("gh:gsl-lite/gsl-lite@0.41.0")
-CPMAddPackage("gh:fmtlib/fmt#10.2.1")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")
