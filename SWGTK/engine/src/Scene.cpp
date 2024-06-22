@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "SDLApp.hpp"
+#include "SDL_blendmode.h"
 #include "gsl/gsl-lite.hpp"
 
 namespace swgtk
@@ -50,7 +51,7 @@ namespace swgtk
 	void GameScene::Destroy()
 	{
 		if(_pimpl->_destroyFunc.has_value())
-		{
+{
 			(_pimpl->_destroyFunc.value())(*this);
 		}
 	}
@@ -222,13 +223,31 @@ namespace swgtk
 				return SDL_FPoint{ *nx, *ny };
 			};
 
-		auto rect = _lua.new_usertype<SDL_FRect>(
-		"Rect",	"x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
+		auto rect = _lua.new_usertype<SDL_Rect>(
+		"Rect",	"x", &SDL_Rect::x, "y", &SDL_Rect::y, "w", &SDL_Rect::w, "h", &SDL_Rect::h
 		);
 
-		rect["new"] = [](sol::optional<float> nx, sol::optional<float> ny, sol::optional<float> nw, sol::optional<float> nh) -> SDL_FRect
+		rect["new"] = [](sol::optional<int> nx, sol::optional<int> ny, sol::optional<int> nw, sol::optional<int> nh) -> SDL_Rect
+			{
+				return SDL_Rect{ *nx, *ny, *nw, *nh };
+			};
+
+		auto rectf = _lua.new_usertype<SDL_FRect>(
+		"RectF", "x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
+		);
+
+		rectf["new"] = [](sol::optional<float> nx, sol::optional<float> ny, sol::optional<float> nw, sol::optional<float> nh) -> SDL_FRect
 			{
 				return SDL_FRect{ *nx, *ny, *nw, *nh };
+			};
+
+		auto vertex = _lua.new_usertype<SDL_Vertex>(
+		"Vertex2D", "position", &SDL_Vertex::position, "color", &SDL_Vertex::color, "tex_coord", &SDL_Vertex::tex_coord
+		);
+
+		vertex["new"] = [](sol::optional<SDL_FPoint> pos, sol::optional<SDL_Color> col, sol::optional<SDL_FPoint> tex) -> SDL_Vertex
+			{
+				return SDL_Vertex{ *pos, *col, *tex };
 			};
 
 		// Define functions for Lua.
@@ -286,6 +305,26 @@ namespace swgtk
 		_lua["GetMouseY"] = [this]() -> int
 			{
 				return GetMouseY();
+			};
+
+		/*
+		   Begin binding  the rendering backend.
+		*/
+
+		_lua["SetDrawColor"] = [this](uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255u)
+			{
+				_renderer.SetDrawColor(r, g, b, a);
+			};
+
+		_lua["DrawTexture"] = [this](SDL_Texture* texture, sol::optional<SDL_Rect> src, sol::optional<SDL_FRect> dest, sol::optional<double> angle, sol::optional<SDL_FPoint> center, sol::optional<SDL_RendererFlip> flip)
+			{
+				_renderer.DrawTexture(gsl::make_not_null(texture), (src) ? &src.value() : nullptr, (dest) ? &dest.value() : nullptr,
+									angle.value_or(0.0), (center) ? &center.value() : nullptr, flip.value_or(SDL_FLIP_NONE));
+			};
+
+		_lua["DrawText"] = [this](std::string_view str, TTF_Font* font, sol::optional<SDL_Rect> dest)
+			{
+				_renderer.DrawText(str, gsl::make_not_null(font), (dest) ? &dest.value() : nullptr);
 			};
 
 	}
