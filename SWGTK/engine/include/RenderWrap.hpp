@@ -7,6 +7,7 @@
 #include "SDL_blendmode.h"
 #include "SDL_render.h"
 #include "gsl/gsl-lite.hpp"
+#include <sol/sol.hpp>
 
 #include <string_view>
 #include <span>
@@ -86,6 +87,8 @@ namespace swgtk
 	}
 
 	constexpr void SetDrawTarget(SDL_Texture* ptr = nullptr) { [[maybe_unused]] auto _ = SDL_SetRenderTarget(_render, ptr); }
+
+	void InitLua(sol::state& lua);
 
     private:
 	SDL_Renderer* _render = nullptr;

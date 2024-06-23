@@ -61,7 +61,8 @@ namespace swgtk
 		[[nodiscard]] SSC Create();
 		[[nodiscard]] SSC Update(float dt);
 		void Destroy();
-		void InitLua();
+		static void InitLua(sol::state& lua);
+		void InitLuaInput(sol::state& lua);
 		void SetNewScene(gsl::owner<Node*> scene);
 		void GenerateNewScene(gsl::owner<Node*> ptr);
 
@@ -69,7 +70,7 @@ namespace swgtk
 		[[nodiscard]] constexpr RenderWrapper& Renderer(this GameScene& self) { return self._renderer; }
 
 		/*
-			Input state and event polling for the derived scene class.
+			Input state and event polling for the client's logic.
 		*/
 
 		[[nodiscard]] constexpr float GetScrollX() const { return _scroll.x; }
@@ -121,7 +122,6 @@ namespace swgtk
 		SDLApp* _parent = nullptr;
 		RenderWrapper _renderer;
 		std::unique_ptr<Node> _pimpl;
-		sol::state _lua; 
 		SSC _sceneState = SSC::Ok;
 
 		/*
