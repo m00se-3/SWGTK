@@ -64,13 +64,11 @@ namespace swgtk
 		}
 	}
 
-	gsl::owner<GameScene::Node*> CreateLuaScene(const std::string& luaFileName)
+	gsl::owner<GameScene::Node*> CreateLuaScene(sol::state& state, const std::string& luaFileName)
 	{
-		sol::state lua{};
-
 		if(std::filesystem::exists(luaFileName))
 		{
-			const sol::protected_function_result file = lua.script_file(luaFileName);
+			const sol::protected_function_result file = state.script_file(luaFileName);
 
 			if(file.valid())
 			{
@@ -83,9 +81,9 @@ namespace swgtk
 				if(up && cr)
 				{
 					return new GameScene::Node{
-						static_cast<std::function<SSC(GameScene&, float)>>(*up),
 						static_cast<std::function<SSC(GameScene&)>>(*cr),
-						std::optional<std::function<void(GameScene&)>>{static_cast<std::function<void(GameScene&)>>(*dest)}
+						static_cast<std::function<SSC(GameScene&, float)>>(*up),
+						(dest) ? std::optional<std::function<void(GameScene&)>>{static_cast<std::function<void(GameScene&)>>(*dest)} : std::nullopt
 					};
 				}
 			}

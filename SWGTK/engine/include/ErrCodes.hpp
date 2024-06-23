@@ -5,9 +5,9 @@ namespace swgtk
 {
 	enum class LuaError
 	{
-		ok,
-		file_dir_404,
-		parsing_failed,
+		Ok,
+		FileDir404,
+		ParsingFailed,
 	};
 }
 

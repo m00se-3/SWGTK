@@ -80,20 +80,20 @@ namespace swgtk
 			}
 			else
 			{
-				DEBUG_PRINT("Failed to create window. - {}\n", SDL_GetError())
+				DEBUG_PRINT("Failed to create window. - %s\n", SDL_GetError())
 				return;
 			}
 			
 			if (_renderer == nullptr)
 			{
-				DEBUG_PRINT("Failed to initialize renderer. - {}\n", SDL_GetError())
+				DEBUG_PRINT("Failed to initialize renderer. - %s\n", SDL_GetError())
 				return;
 			}
 
 		}
 		else
 		{
-			DEBUG_PRINT("An SDL Library failed to initialize. - {}\n", SDL_GetError())
+			DEBUG_PRINT("An SDL Library failed to initialize. - %s\n", SDL_GetError())
 			return;
 		}
 

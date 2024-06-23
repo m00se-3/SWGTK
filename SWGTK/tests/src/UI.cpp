@@ -104,7 +104,7 @@ namespace swgtk
 			if (!result.valid())
 			{
 				auto msg = menu + std::string{" - "} + err;
-				DEBUG_PRINT("Lua runtime error: Function {}\n", msg)
+				DEBUG_PRINT("Lua runtime error: Function %s\n", msg.c_str())
 			}
 		}
 	}
@@ -145,8 +145,8 @@ namespace swgtk
 	{
 		if (!std::filesystem::exists(dir))
 		{
-			DEBUG_PRINT("Error loading Lua script: no such file or directory - {}", dir)
-			return LuaError::file_dir_404;
+			DEBUG_PRINT("Error loading Lua script: no such file or directory - %s\n", dir.c_str())
+			return LuaError::FileDir404;
 		}
 
 		if (recursive)
@@ -159,9 +159,9 @@ namespace swgtk
 				{
 					auto err = LoadScript(path.string());
 
-					if (err != LuaError::ok)
+					if (err != LuaError::Ok)
 					{
-						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - {}", path.string())
+						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - %s", path.string().c_str())
 						return err;
 					}
 				}
@@ -177,16 +177,16 @@ namespace swgtk
 				{
 					auto err = LoadScript(path.string());
 
-					if (err != LuaError::ok)
+					if (err != LuaError::Ok)
 					{
-						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - {}", path.string())
+						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - %s\n", path.string().c_str())
 						return err;
 					}
 				}
 			}
 		}
 
-		return LuaError::ok;
+		return LuaError::Ok;
 	}
 
 	nk_context* UI::Context(this UI& self) { return &self._ctx; }
@@ -200,10 +200,10 @@ namespace swgtk
 			std::pair<std::string, std::string> res = result;
 			_luaFunctions.insert_or_assign(res.first, res.second);
 			
-			return LuaError::ok;
+			return LuaError::Ok;
 		}
 		
-		return LuaError::parsing_failed;
+		return LuaError::ParsingFailed;
 	}
 
 	void UI::InitLua()

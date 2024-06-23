@@ -15,9 +15,8 @@
 #include "Scene.hpp"
 
 #ifdef _DEBUG
-#include <format>
-#include <iostream>
-#define DEBUG_PRINT(Debug_Format, Debug_Message) std::cout << std::format(Debug_Format, Debug_Message);
+#include <cstdio>
+#define DEBUG_PRINT(Debug_Format, Debug_Message) auto _ = std::fprintf(stderr, Debug_Format, Debug_Message); // NOLINT
 
 #else
 #define DEBUG_PRINT(Debug_Format, Debug_Message)

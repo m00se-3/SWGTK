@@ -51,8 +51,8 @@ namespace swgtk
 
 		struct Node
 		{
-			std::function<SSC(GameScene&, float)> _updateFunc;
 			std::function<SSC(GameScene&)> _createFunc;
+			std::function<SSC(GameScene&, float)> _updateFunc;
 			std::optional<std::function<void(GameScene&)>> _destroyFunc;
 		};
 	
@@ -142,7 +142,7 @@ namespace swgtk
 
 	};
 
-	[[nodiscard]] gsl::owner<GameScene::Node*> CreateLuaScene(const std::string& luaFileName);
+	[[nodiscard]] gsl::owner<GameScene::Node*> CreateLuaScene(sol::state& state, const std::string& luaFileName);
 
 }
 
