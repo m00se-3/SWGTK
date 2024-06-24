@@ -72,7 +72,7 @@ namespace swgtk
 			return std::make_pair(width, height);
 		}
 
-		void SetNewSceneNode(gsl::owner<GameScene::Node*> ptr);
+		constexpr void SetNewSceneNode(gsl::owner<GameScene::Node*> ptr) { _nextSceneNode = ptr; }
 
 		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__

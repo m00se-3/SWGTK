@@ -1,23 +1,26 @@
 ﻿#define SDL_MAIN_HANDLED
 #include "SDLApp.hpp"
-#include "OpenScene.hpp"
+#include "Tests.hpp"
 
 int main(int argc, const char** argv)
 {
 	using namespace std::placeholders;
 
 	auto app = swgtk::SDLApp(argc, argv);
-	auto client = OpenScene{};
+	auto suite = swgtk::tests::Test_Suite{};
+	auto none = swgtk::tests::TestNone{&suite};
+
+	suite.Config(app);
 
 	app.Run(new swgtk::GameScene::Node {
-		._createFunc = [&client](swgtk::GameScene& app) -> auto
+		._createFunc = [&none](swgtk::GameScene& app) -> auto
 		{ 
-			return client.Create(app);
+			return none.Create(app);
 		},
 
-		._updateFunc = [&client](swgtk::GameScene& app, float dt) -> auto 
+		._updateFunc = [&none](swgtk::GameScene& app, float dt) -> auto 
 		{
-			return client.Update(app, dt);
+			return none.Update(app, dt);
 		},
 	});
 

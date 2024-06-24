@@ -35,13 +35,13 @@ namespace swgtk
 
 		A game scene has the following lifetime:
 
-		- Create() is called once after the scene is initialized. This allows the program
+		- Create(GameScene&) is called once after the scene is initialized. This allows the program
 			to initialize the simulation and allocate any needed resources.
 
-		- Update(float) is called once each frame. This is where all the simulation logic
+		- Update(GameScene&, float) is called once each frame. This is where all the simulation logic is
 			kept, including input handling.
 
-		- Destroy is called once at the end of the scene's lifetime. This function is *optional*.
+		- Destroy(GameScene&) is called once at the end of the scene's lifetime. This function is *optional*.
 			You only need to use it if you are using non-RAII structures for your allocated
 			resources. (This is not recommended!)
 	*/
@@ -49,8 +49,10 @@ namespace swgtk
 	{
 	public:
 
-		struct Node
+		// This is a class so that things don't get confusing if the user wants to inherit from this type.
+		class Node
 		{
+		public:
 			std::function<SSC(GameScene&)> _createFunc;
 			std::function<SSC(GameScene&, float)> _updateFunc;
 			std::optional<std::function<void(GameScene&)>> _destroyFunc;
@@ -63,8 +65,8 @@ namespace swgtk
 		void Destroy();
 		static void InitLua(sol::state& lua);
 		void InitLuaInput(sol::state& lua);
-		void SetNewScene(gsl::owner<Node*> scene);
-		void GenerateNewScene(gsl::owner<Node*> ptr);
+		void SetNewScene(gsl::owner<Node*> scene); // The SDLApp uses this function.
+		void GenerateNewScene(gsl::owner<Node*> ptr); // The user uses this function.
 
 		[[nodiscard]] constexpr SDLApp* AppRoot(this GameScene& self) { return self._parent; }
 		[[nodiscard]] constexpr RenderWrapper& Renderer(this GameScene& self) { return self._renderer; }

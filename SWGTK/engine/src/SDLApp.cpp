@@ -221,11 +221,6 @@ namespace swgtk
 #endif
 	}
 
-	void SDLApp::SetNewSceneNode(gsl::owner<GameScene::Node*> ptr)
-	{
-		_nextSceneNode = ptr;	
-	}
-
 #ifdef __EMSCRIPTEN__
 
 	const SDLApp::timePoint& SDLApp::GetLastFrame() { return _lastFrameTime; }
