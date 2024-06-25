@@ -1,8 +1,14 @@
-﻿add_executable(Test_Suite)
+﻿add_executable(SWGTK_TestSuite)
 add_library(SWGTK STATIC)
 
-target_compile_definitions(SWGTK PRIVATE USE_CCACHE=YES)
-target_compile_definitions(Test_Suite PRIVATE USE_CCACHE=YES)
+add_executable(SWGTK::TestSuite ALIAS SWGTK_TestSuite)
+
+if(CCACHE_PROGRAM)
+
+	target_compile_definitions(SWGTK PRIVATE USE_CCACHE=YES)
+	target_compile_definitions(SWGTK_TestSuite PRIVATE USE_CCACHE=YES)
+
+endif()
 
 target_sources(
 	SWGTK	
@@ -29,7 +35,7 @@ target_sources(
 )
 
 target_compile_definitions(
-	Test_Suite	
+	SWGTK_TestSuite	
 
 	PRIVATE 
 
@@ -38,7 +44,7 @@ target_compile_definitions(
 )
 
 target_include_directories(
-	Test_Suite
+	SWGTK_TestSuite
 
 	PUBLIC 
 
@@ -50,7 +56,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-	Test_Suite
+	SWGTK_TestSuite
 
 	PRIVATE 
 
@@ -94,13 +100,13 @@ target_link_libraries(
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-	target_compile_options(Test_Suite PRIVATE "-g")
+	target_compile_options(SWGTK_TestSuite PRIVATE "-g")
 	target_compile_options(SWGTK PRIVATE "-g")
 endif()
 
 
 target_sources(
-	Test_Suite
+	SWGTK_TestSuite
 
 	PUBLIC 
 

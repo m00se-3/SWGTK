@@ -4,35 +4,43 @@ project ("SWGTK")
 
 include("CPM.cmake")
 
-# Add CCache for build caching
+# Add CCache and CLang-Tidy, if available
 
 find_program(CCACHE_PROGRAM ccache)
 
 if(CCACHE_PROGRAM)
 
-CPMAddPackage(
-  NAME Ccache.cmake
-  GITHUB_REPOSITORY TheLartians/Ccache.cmake
-  VERSION 1.2
-)
+  message("-- Enabling ccache.\n")
 
-set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+  CPMAddPackage(
+    NAME Ccache.cmake
+    GITHUB_REPOSITORY TheLartians/Ccache.cmake
+    VERSION 1.2
+  )
+
+  set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+endif()
+
+find_program(CLANG_TIDY_LOC clang-tidy)
+
+if(CLANG_TIDY_LOC)
+  
+  message("-- Enabling clang-tidy.\n")
+  set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_LOC})
 endif()
 
 # Compiler warning flags go here.
 if(NOT CMAKE_CXX_COMPILER_ID  MATCHES MSVC)
-list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion" "-Wshadow" "-Wnon-virtual-dtor")
+  list(APPEND WarningFlags "-Wall" "-Wextra" "-Wpedantic" "-Wno-newline-eof" "-Wno-c++98-compat" "-Wno-c++98-compat-pedantic" "-Wconversion" "-Wshadow" "-Wnon-virtual-dtor")
 else()
   list(APPEND WarningFlags "/Wall", "/permissive-")
 endif()
 
-set(CMAKE_CXX_CLANG_TIDY clang-tidy)
-
 # If building for emscripten
 if(EMSCRIPTEN)
-message("-- Emscripten build enabled!!!")
+  message("-- Emscripten build enabled!!!")
 
-set(CMAKE_EXECUTABLE_SUFFIX ".html")
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 endif()
 
