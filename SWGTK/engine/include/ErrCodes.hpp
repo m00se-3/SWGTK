@@ -8,6 +8,7 @@ namespace swgtk
 		Ok,
 		FileDir404,
 		ParsingFailed,
+		BadResult,
 	};
 }
 

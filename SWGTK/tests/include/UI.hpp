@@ -1,6 +1,9 @@
 #ifndef SWGTK_UI_SYSTEM_HPP
 #define SWGTK_UI_SYSTEM_HPP
 
+#include "RenderWrap.hpp"
+#include <cwchar>
+#include <filesystem>
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_STANDARD_IO
 
@@ -24,11 +27,15 @@
 #include "ErrCodes.hpp"
 #include "NKFont.hpp"
 
-namespace swgtk
+namespace swgtk 
 {
 	class SDLApp;
+	class RenderWrapper;
+}
 
-	constexpr const int normalFontSize = 16;
+namespace swgtk::tests
+{
+constexpr const int normalFontSize = 16;
 	constexpr const int largeFontSize = 40;
 	
 	class UI
@@ -45,8 +52,9 @@ namespace swgtk
 
 		void Update();
 		void Compile();
-		void Draw();
+		void Draw(RenderWrapper* ren);
 		void InitLua();
+		[[nodiscard]] LuaError LoadScript(const std::string& file);
 
 		void Open(const std::string& name);
 		void Close(const std::string& name);
@@ -56,7 +64,7 @@ namespace swgtk
 
 	private:
 
-		LuaError LoadScript(const std::string& file);
+		[[nodiscard]] LuaError CheckLuaPath(const std::filesystem::directory_entry& entry);
 
 		sol::state _lua;
 		sol::table _dataTable;

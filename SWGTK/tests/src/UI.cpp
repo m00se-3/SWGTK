@@ -3,9 +3,10 @@
 #include <filesystem>
 #include <string>
 
+#include "RenderWrap.hpp"
 #include "SDLApp.hpp"
 
-namespace swgtk
+namespace swgtk::tests
 {
 	/*
 		NOTE: If you experience rendering issues while building the ui, consider increasing this buffer size.
@@ -114,7 +115,7 @@ namespace swgtk
 		
 	}
 
-	void UI::Draw()
+	void UI::Draw(RenderWrapper* ren)
 	{
 		nk_buffer_init_fixed(&_verts, _buffer.data(), MaxVertexBuffer);
 		nk_buffer_init_fixed(&_inds, _elements.data(), MaxVertexBuffer);
@@ -124,14 +125,14 @@ namespace swgtk
 		const nk_draw_command* cmd = nullptr;
 		uint32_t offset = 0u;
 
-		const auto* vertices = static_cast<const SDL_Vertex*>(nk_buffer_memory_const(&_verts));
-		const std::span<const int> elements{static_cast<const int*>(nk_buffer_memory_const(&_inds)), MaxVertexBuffer};
+		auto vertices = std::span<SDL_Vertex>{static_cast<SDL_Vertex*>(nk_buffer_memory(&_verts)), _buffer.size()};
+		const std::span<int> elements{static_cast<int*>(nk_buffer_memory(&_inds)), _elements.size()};
 
 		nk_draw_foreach(cmd, &_ctx, &_cmds)
 		{
 			if (cmd->elem_count > 0u) { continue; }
-
-			SDL_RenderGeometry(_parent->Renderer(), static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, _verts.needed / sizeof(SDL_Vertex), &elements[offset], static_cast<int>(cmd->elem_count));  // NOLINT
+			// SDL_RenderGeometry(_parent->Renderer(), static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, _verts.needed / sizeof(SDL_Vertex), &elements[offset], static_cast<int>(cmd->elem_count));
+			ren->DrawGeometry(static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, std::span<int>{&elements[offset], cmd->elem_count});
 
 			offset += cmd->elem_count;
 		}
@@ -143,9 +144,9 @@ namespace swgtk
 
 	LuaError UI::LoadScriptsFromDirectory(const std::string& dir, bool recursive)
 	{
-		if (!std::filesystem::exists(dir))
+		if (!std::filesystem::exists(dir) || !std::filesystem::is_directory(dir))
 		{
-			DEBUG_PRINT("Error loading Lua script: no such file or directory - %s\n", dir.c_str())
+			DEBUG_PRINT("Error loading directory: the directory does not exist or is not a directory. - %s\n", dir.c_str())
 			return LuaError::FileDir404;
 		}
 
@@ -153,17 +154,11 @@ namespace swgtk
 		{
 			for (const auto& item : std::filesystem::recursive_directory_iterator(dir))
 			{
-				const auto& path = item.path();
+				auto result = CheckLuaPath(item);
 
-				if (path.extension() == ".lua")
+				if(result != LuaError::Ok)
 				{
-					auto err = LoadScript(path.string());
-
-					if (err != LuaError::Ok)
-					{
-						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - %s", path.string().c_str())
-						return err;
-					}
+					break;
 				}
 			}
 		}
@@ -171,20 +166,32 @@ namespace swgtk
 		{
 			for (const auto& item : std::filesystem::directory_iterator(dir))
 			{
-				const auto& path = item.path();
+				auto result = CheckLuaPath(item);
 
-				if (path.extension() == ".lua")
+				if(result != LuaError::Ok)
 				{
-					auto err = LoadScript(path.string());
-
-					if (err != LuaError::Ok)
-					{
-						DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - %s\n", path.string().c_str())
-						return err;
-					}
+					break;
 				}
 			}
 		}
+
+		return LuaError::Ok;
+	}
+
+	LuaError UI::CheckLuaPath(const std::filesystem::directory_entry& entry)
+	{
+		const auto& path = entry.path();
+
+		if (path.extension() == ".lua")
+		{
+			auto err = LoadScript(path.string());
+
+			if (err != LuaError::Ok)
+			{
+				DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - %s", path.string().c_str())
+				return err;
+			}
+		} // If not a lua file, just carry on iterating the directory.
 
 		return LuaError::Ok;
 	}
@@ -197,6 +204,12 @@ namespace swgtk
 
 		if (result.valid())
 		{
+			// Make sure the results are of the layout we expect.
+			if(result.get_type() != sol::type::table || result.get<sol::table>().size() != 2uz)
+			{
+				return LuaError::BadResult;
+			}
+
 			std::pair<std::string, std::string> res = result;
 			_luaFunctions.insert_or_assign(res.first, res.second);
 			

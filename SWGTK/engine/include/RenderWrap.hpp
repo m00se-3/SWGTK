@@ -60,7 +60,7 @@ namespace swgtk
 
 	    It's okay to allow for nullptr in 'texture' because SDL handles it for us.
 	*/ 
-	constexpr void DrawGeomerty(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies)
+	constexpr void DrawGeometry(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies)
 	{
 	    [[maybe_unused]] auto result = SDL_RenderGeometry(_render, texture, verticies.data(), static_cast<int>(std::ssize(verticies)),
 								indicies.data(), static_cast<int>(std::ssize(indicies)));
