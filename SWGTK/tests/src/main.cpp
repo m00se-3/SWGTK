@@ -4,8 +4,6 @@
 
 int main(int argc, const char** argv)
 {
-	using namespace std::placeholders;
-
 	auto app = swgtk::SDLApp(argc, argv);
 	auto suite = swgtk::tests::Test_Suite{};
 	auto none = swgtk::tests::TestNone{&suite};

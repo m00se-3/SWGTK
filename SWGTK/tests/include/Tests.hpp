@@ -17,6 +17,7 @@ namespace swgtk::tests
 	public:
 		void Config(SDLApp& app);
 		void UpdateUI(swgtk::GameScene& app);
+		void DrawUI(swgtk::GameScene& app);
 		
 		static nk_keys SDLKeytoNKKey(int key, uint16_t mods);
         static int SDLButtontoNKButton(uint8_t button);

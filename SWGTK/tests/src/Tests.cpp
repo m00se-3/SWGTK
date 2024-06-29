@@ -43,6 +43,11 @@ namespace swgtk::tests
 
 	}
 
+	void Test_Suite::DrawUI(swgtk::GameScene& app)
+	{
+		_ui->Draw(&app.Renderer());
+	}
+
 	int Test_Suite::SDLButtontoNKButton(uint8_t button)
 	{
 		switch(button)
@@ -128,6 +133,9 @@ namespace swgtk::tests
 	SSC TestNone::Update(GameScene& app, [[maybe_unused]] float dt)
 	{
 		_parent->UpdateUI(app);
+		
+
+		_parent->DrawUI(app);
 
 		return SSC::Ok;
 	}
