@@ -20,7 +20,7 @@ namespace swgtk::tests
 		void DrawUI(swgtk::GameScene& app);
 		
 		static nk_keys SDLKeytoNKKey(int key, uint16_t mods);
-        static int SDLButtontoNKButton(uint8_t button);
+		static int SDLButtontoNKButton(uint8_t button);
 
 	private:
 

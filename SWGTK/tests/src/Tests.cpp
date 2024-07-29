@@ -7,7 +7,8 @@ namespace swgtk::tests
 {
 	void Test_Suite::Config(SDLApp& app)
 	{
-		_ui = std::make_unique<UI>(&app, _config + "/ui");
+		_ui = std::make_unique<UI>(&app, _assets + "/fonts");
+		[[maybe_unused]] auto err = _ui->LoadScriptsFromDirectory(_config + "/ui");
 	}
 
 	void Test_Suite::UpdateUI(swgtk::GameScene& app)
@@ -40,6 +41,8 @@ namespace swgtk::tests
 		nk_input_scroll(_ui->Context(), nk_vec2(app.GetScrollX(), app.GetScrollY()));
 
 		nk_input_end(_ui->Context());
+
+		_ui->Update();
 
 	}
 

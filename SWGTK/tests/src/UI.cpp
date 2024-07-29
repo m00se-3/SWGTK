@@ -82,8 +82,8 @@ namespace swgtk::tests
 		_configurator.tex_null = _nullTexture;
 
 		nk_buffer_init_default(&_cmds);
-		_buffer.resize(MaxVertexBuffer);
-		_elements.resize(MaxVertexBuffer);
+		_buffer.reserve(MaxVertexBuffer);
+		_elements.reserve(MaxVertexBuffer);
 
 		InitLua();
 	}
@@ -117,8 +117,8 @@ namespace swgtk::tests
 
 	void UI::Draw(RenderWrapper* ren)
 	{
-		nk_buffer_init_fixed(&_verts, _buffer.data(), MaxVertexBuffer);
-		nk_buffer_init_fixed(&_inds, _elements.data(), MaxVertexBuffer);
+		nk_buffer_init_fixed(&_verts, _buffer.data(), _buffer.capacity());
+		nk_buffer_init_fixed(&_inds, _elements.data(), _elements.capacity());
 
 		nk_convert(&_ctx, &_cmds, &_verts, &_inds, &_configurator);
 		
@@ -186,10 +186,25 @@ namespace swgtk::tests
 		{
 			auto err = LoadScript(path.string());
 
-			if (err != LuaError::Ok)
+			switch (err)
 			{
-				DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - %s", path.string().c_str())
+			case LuaError::Ok: 
 				return err;
+			case LuaError::BadResult:
+				{
+					DEBUG_PRINT("Lua script returned an invalid result: possibly a missing return statement - %s", path.string().c_str())
+					return err;
+				}
+			case LuaError::ParsingFailed:
+				{
+					DEBUG_PRINT("Failed to parse Lua script: possibly a syntax error - %s", path.string().c_str())
+					return err;
+				}
+			case LuaError::FileDir404:
+				{
+					DEBUG_PRINT("Unable to load Lua script: no such file or directory - %s", path.string().c_str())
+					return err;
+				}
 			}
 		} // If not a lua file, just carry on iterating the directory.
 
@@ -205,13 +220,15 @@ namespace swgtk::tests
 		if (result.valid())
 		{
 			// Make sure the results are of the layout we expect.
-			if(result.get_type() != sol::type::table || result.get<sol::table>().size() != 2uz)
+			sol::optional<std::string> name = result.get<std::string>(0);
+			sol::optional<std::string> errMsg = result.get<std::string>(1);
+
+			if(!name || !errMsg)
 			{
 				return LuaError::BadResult;
 			}
 
-			std::pair<std::string, std::string> res = result;
-			_luaFunctions.insert_or_assign(res.first, res.second);
+			_luaFunctions.insert_or_assign(*name, *errMsg);
 			
 			return LuaError::Ok;
 		}
