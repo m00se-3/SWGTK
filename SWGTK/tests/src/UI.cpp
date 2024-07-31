@@ -67,7 +67,7 @@ namespace swgtk::tests
 		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
 
-		if (nk_init_default(&_ctx, &_fonts.GetNK(nk::FontStyle::Normal, normalFontSize)->handle) == nk_bool{1}) { return; }
+		if (nk_init_default(&_ctx, &_fonts.GetNK(nk::FontStyle::Normal, normalFontSize)->handle) == nk_bool{0}) { return; }
 
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;

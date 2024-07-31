@@ -12,7 +12,8 @@
       },
       "environment": {
         "Assets_Dir": "${sourceDir}/assets",
-        "Config_Dir": "${sourceDir}/config"
+        "Config_Dir": "${sourceDir}/config",
+        "CMAKE_BUILD_PARALLEL_LEVEL": "10"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
