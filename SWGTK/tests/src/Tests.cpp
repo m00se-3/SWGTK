@@ -11,6 +11,11 @@ namespace swgtk::tests
 		[[maybe_unused]] auto err = _ui->LoadScriptsFromDirectory(_config + "/ui");
 	}
 
+	void Test_Suite::LoadUI()
+	{
+		_ui->Open("TestOptionWindow");
+	}
+
 	void Test_Suite::UpdateUI(swgtk::GameScene& app)
 	{
 		//Forward mouse and keyboard events to nuklear.
@@ -129,7 +134,7 @@ namespace swgtk::tests
 
 	SSC TestNone::Create(GameScene& app)
 	{
-		
+		_parent->LoadUI();
 		return SSC::Ok;
 	}
 

@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <string>
+#include <SDL2/SDL_render.h>
 
 #include "RenderWrap.hpp"
 #include "SDLApp.hpp"
@@ -82,8 +83,8 @@ namespace swgtk::tests
 		_configurator.tex_null = _nullTexture;
 
 		nk_buffer_init_default(&_cmds);
-		_buffer.reserve(MaxVertexBuffer);
-		_elements.reserve(MaxVertexBuffer);
+		_buffer.resize(MaxVertexBuffer);
+		_elements.resize(MaxVertexBuffer);
 
 		InitLua();
 	}
@@ -125,13 +126,13 @@ namespace swgtk::tests
 		const nk_draw_command* cmd = nullptr;
 		uint32_t offset = 0u;
 
-		auto vertices = std::span<SDL_Vertex>{static_cast<SDL_Vertex*>(nk_buffer_memory(&_verts)), _buffer.size()};
-		const std::span<int> elements{static_cast<int*>(nk_buffer_memory(&_inds)), _elements.size()};
+		auto vertices = std::span<SDL_Vertex>{static_cast<SDL_Vertex*>(nk_buffer_memory(&_verts)), _buffer.capacity()};
+		const std::span<int> elements{static_cast<int*>(nk_buffer_memory(&_inds)), _elements.capacity()};
 
 		nk_draw_foreach(cmd, &_ctx, &_cmds)
 		{
-			if (cmd->elem_count > 0u) { continue; }
-			// SDL_RenderGeometry(_parent->Renderer(), static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, _verts.needed / sizeof(SDL_Vertex), &elements[offset], static_cast<int>(cmd->elem_count));
+			if (cmd->elem_count == 0u) { continue; }
+			// SDL_RenderGeometry(_parent->Renderer(), static_cast<SDL_Texture*>(cmd->texture.ptr), vertices.data(), _verts.needed / sizeof(SDL_Vertex), &elements[offset], static_cast<int>(cmd->elem_count));
 			ren->DrawGeometry(static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, std::span<int>{&elements[offset], cmd->elem_count});
 
 			offset += cmd->elem_count;
@@ -381,7 +382,7 @@ namespace swgtk::tests
 		// Access to the nuklear context.
 
 		auto context = _lua.new_usertype<struct nk_context>("Context");
-		_lua["Ctx"] = _ctx;
+		_lua["Ctx"] = &_ctx;
 
 		/*
 			Define nuklear functions.

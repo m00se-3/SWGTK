@@ -30,20 +30,12 @@ namespace swgtk
 
 	SSC GameScene::Create()
 	{
-		_sceneState = _pimpl->_createFunc(*this);
-		return _sceneState;
+		return _pimpl->_createFunc(*this);
 	}
 
 	SSC GameScene::Update(float dt)
 	{
-		auto result = _pimpl->_updateFunc(*this, dt);
-
-		if(_sceneState != SSC::ChangeScene)
-		{
-			_sceneState = result;
-		}
-
-		return result;
+		return _pimpl->_updateFunc(*this, dt);
 	}
 
 	void GameScene::Destroy()

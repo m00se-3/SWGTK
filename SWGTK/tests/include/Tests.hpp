@@ -16,6 +16,7 @@ namespace swgtk::tests
 	{
 	public:
 		void Config(SDLApp& app);
+		void LoadUI();
 		void UpdateUI(swgtk::GameScene& app);
 		void DrawUI(swgtk::GameScene& app);
 		
