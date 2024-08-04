@@ -1,8 +1,7 @@
-#ifndef SWGTK_UI_SYSTEM_HPP
-#define SWGTK_UI_SYSTEM_HPP
+#ifndef SWGTK_NUKLEARUI_SYSTEM_HPP
+#define SWGTK_NUKLEARUI_SYSTEM_HPP
 
 #include "RenderWrap.hpp"
-#include <cwchar>
 #include <filesystem>
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_STANDARD_IO
@@ -33,34 +32,32 @@ namespace swgtk
 	class RenderWrapper;
 }
 
-namespace swgtk::tests
+namespace swgtk::nk
 {
-constexpr const int normalFontSize = 16;
-	constexpr const int largeFontSize = 40;
-	
-	class UI
+	class NuklearUI
 	{
 	public:
-		UI(SDLApp* app, const std::string& fontsDir);
-		UI(const UI&) = delete;
-		UI(UI&&) = delete;
+		NuklearUI(SDLApp* app);
+		NuklearUI(const NuklearUI&) = delete;
+		NuklearUI(NuklearUI&&) = delete;
 
-		UI& operator=(const UI&) = delete;
-		UI& operator=(UI&&) = delete;
+		NuklearUI& operator=(const NuklearUI&) = delete;
+		NuklearUI& operator=(NuklearUI&&) = delete;
 
-		~UI();
+		~NuklearUI();
 
+		void Compile(uint64_t vertexBufferSize, nk_font* initFont);
 		void Update();
-		void Compile();
 		void Draw(RenderWrapper* ren);
-		void InitLua();
-		[[nodiscard]] LuaError LoadScript(const std::string& file);
+		[[nodiscard]] FontGroup& GetFontHandle();
 
 		void Open(const std::string& name);
 		void Close(const std::string& name);
 
+		void InitLua();
+		[[nodiscard]] LuaError LoadScript(const std::string& file);
 		[[nodiscard]] LuaError LoadScriptsFromDirectory(const std::string& dir, bool recursive = false);
-		[[nodiscard]] nk_context* Context(this UI& self);
+		[[nodiscard]] nk_context* Context(this NuklearUI& self);
 
 	private:
 
@@ -85,4 +82,4 @@ constexpr const int normalFontSize = 16;
 	};
 }
 
-#endif // !SWGTK_UI_SYSTEM_HPP
+#endif // !SWGTK_NUKLEARUI_SYSTEM_HPP

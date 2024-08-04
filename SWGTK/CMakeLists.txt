@@ -10,6 +10,28 @@ if(CCACHE_PROGRAM)
 
 endif()
 
+set(Added_Sources "")
+set(Added_Headers "")
+
+if(SWGTK_USE_NUKLEAR)
+	list(
+		APPEND 
+		Added_Headers
+
+		${CMAKE_CURRENT_LIST_DIR}/engine/include/NKFont.hpp
+		${CMAKE_CURRENT_LIST_DIR}/engine/include/NKUI.hpp
+	)
+
+	list(
+		APPEND
+		Added_Sources
+
+		${CMAKE_CURRENT_LIST_DIR}/engine/src/nuklear.cpp
+		${CMAKE_CURRENT_LIST_DIR}/engine/src/NKFont.cpp
+		${CMAKE_CURRENT_LIST_DIR}/engine/src/NKUI.cpp
+	)
+endif()
+
 target_sources(
 	SWGTK	
 
@@ -23,7 +45,9 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/Component.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/RenderWrap.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/TTFFont.hpp
-	
+
+	${Added_Headers}
+
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/SDLApp.cpp
@@ -32,6 +56,8 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/RenderWrap.cpp
+
+	${Added_Sources}
 )
 
 target_compile_definitions(
@@ -52,7 +78,6 @@ target_include_directories(
 	${CMAKE_CURRENT_LIST_DIR}/tests/include
 	${lua_SOURCE_DIR}
 	${SDL2_SOURCE_DIR}/include
-	${Nuklear_SOURCE_DIR}
 )
 
 target_link_libraries(
@@ -82,6 +107,7 @@ target_include_directories(
 	${SDL2_mixer_SOURCE_DIR}/include
 	${SDL2_image_SOURCE_DIR}/include
 	${SDL2_ttf_SOURCE_DIR}
+	${Nuklear_SOURCE_DIR}
 )
 
 target_link_libraries(
@@ -110,15 +136,10 @@ target_sources(
 
 	PUBLIC 
 
-	${CMAKE_CURRENT_LIST_DIR}/tests/include/NKFont.hpp
-	${CMAKE_CURRENT_LIST_DIR}/tests/include/UI.hpp
 	${CMAKE_CURRENT_LIST_DIR}/tests/include/Tests.hpp
 
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/tests/src/main.cpp
-	${CMAKE_CURRENT_LIST_DIR}/tests/src/nuklear.cpp
-	${CMAKE_CURRENT_LIST_DIR}/tests/src/NKFont.cpp
-	${CMAKE_CURRENT_LIST_DIR}/tests/src/UI.cpp
 	${CMAKE_CURRENT_LIST_DIR}/tests/src/Tests.cpp
 )

@@ -2,7 +2,7 @@
 #define SWGTK_TEST_SCENES_HPP
 
 #include "Scene.hpp"
-#include "UI.hpp"
+#include "NKUI.hpp"
 #include "SDLApp.hpp"
 
 #include <memory>
@@ -11,6 +11,14 @@
 
 namespace swgtk::tests 
 {
+	/*
+		NOTE: If you experience rendering issues while building the ui, consider increasing this buffer size.
+	*/
+
+	constexpr uint64_t MaxVertexBuffer = 32uz * 1024uz;
+
+	constexpr const int normalFontSize = 16;
+	constexpr const int largeFontSize = 40;
 
 	class Test_Suite
 	{
@@ -27,7 +35,7 @@ namespace swgtk::tests
 
 		std::string _config = SWGTK_CONFIG;
 		std::string _assets = SWGTK_ASSETS;
-		std::unique_ptr<UI> _ui;
+		std::unique_ptr<swgtk::nk::NuklearUI> _ui;
 
 		sol::state _lua;
 	};

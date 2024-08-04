@@ -1,17 +1,26 @@
 #include "Tests.hpp"
 #include "Input.hpp"
-#include "UI.hpp"
 #include <memory>
 
 namespace swgtk::tests 
 {
 	void Test_Suite::Config(SDLApp& app)
 	{
-		_ui = std::make_unique<UI>(&app, _assets + "/fonts/roboto");
+		_ui = std::make_unique<swgtk::nk::NuklearUI>(&app);
+		auto& fontHandle = _ui->GetFontHandle();
+
+		fontHandle.AddFont(nk::FontStyle::Normal, normalFontSize , _assets + "/fonts/roboto/Roboto-Medium.ttf");
+		fontHandle.AddFont(nk::FontStyle::Bold, normalFontSize , _assets + "/fonts/roboto/Roboto-Bold.ttf");
+		fontHandle.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , _assets + "/fonts/roboto/Roboto-BoldItalic.ttf");
+		fontHandle.AddFont(nk::FontStyle::Italic, normalFontSize , _assets + "/fonts/roboto/Roboto-Italic.ttf");
+		fontHandle.AddFont(nk::FontStyle::Bold, largeFontSize, _assets + "/fonts/roboto/Roboto-Bold.ttf");
+		
+		_ui->Compile(MaxVertexBuffer, fontHandle.GetNK(nk::FontStyle::Normal, normalFontSize));
 	}
 
 	void Test_Suite::LoadUI()
 	{
+		_ui->InitLua();
 		[[maybe_unused]] auto err = _ui->LoadScriptsFromDirectory(_config + "/ui");
 		_ui->Open("TestOptionWindow");
 	}

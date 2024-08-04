@@ -1,4 +1,4 @@
-#include "UI.hpp"
+#include "NKUI.hpp"
 
 #include <filesystem>
 #include <string>
@@ -7,13 +7,8 @@
 #include "RenderWrap.hpp"
 #include "SDLApp.hpp"
 
-namespace swgtk::tests
+namespace swgtk::nk
 {
-	/*
-		NOTE: If you experience rendering issues while building the ui, consider increasing this buffer size.
-	*/
-
-	constexpr uint64_t MaxVertexBuffer = 32uz * 1024uz;
 
 	constexpr std::array<nk_draw_vertex_layout_element, 4u> VertexLayout = {
 		nk_draw_vertex_layout_element{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
@@ -22,7 +17,7 @@ namespace swgtk::tests
 		nk_draw_vertex_layout_element{NK_VERTEX_LAYOUT_END}
 	}; 
 
-	UI::~UI()
+	NuklearUI::~NuklearUI()
 	{
 		nk_buffer_free(&_cmds);
 
@@ -30,7 +25,7 @@ namespace swgtk::tests
 		SDL_DestroyTexture(_whiteTexture);
 	}
 
-	UI::UI(SDLApp* app, const std::string& fontsDir)
+	NuklearUI::NuklearUI(SDLApp* app)
 		: _ctx(), _configurator(), _parent(app),
 			_cmds(), _verts(), _inds(), _nullTexture()
 	{
@@ -44,31 +39,7 @@ namespace swgtk::tests
 		_nullTexture.texture = nk_handle_ptr(_whiteTexture);
 		_nullTexture.uv = nk_vec2(0.0f, 0.0f);
 		
-		// Add Fonts to the FontGroup.
-
-		_fonts.Create();
-
-		_fonts.AddFont(nk::FontStyle::Normal, normalFontSize , fontsDir + "/Roboto-Medium.ttf");
-		_fonts.AddFont(nk::FontStyle::Bold, normalFontSize , fontsDir + "/Roboto-Bold.ttf");
-		_fonts.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , fontsDir + "/Roboto-BoldItalic.ttf");
-		_fonts.AddFont(nk::FontStyle::Italic, normalFontSize , fontsDir + "/Roboto-Italic.ttf");
-		_fonts.AddFont(nk::FontStyle::Bold, largeFontSize, fontsDir + "/Roboto-Bold.ttf");
-
-
-		// Bake the fonts.
-
-		int imgWidth = 0, imgHeight = 0;
-		const void* img = nk_font_atlas_bake(_fonts.GetAtlas(), &imgWidth, &imgHeight, NK_FONT_ATLAS_RGBA32);
-
-		_fontTexture = SDL_CreateTexture(_parent->Renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, imgWidth, imgHeight);
-		SDL_UpdateTexture(_fontTexture, nullptr, img, imgWidth * 4);
-
-		_fonts.Finalize(_fontTexture);
-
-		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureBlendMode(_whiteTexture, SDL_BLENDMODE_BLEND);
-
-		if (nk_init_default(&_ctx, &_fonts.GetNK(nk::FontStyle::Normal, normalFontSize)->handle) == nk_bool{0}) { return; }
 
 		memset(&_configurator, 0, sizeof(_configurator));
 		_configurator.shape_AA = NK_ANTI_ALIASING_ON;
@@ -82,14 +53,35 @@ namespace swgtk::tests
 		_configurator.global_alpha = 1.0f; //NOLINT
 		_configurator.tex_null = _nullTexture;
 
-		nk_buffer_init_default(&_cmds);
-		_buffer.resize(MaxVertexBuffer);
-		_elements.resize(MaxVertexBuffer);
-
-		InitLua();
+		_fonts.Create();
 	}
 
-	void UI::Update()
+	void NuklearUI::Compile(uint64_t vertexBufferSize, nk_font* initFont)
+	{
+		nk_buffer_init_default(&_cmds);
+		_buffer.resize(vertexBufferSize);
+		_elements.resize(vertexBufferSize);
+
+		// Bake the fonts.
+
+		int imgWidth = 0, imgHeight = 0;
+		const void* img = nk_font_atlas_bake(_fonts.GetAtlas(), &imgWidth, &imgHeight, NK_FONT_ATLAS_RGBA32);
+
+		_fontTexture = SDL_CreateTexture(_parent->Renderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, imgWidth, imgHeight);
+		SDL_UpdateTexture(_fontTexture, nullptr, img, imgWidth * 4);
+
+		_fonts.Finalize(_fontTexture);
+
+		SDL_SetTextureBlendMode(_fontTexture, SDL_BLENDMODE_BLEND);
+
+		if (nk_init_default(&_ctx, &initFont->handle) == nk_bool{0}) 
+		{
+			DEBUG_PRINT("Failed to initialize nuklear context%s", ".\n")
+		}
+
+	}
+
+	void NuklearUI::Update()
 	{
 		auto size = _parent->GetWindowSize();
 		auto _dataTable = _lua["Host"].get<sol::table>();
@@ -111,12 +103,7 @@ namespace swgtk::tests
 		}
 	}
 
-	void UI::Compile()
-	{
-		
-	}
-
-	void UI::Draw(RenderWrapper* ren)
+	void NuklearUI::Draw(RenderWrapper* ren)
 	{
 		nk_buffer_init_fixed(&_verts, _buffer.data(), _buffer.capacity());
 		nk_buffer_init_fixed(&_inds, _elements.data(), _elements.capacity());
@@ -143,7 +130,12 @@ namespace swgtk::tests
 		nk_buffer_free(&_inds);
 	}
 
-	LuaError UI::LoadScriptsFromDirectory(const std::string& dir, bool recursive)
+	nk::FontGroup& NuklearUI::GetFontHandle()
+	{
+		return _fonts;
+	}
+
+	LuaError NuklearUI::LoadScriptsFromDirectory(const std::string& dir, bool recursive)
 	{
 		if (!std::filesystem::exists(dir) || !std::filesystem::is_directory(dir))
 		{
@@ -179,7 +171,7 @@ namespace swgtk::tests
 		return LuaError::Ok;
 	}
 
-	LuaError UI::CheckLuaPath(const std::filesystem::directory_entry& entry)
+	LuaError NuklearUI::CheckLuaPath(const std::filesystem::directory_entry& entry)
 	{
 		const auto& path = entry.path();
 
@@ -212,9 +204,9 @@ namespace swgtk::tests
 		return LuaError::Ok;
 	}
 
-	nk_context* UI::Context(this UI& self) { return &self._ctx; }
+	nk_context* NuklearUI::Context(this NuklearUI& self) { return &self._ctx; }
 
-	LuaError UI::LoadScript(const std::string& file)
+	LuaError NuklearUI::LoadScript(const std::string& file)
 	{
 		sol::protected_function_result result = _lua.script_file(file);
 
@@ -237,7 +229,7 @@ namespace swgtk::tests
 		return LuaError::ParsingFailed;
 	}
 
-	void UI::InitLua()
+	void NuklearUI::InitLua()
 	{
 		_lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
@@ -790,7 +782,7 @@ namespace swgtk::tests
 		
 	}
 
-	void UI::Open(const std::string& name)
+	void NuklearUI::Open(const std::string& name)
 	{
 		if (_luaFunctions.contains(name))
 		{
@@ -798,7 +790,7 @@ namespace swgtk::tests
 		}
 	}
 
-	void UI::Close(const std::string& name)
+	void NuklearUI::Close(const std::string& name)
 	{
 		_openMenus.erase(name);
 	}

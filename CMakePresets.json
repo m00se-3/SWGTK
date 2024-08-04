@@ -52,11 +52,27 @@
       }
     },
     {
+      "name": "x64-debug-nuklear",
+      "displayName": "x64 Debug (With Nuklear)",
+      "inherits": "x64-debug",
+      "cacheVariables": {
+        "SWGTK_USE_NUKLEAR": true
+      }
+    },
+    {
       "name": "x64-release",
       "displayName": "x64 Release",
       "inherits": "x64-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "x64-release-nuklear",
+      "displayName": "x64 Release (With Nuklear)",
+      "inherits": "x64-release",
+      "cacheVariables": {
+        "SWGTK_USE_NUKLEAR": true
       }
     },
     {

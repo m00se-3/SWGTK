@@ -104,8 +104,9 @@ CPMAddPackage(
 target_compile_definitions(SDL2_mixer PUBLIC HAVE_WAVPACK_H=1) # Make sure SDL_mixer uses the correct include path for wavpack
 target_include_directories(SDL2_mixer PUBLIC ${WavPack_SOURCE_DIR})
 
-#  Test_Suite specific
-CPMAddPackage("gh:Immediate-Mode-UI/Nuklear#4.12.0")
+if(SWGTK_USE_NUKLEAR)
+  CPMAddPackage("gh:Immediate-Mode-UI/Nuklear#4.12.0")
+endif()
 
 # Misc
 CPMAddPackage("gh:gsl-lite/gsl-lite@0.41.0")
