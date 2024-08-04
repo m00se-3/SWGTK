@@ -11,8 +11,8 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": true
       },
       "environment": {
-        "Assets_Dir": "${sourceDir}/assets",
-        "Config_Dir": "${sourceDir}/config",
+        "Assets_Dir": "${sourceDir}/SWGTK/tests/assets",
+        "Config_Dir": "${sourceDir}/SWGTK/tests/config",
         "CMAKE_BUILD_PARALLEL_LEVEL": "10"
       },
       "vendor": {

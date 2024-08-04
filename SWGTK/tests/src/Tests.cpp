@@ -7,12 +7,12 @@ namespace swgtk::tests
 {
 	void Test_Suite::Config(SDLApp& app)
 	{
-		_ui = std::make_unique<UI>(&app, _assets + "/fonts");
-		[[maybe_unused]] auto err = _ui->LoadScriptsFromDirectory(_config + "/ui");
+		_ui = std::make_unique<UI>(&app, _assets + "/fonts/roboto");
 	}
 
 	void Test_Suite::LoadUI()
 	{
+		[[maybe_unused]] auto err = _ui->LoadScriptsFromDirectory(_config + "/ui");
 		_ui->Open("TestOptionWindow");
 	}
 

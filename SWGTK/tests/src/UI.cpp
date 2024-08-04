@@ -48,11 +48,11 @@ namespace swgtk::tests
 
 		_fonts.Create();
 
-		_fonts.AddFont(nk::FontStyle::Normal, normalFontSize , fontsDir + "/roboto/Roboto-Medium.ttf");
-		_fonts.AddFont(nk::FontStyle::Bold, normalFontSize , fontsDir + "/roboto/Roboto-Bold.ttf");
-		_fonts.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , fontsDir + "/roboto/Roboto-BoldItalic.ttf");
-		_fonts.AddFont(nk::FontStyle::Italic, normalFontSize , fontsDir + "/roboto/Roboto-Italic.ttf");
-		_fonts.AddFont(nk::FontStyle::Bold, largeFontSize, fontsDir + "/roboto/Roboto-Bold.ttf");
+		_fonts.AddFont(nk::FontStyle::Normal, normalFontSize , fontsDir + "/Roboto-Medium.ttf");
+		_fonts.AddFont(nk::FontStyle::Bold, normalFontSize , fontsDir + "/Roboto-Bold.ttf");
+		_fonts.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , fontsDir + "/Roboto-BoldItalic.ttf");
+		_fonts.AddFont(nk::FontStyle::Italic, normalFontSize , fontsDir + "/Roboto-Italic.ttf");
+		_fonts.AddFont(nk::FontStyle::Bold, largeFontSize, fontsDir + "/Roboto-Bold.ttf");
 
 
 		// Bake the fonts.
