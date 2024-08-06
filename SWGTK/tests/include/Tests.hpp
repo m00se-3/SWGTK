@@ -4,6 +4,7 @@
 #include "Scene.hpp"
 #include "NKUI.hpp"
 #include "SDLApp.hpp"
+#include "sol/sol.hpp"
 
 #include <memory>
 #include <sol/forward.hpp>

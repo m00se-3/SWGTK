@@ -1,11 +1,19 @@
 #include "NKUI.hpp"
 
 #include <filesystem>
+#include <gsl/gsl-lite.hpp>
 #include <string>
 #include <SDL2/SDL_render.h>
 
+#include "sol/sol.hpp"
+
 #include "RenderWrap.hpp"
 #include "SDLApp.hpp"
+
+/*
+	TODO:
+	- Improve error reporting from Lua scripts.
+*/
 
 namespace swgtk::nk
 {
@@ -25,8 +33,8 @@ namespace swgtk::nk
 		SDL_DestroyTexture(_whiteTexture);
 	}
 
-	NuklearUI::NuklearUI(SDLApp* app)
-		: _ctx(), _configurator(), _parent(app),
+	NuklearUI::NuklearUI(gsl::not_null<SDLApp*> app, sol::state& lua)
+		: _ctx(), _configurator(), _parent(app), _lua(lua),
 			_cmds(), _verts(), _inds(), _nullTexture()
 	{
 		// Assign the white texture to _nullTexture.
@@ -54,6 +62,8 @@ namespace swgtk::nk
 		_configurator.tex_null = _nullTexture;
 
 		_fonts.Create();
+		
+		InitLua();
 	}
 
 	void NuklearUI::Compile(uint64_t vertexBufferSize, nk_font* initFont)
@@ -231,8 +241,6 @@ namespace swgtk::nk
 
 	void NuklearUI::InitLua()
 	{
-		_lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
-
 		// Create a reference table for the nuklear functions.
 		_lua["Host"] = _lua.create_table();
 

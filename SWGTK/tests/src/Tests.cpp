@@ -6,7 +6,7 @@ namespace swgtk::tests
 {
 	void Test_Suite::Config(SDLApp& app)
 	{
-		_ui = std::make_unique<swgtk::nk::NuklearUI>(&app);
+		_ui = std::make_unique<swgtk::nk::NuklearUI>(gsl::make_not_null(&app), _lua);
 		auto& fontHandle = _ui->GetFontHandle();
 
 		fontHandle.AddFont(nk::FontStyle::Normal, normalFontSize , _assets + "/fonts/roboto/Roboto-Medium.ttf");

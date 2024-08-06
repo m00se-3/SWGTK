@@ -3,6 +3,7 @@
 
 #include "RenderWrap.hpp"
 #include <filesystem>
+#include <gsl/gsl-lite.hpp>
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_STANDARD_IO
 
@@ -20,8 +21,7 @@
 #include <set>
 #include <vector>
 
-#include "sol/sol.hpp"
-
+#include <gsl-lite/gsl-lite.hpp>
 #include "Texture.hpp"
 #include "ErrCodes.hpp"
 #include "NKFont.hpp"
@@ -37,7 +37,7 @@ namespace swgtk::nk
 	class NuklearUI
 	{
 	public:
-		NuklearUI(SDLApp* app);
+		NuklearUI(gsl::not_null<SDLApp*> app, sol::state& lua);
 		NuklearUI(const NuklearUI&) = delete;
 		NuklearUI(NuklearUI&&) = delete;
 
@@ -63,10 +63,10 @@ namespace swgtk::nk
 
 		[[nodiscard]] LuaError CheckLuaPath(const std::filesystem::directory_entry& entry);
 
-		sol::state _lua;
 		sol::table _dataTable;
 		SDL_Texture* _fontTexture = nullptr, * _whiteTexture = nullptr;
 		SDLApp* _parent = nullptr;
+		sol::state& _lua;
 
 		nk_context _ctx;
 		nk::FontGroup _fonts;

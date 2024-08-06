@@ -1,8 +1,11 @@
--- This is supposed to be the file that defines the TestSuite options, assuming the UI code still works.
-
 function TestOptionWindow()
 
-    if Ctx:Begin("This worked.", new_rect(100.0, 100.0, 200.0, 100.0), PanelFlag.Title) then
+    local width = Host.wWidth / 5.0
+    local height = Host.wHeight / 4.0
+    local posX = Host.wWidth / 3.0 - (width / 2.0)
+    local posY = Host.wHeight / 3.0 - (height / 2.0)
+
+    if Ctx:Begin("Select a test to run.", new_rect(posX, posY, width, height), PanelFlag.Title) then
         
 
         Ctx:End()
