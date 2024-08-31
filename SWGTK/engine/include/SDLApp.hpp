@@ -56,8 +56,6 @@ namespace swgtk
 		void EventsAndTimeStep();
 		void CloseApp();
 
-		[[nodiscard]] constexpr std::string AssetsDir(this SDLApp& self) { return self._assetsDir; }
-		[[nodiscard]] constexpr std::string ConfigDir(this SDLApp& self) { return self._configDir; }
 		[[nodiscard]] constexpr SSC GetSceneStatus(this SDLApp& self) { return self._currentSSC; }
 
 		[[nodiscard]] constexpr TTF_Font* GetTTF(this SDLApp& self, sdl::FontStyle style, int size) { return self._fonts.GetTTF(style, size); }
@@ -94,9 +92,6 @@ namespace swgtk
 		sdl::FontGroup _fonts;
 
 		SSC _currentSSC = SSC::Ok;
-
-		std::string _assetsDir;
-		std::string _configDir;
 
 		timePoint _lastFrameTime, _currentFrameTime;
 		bool _running = true;

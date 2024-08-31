@@ -34,8 +34,6 @@ namespace swgtk::tests
 
 	private:
 
-		std::string _config = SWGTK_CONFIG;
-		std::string _assets = SWGTK_ASSETS;
 		std::unique_ptr<swgtk::nk::NuklearUI> _ui;
 
 		sol::state _lua;

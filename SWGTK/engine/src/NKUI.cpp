@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <gsl/gsl-lite.hpp>
 #include <string>
-#include <SDL2/SDL_render.h>
 
 #include "sol/sol.hpp"
 
@@ -18,7 +17,7 @@
 namespace swgtk::nk
 {
 
-	constexpr std::array<nk_draw_vertex_layout_element, 4u> VertexLayout = {
+	static constexpr std::array<nk_draw_vertex_layout_element, 4u> VertexLayout = {
 		nk_draw_vertex_layout_element{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, position)},
 		nk_draw_vertex_layout_element{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(SDL_Vertex, tex_coord)}, 
 		nk_draw_vertex_layout_element{NK_VERTEX_COLOR, NK_FORMAT_RGBA32, NK_OFFSETOF(SDL_Vertex, color)},
@@ -129,7 +128,7 @@ namespace swgtk::nk
 		nk_draw_foreach(cmd, &_ctx, &_cmds)
 		{
 			if (cmd->elem_count == 0u) { continue; }
-			// SDL_RenderGeometry(_parent->Renderer(), static_cast<SDL_Texture*>(cmd->texture.ptr), vertices.data(), _verts.needed / sizeof(SDL_Vertex), &elements[offset], static_cast<int>(cmd->elem_count));
+
 			ren->DrawGeometry(static_cast<SDL_Texture*>(cmd->texture.ptr), vertices, std::span<int>{&elements[offset], cmd->elem_count});
 
 			offset += cmd->elem_count;

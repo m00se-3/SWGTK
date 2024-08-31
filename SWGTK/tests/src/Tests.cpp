@@ -1,6 +1,7 @@
 #include "Tests.hpp"
 #include "Input.hpp"
 #include <memory>
+#include "Project.hpp"
 
 namespace swgtk::tests 
 {
@@ -9,11 +10,11 @@ namespace swgtk::tests
 		_ui = std::make_unique<swgtk::nk::NuklearUI>(gsl::make_not_null(&app), _lua);
 		auto& fontHandle = _ui->GetFontHandle();
 
-		fontHandle.AddFont(nk::FontStyle::Normal, normalFontSize , _assets + "/fonts/roboto/Roboto-Medium.ttf");
-		fontHandle.AddFont(nk::FontStyle::Bold, normalFontSize , _assets + "/fonts/roboto/Roboto-Bold.ttf");
-		fontHandle.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , _assets + "/fonts/roboto/Roboto-BoldItalic.ttf");
-		fontHandle.AddFont(nk::FontStyle::Italic, normalFontSize , _assets + "/fonts/roboto/Roboto-Italic.ttf");
-		fontHandle.AddFont(nk::FontStyle::Bold, largeFontSize, _assets + "/fonts/roboto/Roboto-Bold.ttf");
+		fontHandle.AddFont(nk::FontStyle::Normal, normalFontSize , project::AssetsDir() + "/fonts/roboto/Roboto-Medium.ttf");
+		fontHandle.AddFont(nk::FontStyle::Bold, normalFontSize , project::AssetsDir() + "/fonts/roboto/Roboto-Bold.ttf");
+		fontHandle.AddFont(nk::FontStyle::Bold_Italic, normalFontSize , project::AssetsDir() + "/fonts/roboto/Roboto-BoldItalic.ttf");
+		fontHandle.AddFont(nk::FontStyle::Italic, normalFontSize , project::AssetsDir() + "/fonts/roboto/Roboto-Italic.ttf");
+		fontHandle.AddFont(nk::FontStyle::Bold, largeFontSize, project::AssetsDir() + "/fonts/roboto/Roboto-Bold.ttf");
 		
 		_ui->Compile(MaxVertexBuffer, fontHandle.GetNK(nk::FontStyle::Normal, normalFontSize));
 	}
@@ -21,7 +22,7 @@ namespace swgtk::tests
 	void Test_Suite::LoadUI()
 	{
 		_ui->InitLua();
-		[[maybe_unused]] auto err = _ui->LoadScriptsFromDirectory(_config + "/ui");
+		[[maybe_unused]] auto err = _ui->LoadScriptsFromDirectory(project::ConfigDir() + "/ui");
 		_ui->Open("TestOptionWindow");
 	}
 

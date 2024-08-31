@@ -45,6 +45,7 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/Component.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/RenderWrap.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/TTFFont.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/Project.hpp
 
 	${Added_Headers}
 
