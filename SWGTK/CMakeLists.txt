@@ -3,10 +3,32 @@ add_library(SWGTK STATIC)
 
 add_executable(SWGTK::TestSuite ALIAS SWGTK_TestSuite)
 
+if(${CMAKE_CXX_COMPILER_ID} MATCHES MSVC)
+	include("../cmake/MSVCOptions.cmake")
+else()
+	include("../cmake/GNUOptions.cmake")
+endif()
+
+target_compile_options(SWGTK PRIVATE ${CompilerFlags})
+target_link_options(SWGTK PRIVATE ${LinkerFlags})
+
+target_compile_options(SWGTK_TestSuite PRIVATE ${CompilerFlags})
+target_link_options(SWGTK_TestSuite PRIVATE ${LinkerFlags})
+
 if(CCACHE_PROGRAM)
 
 	target_compile_definitions(SWGTK PRIVATE USE_CCACHE=YES)
 	target_compile_definitions(SWGTK_TestSuite PRIVATE USE_CCACHE=YES)
+
+endif()
+
+find_program(CLANG_TIDY_LOC clang-tidy)
+
+if(CLANG_TIDY_LOC)
+  
+  message("-- Enabling clang-tidy.\n")
+  set_property(TARGET SWGTK PROPERTY CXX_CLANG_TIDY ${CLANG_TIDY_LOC})
+  set_property(TARGET SWGTK_TestSuite PROPERTY CXX_CLANG_TIDY ${CLANG_TIDY_LOC})
 
 endif()
 

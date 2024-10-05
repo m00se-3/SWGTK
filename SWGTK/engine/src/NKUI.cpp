@@ -33,7 +33,7 @@ namespace swgtk::nk
 	}
 
 	NuklearUI::NuklearUI(gsl::not_null<SDLApp*> app, sol::state& lua)
-		: _ctx(), _configurator(), _parent(app), _lua(lua),
+		: _parent(app), _lua(lua), _ctx(), _configurator(),
 			_cmds(), _verts(), _inds(), _nullTexture()
 	{
 		// Assign the white texture to _nullTexture.
