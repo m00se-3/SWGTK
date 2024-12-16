@@ -1,0 +1,23 @@
+if(DEFINED SWGTK_USE_CCACHE)
+    find_program(CCACHE_PROGRAM ${SWGTK_USE_CCACHE})
+else()
+    find_program(CCACHE_PROGRAM ccache)
+endif()
+
+if(DEFINED SWGTK_USE_CLANG_TIDY)
+    find_program(CLANG_TIDY_PROGRAM ${SWGTK_USE_CLANG_TIDY})
+else()
+    find_program(CLANG_TIDY_PROGRAM clang-tidy)
+endif()
+
+if(DEFINED SWGTK_USE_CPPCHECK)
+    find_program(CPPCHECK_PROGRAM ${SWGTK_USE_CPPCHECK})
+else()
+    find_program(CPPCHECK_PROGRAM cppcheck)
+endif()
+
+if(${CMAKE_CXX_COMPILER_ID} MATCHES MSVC)
+	include(${CMAKE_CURRENT_LIST_DIR}/MSVCOptions.cmake)
+else()
+	include(${CMAKE_CURRENT_LIST_DIR}/GNUOptions.cmake)
+endif()

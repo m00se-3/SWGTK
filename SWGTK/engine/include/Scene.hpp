@@ -1,7 +1,7 @@
 #ifndef SWGTK_SCENE_HPP
 #define SWGTK_SCENE_HPP
 
-#include <SDL_rect.h>
+#include <SDL3/SDL_rect.h>
 #include <functional>
 #include <memory>
 #include <span>
@@ -63,31 +63,31 @@ namespace swgtk
 		[[nodiscard]] SSC Create();
 		[[nodiscard]] SSC Update(float dt);
 		void Destroy();
-		static void InitLua(sol::state& lua);
-		void InitLuaInput(sol::state& lua);
+		// static void InitLua(sol::state& lua);
+		// void InitLuaInput(sol::state& lua);
 		void SetNewScene(gsl::owner<Node*> scene); // The SDLApp uses this function.
 		void GenerateNewScene(gsl::owner<Node*> ptr); // The user uses this function.
 
-		[[nodiscard]] constexpr SDLApp* AppRoot(this GameScene& self) { return self._parent; }
-		[[nodiscard]] constexpr RenderWrapper& Renderer(this GameScene& self) { return self._renderer; }
+		[[nodiscard]] constexpr SDLApp* AppRoot(this auto&& self) { return self._parent; }
+		[[nodiscard]] constexpr RenderWrapper& Renderer(this auto&& self) { return self._renderer; }
 
 		/*
 			Input state and event polling for the client's logic.
 		*/
 
-		[[nodiscard]] constexpr float GetScrollX() const { return _scroll.x; }
-		[[nodiscard]] constexpr float GetScrollY() const { return _scroll.y; }
+		[[nodiscard]] constexpr auto GetScrollX() const { return _scroll.x; }
+		[[nodiscard]] constexpr auto GetScrollY() const { return _scroll.y; }
 		[[nodiscard]] constexpr bool IsKeyPressed(LayoutCode code) const { return (_keyEvent.first == code && _keyEvent.second); }
 		[[nodiscard]] constexpr bool IsKeyReleased(LayoutCode code) const { return (_keyEvent.first == code && !_keyEvent.second); }
-		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _keyboardState[static_cast<size_t>(code)] == 1; }
+		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _keyboardState[static_cast<size_t>(code)]; }
 		[[nodiscard]] constexpr std::pair<LayoutCode, bool> GetCurrentKeyEvent() const { return _keyEvent; }
 		[[nodiscard]] constexpr KeyMod GetKeyMods() const { return _modifiers; }
-		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _mouseEvents.at(static_cast<size_t>(button)) == MButtonState::Pressed; }
-		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _mouseEvents.at(static_cast<size_t>(button)) == MButtonState::Released; }
+		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Pressed; }
+		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Released; }
 		[[nodiscard]] constexpr bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button)); }
-		[[nodiscard]] constexpr int GetMouseX() const { return _mouseState.x; }
-		[[nodiscard]] constexpr int GetMouseY() const { return _mouseState.y; }
-		[[nodiscard]] constexpr SDL_Point GetMousePos() const { return SDL_Point{ _mouseState.x, _mouseState.y }; }
+		[[nodiscard]] constexpr auto GetMouseX() const { return _mouseState.x; }
+		[[nodiscard]] constexpr auto GetMouseY() const { return _mouseState.y; }
+		[[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{ _mouseState.x, _mouseState.y }; }
 
 		/*
 			Input state and event management.
@@ -95,8 +95,8 @@ namespace swgtk
 
 		constexpr void SetMouseState(const MouseState& event) { _mouseState = event; }
 		constexpr void SetModState(const SDL_Keymod& state) { _modifiers = static_cast<KeyMod>(state); }
-		constexpr void ResetScroll() { _scroll = { 0.f, 0.f }; }
-		constexpr void AddScroll(float amountX, float amountY) { _scroll = { amountX, amountY }; }
+		constexpr void ResetScroll() { _scroll = { .x=0.f, .y=0.f }; }
+		constexpr void AddScroll(float amountX, float amountY) { _scroll = { .x=amountX, .y=amountY }; }
 		constexpr void SetMouseEvent(MButton button, MButtonState state) { _mouseEvents.at(static_cast<size_t>(button)) = state; }
 
 		constexpr void ResetKeyEvent()
@@ -114,8 +114,8 @@ namespace swgtk
 		void SetKeyboardState() 
 		{
 			int numKeys{};
-			const uint8_t* state = SDL_GetKeyboardState(&numKeys);
-			_keyboardState = std::span<const uint8_t>{ state, static_cast<size_t>(numKeys) };
+			const bool* state = SDL_GetKeyboardState(&numKeys);
+			_keyboardState = std::span<const bool>{ state, static_cast<size_t>(numKeys) };
 		}
 		
 		void ResetMouseEvents();
@@ -132,7 +132,7 @@ namespace swgtk
 
 		MouseState _mouseState{};
 		KeyMod _modifiers = KeyMod::None;
-		std::span<const uint8_t>_keyboardState;
+		std::span<const bool>_keyboardState;
 
 		/*
 			Variables for processing input events.

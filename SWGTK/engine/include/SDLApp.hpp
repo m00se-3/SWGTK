@@ -1,11 +1,10 @@
 #ifndef SDLAPP_HPP
 #define SDLAPP_HPP
 
-#include <SDL_video.h>
+#include <SDL3/SDL_video.h>
 #include <chrono>
 #include <gsl/gsl-lite.hpp>
 #include <memory>
-#include <string>
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
@@ -16,10 +15,10 @@
 
 #ifdef _DEBUG
 #include <cstdio>
-#define DEBUG_PRINT(Debug_Format, Debug_Message) auto _ = std::fprintf(stderr, Debug_Format, Debug_Message); // NOLINT
+#define DEBUG_PRINT(Debug_Message) std::fputs(Debug_Message, stderr); // NOLINT
 
 #else
-#define DEBUG_PRINT(Debug_Format, Debug_Message)
+#define DEBUG_PRINT(Debug_Message)
 #endif
 
 extern "C" {
@@ -56,14 +55,13 @@ namespace swgtk
 		void EventsAndTimeStep();
 		void CloseApp();
 
-		[[nodiscard]] constexpr SSC GetSceneStatus(this SDLApp& self) { return self._currentSSC; }
+		[[nodiscard]] constexpr SSC GetSceneStatus(this auto&& self) { return self._currentSSC; }
 
-		[[nodiscard]] constexpr TTF_Font* GetTTF(this SDLApp& self, sdl::FontStyle style, int size) { return self._fonts.GetTTF(style, size); }
-		[[nodiscard]] constexpr SDL_Renderer* Renderer(this SDLApp& self) { return self._renderer; }
-		[[nodiscard]] constexpr SDL_Window* Window(this SDLApp& self) { return self._window; }
+		// [[nodiscard]] constexpr TTF_Font* GetTTF(this SDLApp& self, sdl::FontStyle style, int size) { return self._fonts.GetTTF(style, size); }
+		[[nodiscard]] constexpr SDL_Renderer* Renderer(this auto&& self) { return self._renderer; }
+		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
-		[[nodiscard]] constexpr std::pair<int, int> GetWindowSize(this SDLApp& self)
-		{
+		[[nodiscard]] constexpr std::pair<int, int> GetWindowSize(this auto&& self)	{
 			int width{}, height{};
 			SDL_GetWindowSize(self._window, &width, &height);
 

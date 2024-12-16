@@ -3,15 +3,15 @@
 project ("SWGTK")
 
 include("CPM.cmake")
+include("cmake/Config.cmake")
 
 # Add CCache, if available
-
-find_program(CCACHE_PROGRAM ccache)
 
 if(CCACHE_PROGRAM)
 
   message("-- Enabling ccache.\n")
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+  set(CPM_SOURCE_CACHE ${CMAKE_CURRENT_LIST_DIR}/.cache/CPM)
   
 endif()
 
@@ -65,27 +65,32 @@ if (freetype_ADDED)
   add_library(Freetype::Freetype ALIAS freetype)
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#release-2.30.4")
-CPMAddPackage("gh:libsdl-org/SDL_image#release-2.8.2")
-CPMAddPackage("gh:libsdl-org/SDL_ttf#release-2.22.0")
+CPMAddPackage("gh:libsdl-org/SDL#preview-3.1.6")
+CPMAddPackage("gh:libsdl-org/SDL_image#preview-3.1.0")
 
 # If any of these external dependencies become necessary in the future, they should be added before any SDL.(For consistency)
+
 CPMAddPackage(
-    NAME "SDL_mixer"
-    GITHUB_REPOSITORY "libsdl-org/SDL_mixer"
-    GIT_TAG "release-2.8.0"
-    OPTIONS 
-    "SDL2MIXER_OPUS false"
-    "SDL2MIXER_MOD false"
-    "SDL2MIXER_MIDI_FLUIDSYNTH false"
+  NAME "SDL3_ttf"
+  GITHUB_REPOSITORY "libsdl-org/SDL_ttf"
+  GIT_TAG "main"
+  OPTIONS 
+  "FREETYPE_LIBRARY ${freetype_BINARY_DIR}"
+  "FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}"
 )
 
-target_compile_definitions(SDL2_mixer PUBLIC HAVE_WAVPACK_H=1) # Make sure SDL_mixer uses the correct include path for wavpack
-target_include_directories(SDL2_mixer PUBLIC ${WavPack_SOURCE_DIR})
-
-if(SWGTK_USE_NUKLEAR)
-  CPMAddPackage("gh:Immediate-Mode-UI/Nuklear#4.12.0")
-endif()
+CPMAddPackage(
+    NAME "SDL3_mixer"
+    GITHUB_REPOSITORY "libsdl-org/SDL_mixer"
+    GIT_TAG "main"
+    OPTIONS 
+    "SDL3MIXER_OPUS false"
+    "SDL3MIXER_MOD false"
+    "SDL3MIXER_MIDI_FLUIDSYNTH false"
+    "HAVE_WAVE_PACK_H 1"
+    "wavpack_LIBRARY ${WavPack_BINARY_DIR}"
+    "wavpack_INCLUDE_PATH ${WavPack_SOURCE_DIR}"
+)
 
 # Misc
 CPMAddPackage("gh:gsl-lite/gsl-lite@0.41.0")

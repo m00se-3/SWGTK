@@ -1,10 +1,8 @@
 #include "TTFFont.hpp"
 
 namespace swgtk::sdl
-{
-
-    void FontGroup::AddFont(FontStyle styleMask, int size, const std::filesystem::path& filename)
-    {
+{    
+    void FontGroup::AddFont(FontStyle styleMask, float size, const std::filesystem::path& filename) {
         const auto hash = Hash(styleMask, size);
         
         if (!_ttfFonts.contains(hash))
@@ -20,16 +18,14 @@ namespace swgtk::sdl
         }
     }
 
-    void FontGroup::ClearTTFFonts()
-    {
+    void FontGroup::ClearTTFFonts() {
         for (auto& font : _ttfFonts)
         {
             TTF_CloseFont(font.second);
         }
     }
 
-    TTF_Font* FontGroup::GetTTF(FontStyle mask, int size)
-    {
+    TTF_Font* FontGroup::GetTTF(FontStyle mask, int size) {
         const auto key = Hash(mask, size);
         
         if (_ttfFonts.contains(key))
@@ -40,8 +36,7 @@ namespace swgtk::sdl
         return nullptr;
     }
 
-    const TTF_Font* FontGroup::GetTTF(FontStyle mask, int size) const
-    {
+    const TTF_Font* FontGroup::GetTTF(FontStyle mask, int size) const {
         const auto key = Hash(mask, size);
         
         if (_ttfFonts.contains(key))

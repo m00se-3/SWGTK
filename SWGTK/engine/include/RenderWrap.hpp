@@ -3,9 +3,9 @@
 
 #include "Texture.hpp"
 
-#include "SDL_ttf.h"
-#include "SDL_blendmode.h"
-#include "SDL_render.h"
+#include "SDL3_ttf/SDL_ttf.h"
+#include "SDL3/SDL_blendmode.h"
+#include "SDL3/SDL_render.h"
 #include "gsl/gsl-lite.hpp"
 #include <sol/sol.hpp>
 
@@ -14,84 +14,78 @@
 
 namespace swgtk
 {
-    class RenderWrapper
-    {
-    public:
-	constexpr RenderWrapper(SDL_Renderer* ren) : _render(ren) {}
+    class RenderWrapper {
+	public:
+		constexpr RenderWrapper(SDL_Renderer* ren) : _render(ren), _textEngine(TTF_CreateRendererTextEngine(ren)) {}
 
-	constexpr void SetDrawColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255u) { SDL_SetRenderDrawColor(_render, r, g, b, a); } // NOLINT
+		constexpr void SetDrawColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255u) { SDL_SetRenderDrawColor(_render, r, g, b, a); } // NOLINT
 
-	/*
-	    Texture source rectangles are taken with integers while the destination is set with floats.
+		/*
+			Texture source rectangles are taken with integers while the destination is set with floats.
 
-	    It is okay to allow nullptr for the rectangles, since SDL handles nullptr for us.
-	*/
-	constexpr void DrawTexture(gsl::not_null<SDL_Texture*> texture, SDL_Rect* src, SDL_FRect* dest)
-	{
-	    SDL_RenderCopyF(_render, texture, src, dest);
-	}
+			It is okay to allow nullptr for the rectangles, since SDL handles nullptr for us.
+		*/
+		constexpr void DrawTexture(gsl::not_null<SDL_Texture*> texture, SDL_FRect* src, SDL_FRect* dest) {
+			SDL_RenderTexture(_render, texture, src, dest);
+		}
 
-	/*
-	    Texture source rectangles are taken with integers while the destination and center are set with floats.
+		/*
+			Texture source rectangles are taken with integers while the destination and center are set with floats.
 
-	    It is okay to allow nullptr for the source, destination, and center, since SDL handles nullptr for us.
-	*/
-	constexpr void DrawTexture(gsl::not_null<SDL_Texture*> texture, SDL_Rect* src, SDL_FRect* dest, double angle, SDL_FPoint* center = nullptr, SDL_RendererFlip flip = SDL_FLIP_NONE)
-	{
-	    SDL_RenderCopyExF(_render, texture, src, dest, angle, center, flip);
-	}
- 
-	/*
-	    It is okay to allow nullptr for the destination, since SDL handles nullptr for us.
-	*/
-	constexpr void DrawText(const std::string_view& text, gsl::not_null<TTF_Font*> font, SDL_Rect* dest)
-	{		
-	    auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
-	    
-	    // This texture will get cleaned up at end of function.
-	    const Texture textTexture{SDL_CreateTextureFromSurface(_render, surface)};
-	    SDL_FreeSurface(surface);
+			It is okay to allow nullptr for the source, destination, and center, since SDL handles nullptr for us.
+		*/
+		constexpr void DrawTexture(gsl::not_null<SDL_Texture*> texture, SDL_FRect* src, SDL_FRect* dest, double angle, SDL_FPoint* center = nullptr, SDL_FlipMode flip = SDL_FLIP_NONE) {
+			SDL_RenderTextureRotated(_render, texture, src, dest, angle, center, flip);
+		}
+	
+		/*
+			It is okay to allow nullptr for the destination, since SDL handles nullptr for us.
+		*/
+		constexpr void DrawText(const std::string_view& text, gsl::not_null<TTF_Font*> font, SDL_FRect* dest) {		
+			auto* ttf = TTF_CreateText(_textEngine, font, text.data(), text.size());
 
-	    SDL_RenderCopy(_render, textTexture.Get(), nullptr, dest);
-	}						
+			auto color = GetDrawColor();
+			TTF_SetTextColor(ttf, color.r, color.g, color.b, color.a);
 
-	/*
-	    Used to draw arbitray shapes from a list of verticies. This is helpful when drawing things like particles.
+			TTF_DrawRendererText(ttf, dest->x, dest->y);
+		}						
 
-	    It's okay to allow for nullptr in 'texture' because SDL handles it for us.
-	*/ 
-	constexpr void DrawGeometry(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies)
-	{
-	    [[maybe_unused]] auto result = SDL_RenderGeometry(_render, texture, verticies.data(), static_cast<int>(std::ssize(verticies)),
-								indicies.data(), static_cast<int>(std::ssize(indicies)));
-	}
+		/*
+			Used to draw arbitray shapes from a list of verticies. This is helpful when drawing things like particles.
 
-	[[nodiscard]] constexpr gsl::owner<SDL_Texture*> RenderTextChunk(const std::string_view& text, gsl::not_null<TTF_Font*> font)
-	{
-	    auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
+			It's okay to allow for nullptr in 'texture' because SDL handles it for us.
+		*/ 
+		constexpr void DrawGeometry(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies) {
+			[[maybe_unused]] auto result = SDL_RenderGeometry(_render, texture, verticies.data(), static_cast<int>(std::ssize(verticies)),
+									indicies.data(), static_cast<int>(std::ssize(indicies)));
+		}
 
-	    auto* textTexture = SDL_CreateTextureFromSurface(_render, surface);
-	    SDL_FreeSurface(surface);
+		// [[nodiscard]] constexpr gsl::owner<SDL_Texture*> RenderTextChunk(const std::string_view& text, gsl::not_null<TTF_Font*> font)
+		// {
+		//     auto* surface = TTF_RenderUTF8_Solid(font, text.data(), GetDrawColor());
 
-	    return textTexture;
-	}
+		//     auto* textTexture = SDL_CreateTextureFromSurface(_render, surface);
+		//     SDL_FreeSurface(surface);
 
-	[[nodiscard]] Texture LoadTextureImg(const std::string_view& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND);
+		//     return textTexture;
+		// }
 
-	[[nodiscard]] constexpr SDL_Color GetDrawColor() const 
-	{
-	    SDL_Color res;
-	    SDL_GetRenderDrawColor(_render, &res.r, &res.g, &res.b, &res.a);
+		[[nodiscard]] Texture LoadTextureImg(const std::string_view& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND);
 
-	    return res;
-	}
+		[[nodiscard]] constexpr SDL_Color GetDrawColor() const {
+			SDL_Color res;
+			SDL_GetRenderDrawColor(_render, &res.r, &res.g, &res.b, &res.a);
 
-	constexpr void SetDrawTarget(SDL_Texture* ptr = nullptr) { [[maybe_unused]] auto _ = SDL_SetRenderTarget(_render, ptr); }
+			return res;
+		}
 
-	void InitLua(sol::state& lua);
+		constexpr bool SetDrawTarget(SDL_Texture* ptr = nullptr) { return SDL_SetRenderTarget(_render, ptr); }
 
-    private:
-	SDL_Renderer* _render = nullptr;
+		void InitLua(sol::state& lua);
+
+	private:
+		SDL_Renderer* _render = nullptr;
+		TTF_TextEngine* _textEngine = nullptr;
     };
 }
 

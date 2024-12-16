@@ -1,15 +1,16 @@
 #include "SDLApp.hpp"
 
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_video.h>
 #include <chrono>
 #include <memory>
 #include <span>
 #include <string>
 
 #include "gsl/gsl-lite.hpp"
-#include "SDL.h"
+#include "SDL3/SDL.h"
 #include "Input.hpp"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
+#include "SDL3_mixer/SDL_mixer.h"
 #include "Scene.hpp"
 
 
@@ -24,83 +25,66 @@ namespace swgtk
 		InitGraphical();
 	}
 #else
-	SDLApp::SDLApp(int argc, const char** argv)
-	{
+	SDLApp::SDLApp(int argc, const char** argv) {
 		const std::span<const char*> args{argv, static_cast<size_t>(argc)};		
 
 		// Because I plan on eventually having a headless version, I'm guarding
 		// window creation with the --headless cmd flag.
-		if (args.size() > 1u && strcmp(args[1], "--headless") == 0)
-		{
+		if (args.size() > 1u && strcmp(args[1], "--headless") == 0)	{
 			InitHeadless();
-		}
-		else
-		{
+		} else {
 			InitGraphical();
 		}
 
 	}
 #endif // __EMSCRIPTEN__
 
-	SDLApp::~SDLApp()
-	{
-		if (!_headless)
-		{
+	SDLApp::~SDLApp() {
+		if (!_headless)	{
 			_fonts.ClearTTFFonts();
 			
 			
 			SDL_DestroyRenderer(_renderer);
 			SDL_DestroyWindow(_window);
 
-			Mix_Quit();
+			// Mix_Quit();
 			TTF_Quit();
-			IMG_Quit();
 			SDL_Quit();
 		}
 	}
 
-	void SDLApp::InitHeadless()
-	{
+	void SDLApp::InitHeadless() {
 		_headless = true;
 	}
 
-	void SDLApp::InitGraphical()
-	{
+	void SDLApp::InitGraphical() {
 		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
-		constexpr int ImageFlags = IMG_INIT_PNG;
 		constexpr int MixFlags = 0;
 
-		if (SDL_Init(InitFlags) == 0 && IMG_Init(ImageFlags) == ImageFlags && TTF_Init() == 0 && Mix_Init(MixFlags) == MixFlags)
-		{
-			_window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_HIDDEN); // NOLINT
+		if (SDL_Init(InitFlags) && TTF_Init() && Mix_Init(MixFlags) == MixFlags) {
+			_window = SDL_CreateWindow("Game", 800, 600, SDL_WINDOW_HIDDEN); // NOLINT
 
-			if (_window != nullptr)
-			{
-				_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
-			}
-			else
-			{
-				DEBUG_PRINT("Failed to create window. - %s\n", SDL_GetError())
+			if (_window != nullptr)	{
+				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+				_renderer = SDL_CreateRenderer(_window, nullptr);
+			} else {
+				DEBUG_PRINT(std::format("Failed to create window. - {}\n", SDL_GetError()).c_str())
 				return;
 			}
 			
-			if (_renderer == nullptr)
-			{
-				DEBUG_PRINT("Failed to initialize renderer. - %s\n", SDL_GetError())
+			if (_renderer == nullptr) {
+				DEBUG_PRINT(std::format("Failed to initialize renderer. - {}\n", SDL_GetError()).c_str())
 				return;
 			}
 
-		}
-		else
-		{
-			DEBUG_PRINT("An SDL Library failed to initialize. - %s\n", SDL_GetError())
+		} else {
+			DEBUG_PRINT(std::format("SDL failed to initialize. - {}\n", SDL_GetError()).c_str())
 			return;
 		}
 
 	}
 
-	void SDLApp::EventsAndTimeStep()
-	{
+	void SDLApp::EventsAndTimeStep() {
 		// If a scene change occurs, that is all we want to do for this frame.
 		if(_currentSSC == SSC::ChangeScene)
 		{
@@ -114,31 +98,29 @@ namespace swgtk
 		_currentScene->ResetMouseEvents();
 		_currentScene->ResetKeyEvent();
 
-		while (SDL_PollEvent(&e) == 1)
-		{
-			switch (e.type)
-			{
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
+		while (SDL_PollEvent(&e)) {
+			switch (e.type)	{
+			case SDL_EVENT_MOUSE_BUTTON_UP:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				{
-					_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_MOUSEBUTTONDOWN) ? MButtonState::Pressed : MButtonState::Released);
+					_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released);
 					break;
 				}
 
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
+			case SDL_EVENT_KEY_DOWN:
+			case SDL_EVENT_KEY_UP:
 				{
-					_currentScene->SetKeyEvent(LayoutCode{ e.key.keysym.scancode }, (e.type == SDL_KEYDOWN));
+					_currentScene->SetKeyEvent(LayoutCode(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
 					break;
 				}
 
-			case SDL_MOUSEWHEEL:
+			case SDL_EVENT_MOUSE_WHEEL:
 				{
-					_currentScene->AddScroll(e.wheel.preciseX, e.wheel.preciseY);
+					_currentScene->AddScroll(e.wheel.x, e.wheel.y);
 					break;
 				}
 
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				{
 					CloseApp();
 					break;
@@ -159,7 +141,7 @@ namespace swgtk
 
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 
-		const double timeDiff = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime).count());
+		const auto timeDiff = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime).count());
 		_lastFrameTime = _currentFrameTime;
 
 		SDL_RenderClear(_renderer);
@@ -171,17 +153,14 @@ namespace swgtk
 
 	}
 
-	void SDLApp::Run(gsl::owner<GameScene::Node*> logicNode)
-	{
-		if (!_headless)
-		{
+	void SDLApp::Run(gsl::owner<GameScene::Node*> logicNode) {
+		if (!_headless)	{
 			SDL_ShowWindow(_window);
 			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u); // NOLINT
 
 			_currentScene = std::make_unique<GameScene>(gsl::make_not_null(this), logicNode);
 			
-			if (_currentScene->Create() != SSC::Ok)
-			{
+			if (_currentScene->Create() != SSC::Ok)	{
 				return;
 			}
 
@@ -190,15 +169,12 @@ namespace swgtk
 
 #else
 
-			while (_running)
-			{
-				if (_currentSSC == SSC::Fail)
-				{
+			while (_running) {
+				if (_currentSSC == SSC::Fail) {
 					break;
 				}
 
-				if(_nextSceneNode != nullptr)
-				{
+				if(_nextSceneNode != nullptr) {
 					_currentScene->SetNewScene(_nextSceneNode);
 					_nextSceneNode = nullptr;
 					_currentSSC = SSC::ChangeScene;
@@ -211,8 +187,7 @@ namespace swgtk
 		}
 	}
 
-	void SDLApp::CloseApp()
-	{
+	void SDLApp::CloseApp() {
 #ifdef __EMSCRIPTEN__
 		emscripten_cancel_main_loop();
 #else
@@ -225,8 +200,7 @@ namespace swgtk
 
 	const SDLApp::timePoint& SDLApp::GetLastFrame() { return _lastFrameTime; }
 
-	void SDLApp::EmscriptenUpdate(void* ptr)
-	{
+	void SDLApp::EmscriptenUpdate(void* ptr) {
 		static_cast<SDLApp*>(ptr)->EventsAndTimeStep();
 	}
 #endif

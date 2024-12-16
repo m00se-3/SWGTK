@@ -7,13 +7,12 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "23",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true
       },
       "environment": {
         "Assets_Dir": "${sourceDir}/SWGTK/tests/assets",
         "Config_Dir": "${sourceDir}/SWGTK/tests/config",
-        "CMAKE_BUILD_PARALLEL_LEVEL": "10"
+        "CMAKE_BUILD_PARALLEL_LEVEL": "12"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
@@ -52,14 +51,6 @@
       }
     },
     {
-      "name": "x64-debug-nuklear",
-      "displayName": "x64 Debug (With Nuklear)",
-      "inherits": "x64-debug",
-      "cacheVariables": {
-        "SWGTK_USE_NUKLEAR": true
-      }
-    },
-    {
       "name": "x64-release",
       "displayName": "x64 Release",
       "inherits": "x64-debug",
@@ -68,34 +59,23 @@
       }
     },
     {
-      "name": "x64-release-nuklear",
-      "displayName": "x64 Release (With Nuklear)",
-      "inherits": "x64-release",
-      "cacheVariables": {
-        "SWGTK_USE_NUKLEAR": true
-      }
-    },
-    {
       "name": "em-win",
       "displayName": "Emscripten (Win)",
       "inherits": "embase",
       "hidden": true,
-      "generator": "MinGW Makefiles",
-      "cacheVariables": {
-      }
+      "generator": "MinGW Makefiles"
     },
     {
       "name": "em-unix",
       "displayName": "Emscripten (Unix)",
       "inherits": "embase",
       "hidden": true,
-      "generator": "Unix Makefiles",
-      "cacheVariables": {
-      }
+      "generator": "Unix Makefiles"
     },
     {
       "name": "linux-debug",
       "displayName": "Linux Debug",
+      "inherits": "desktop-base",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",

@@ -2,7 +2,7 @@
 #define SWGTK_TEXTURE_HPP
 
 #include <gsl/gsl-lite.hpp>
-#include "SDL_render.h"
+#include "SDL3/SDL_render.h"
 
 namespace swgtk
 {
