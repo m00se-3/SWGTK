@@ -43,7 +43,6 @@ target_link_libraries(
 	SDL3_image::SDL3_image
 	SDL3_mixer::SDL3_mixer
 	SDL3_ttf::SDL3_ttf
-	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
 	lua
 	sol2
 )

@@ -24,34 +24,37 @@ target_sources(
 
 	PUBLIC 
 
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/ErrCodes.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/SDLApp.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/Texture.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/Input.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/Scene.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/RenderWrap.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/TTFFont.hpp
+	FILE_SET HEADERS 
+
+	BASE_DIRS
+
+	${CMAKE_CURRENT_LIST_DIR}/engine/include
+	${lua_SOURCE_DIR}
+
+	FILES
+
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/ErrCodes.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/App.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Texture.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Input.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Scene.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Simple2DRenderer.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RendererBase.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/TTFFont.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Macros.hpp
 
 	${Added_Headers}
 
 	PRIVATE 
 
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/SDLApp.cpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/src/App.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Input.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/RenderWrap.cpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/src/Simple2DRenderer.cpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/src/RendererBase.cpp
 
 	${Added_Sources}
-)
-
-target_include_directories(
-	SWGTK
-
-	PUBLIC 
-
-	${CMAKE_CURRENT_LIST_DIR}/engine/include
-	${lua_SOURCE_DIR}
 )
 
 target_link_libraries(
@@ -63,7 +66,6 @@ target_link_libraries(
 	SDL3_image::SDL3_image
 	SDL3_mixer::SDL3_mixer
 	SDL3_ttf::SDL3_ttf
-	gsl::gsl-lite gsl::gsl-lite-v0 gsl::gsl-lite-v1
 	lua
 	sol2
 )

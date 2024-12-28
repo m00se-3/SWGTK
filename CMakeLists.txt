@@ -51,12 +51,6 @@ endif()
 CPMAddPackage("gh:m00se-3/sol2#fix-clang_18")
 
 # SDL and external dependencies
-CPMAddPackage(
-  NAME WavPack
-  GITHUB_REPOSITORY "libsdl-org/WavPack"
-  GIT_TAG "5.7.0"
-  OPTIONS "BUILD_SHARED_LIBS true"
-)
 
 CPMAddPackage("gh:libsdl-org/freetype#VER-2-13-2")
 
@@ -68,7 +62,7 @@ endif()
 CPMAddPackage("gh:libsdl-org/SDL#preview-3.1.6")
 CPMAddPackage("gh:libsdl-org/SDL_image#preview-3.1.0")
 
-# If any of these external dependencies become necessary in the future, they should be added before any SDL.(For consistency)
+# If any more external dependencies become necessary in the future, they should be added before any SDL.(For consistency)
 
 CPMAddPackage(
   NAME "SDL3_ttf"
@@ -86,14 +80,8 @@ CPMAddPackage(
     OPTIONS 
     "SDL3MIXER_OPUS false"
     "SDL3MIXER_MOD false"
-    "SDL3MIXER_MIDI_FLUIDSYNTH false"
-    "HAVE_WAVE_PACK_H 1"
-    "wavpack_LIBRARY ${WavPack_BINARY_DIR}"
-    "wavpack_INCLUDE_PATH ${WavPack_SOURCE_DIR}"
+    "SDL3MIXER_WAVPACK false"
 )
-
-# Misc
-CPMAddPackage("gh:gsl-lite/gsl-lite@0.41.0")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")

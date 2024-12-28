@@ -1,4 +1,4 @@
-#include "SDLApp.hpp"
+#include "swgtk/App.hpp"
 
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
@@ -7,30 +7,28 @@
 #include <span>
 #include <string>
 
-#include "gsl/gsl-lite.hpp"
 #include "SDL3/SDL.h"
-#include "Input.hpp"
 #include "SDL3_mixer/SDL_mixer.h"
-#include "Scene.hpp"
+#include "swgtk/Simple2DRenderer.hpp"
 
 
 namespace swgtk
 {
 
 #ifdef __EMSCRIPTEN__
-	SDLApp::SDLApp()
+	App::App()
 		: _lastFrameTime(std::chrono::high_resolution_clock::now()),
 		_currentFrameTime()
 	{
 		InitGraphical();
 	}
 #else
-	SDLApp::SDLApp(int argc, const char** argv) {
+	App::App(int argc, const char** argv) {
 		const std::span<const char*> args{argv, static_cast<size_t>(argc)};		
 
 		// Because I plan on eventually having a headless version, I'm guarding
 		// window creation with the --headless cmd flag.
-		if (args.size() > 1u && strcmp(args[1], "--headless") == 0)	{
+		if (args.size() > 1u && strcmp(args[1u], "--headless") == 0) {
 			InitHeadless();
 		} else {
 			InitGraphical();
@@ -39,25 +37,24 @@ namespace swgtk
 	}
 #endif // __EMSCRIPTEN__
 
-	SDLApp::~SDLApp() {
+	App::~App() {
 		if (!_headless)	{
 			_fonts.ClearTTFFonts();
 			
 			
-			SDL_DestroyRenderer(_renderer);
 			SDL_DestroyWindow(_window);
 
-			// Mix_Quit();
+			Mix_Quit();
 			TTF_Quit();
 			SDL_Quit();
 		}
 	}
 
-	void SDLApp::InitHeadless() {
+	void App::InitHeadless() {
 		_headless = true;
 	}
 
-	void SDLApp::InitGraphical() {
+	void App::InitGraphical() {
 		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
 		constexpr int MixFlags = 0;
 
@@ -66,14 +63,9 @@ namespace swgtk
 
 			if (_window != nullptr)	{
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-				_renderer = SDL_CreateRenderer(_window, nullptr);
+				_renderer = CreateRenderer<Simple2DRenderer>();
 			} else {
 				DEBUG_PRINT(std::format("Failed to create window. - {}\n", SDL_GetError()).c_str())
-				return;
-			}
-			
-			if (_renderer == nullptr) {
-				DEBUG_PRINT(std::format("Failed to initialize renderer. - {}\n", SDL_GetError()).c_str())
 				return;
 			}
 
@@ -84,39 +76,38 @@ namespace swgtk
 
 	}
 
-	void SDLApp::EventsAndTimeStep() {
+	void App::EventsAndTimeStep() {
 		// If a scene change occurs, that is all we want to do for this frame.
-		if(_currentSSC == SSC::ChangeScene)
-		{
+		if(_currentSSC == SSC::ChangeScene) {
 			_currentSSC = _currentScene->Create();
 			return;
 		}
 		
 		SDL_Event e;
 
-		_currentScene->ResetScroll();
-		_currentScene->ResetMouseEvents();
-		_currentScene->ResetKeyEvent();
+		_input.ResetScroll();
+		_input.ResetMouseEvents();
+		_input.ResetKeyEvent();
 
 		while (SDL_PollEvent(&e)) {
 			switch (e.type)	{
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				{
-					_currentScene->SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released);
+					_input.SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released);
 					break;
 				}
 
 			case SDL_EVENT_KEY_DOWN:
 			case SDL_EVENT_KEY_UP:
 				{
-					_currentScene->SetKeyEvent(LayoutCode(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
+					_input.SetKeyEvent(LayoutCode(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
 					break;
 				}
 
 			case SDL_EVENT_MOUSE_WHEEL:
 				{
-					_currentScene->AddScroll(e.wheel.x, e.wheel.y);
+					_input.AddScroll(e.wheel.x, e.wheel.y);
 					break;
 				}
 
@@ -129,43 +120,47 @@ namespace swgtk
 		}
 
 
-		_currentScene->SetKeyboardState();
-		_currentScene->SetModState(SDL_GetModState());
+		_input.SetKeyboardState();
+		_input.SetModState(SDL_GetModState());
 
 		{
 			MouseState mouse{};
 			mouse.buttons = MButton{ SDL_GetMouseState(&mouse.x, &mouse.y) };
 
-			_currentScene->SetMouseState(mouse);
+			_input.SetMouseState(mouse);
 		}
 
 		_currentFrameTime = std::chrono::high_resolution_clock::now();
 
-		const auto timeDiff = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime).count());
+		const auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
 		_lastFrameTime = _currentFrameTime;
 
-		SDL_RenderClear(_renderer);
+		_renderer->BufferClear();
+		
+		// std::ratio<1,1> converts the timeDiff duration into seconds.
+		_currentSSC = _currentScene->Update(std::chrono::duration<float, std::ratio<1,1>>(timeDiff).count());
 
-		_currentSSC = _currentScene->Update(static_cast<float>(timeDiff * 0.000001)); // NOLINT
-
-
-		SDL_RenderPresent(_renderer);
+		_renderer->BufferPresent();
 
 	}
 
-	void SDLApp::Run(gsl::owner<GameScene::Node*> logicNode) {
+	void App::Run(Scene::NodeProxy logicNode) {
 		if (!_headless)	{
-			SDL_ShowWindow(_window);
-			SDL_SetRenderDrawColor(_renderer, 64u, 64u, 64u, 255u); // NOLINT
+			if(!_renderer->PrepareDevice(_window, _bgColor)) {
+				DEBUG_PRINT(std::format("Failed to initialize rendering context. - {}\n", SDL_GetError()).c_str())
+				return;
+			}
 
-			_currentScene = std::make_unique<GameScene>(gsl::make_not_null(this), logicNode);
+			SDL_ShowWindow(_window);
+
+			_currentScene = std::make_unique<Scene>(this, &_input, logicNode);
 			
 			if (_currentScene->Create() != SSC::Ok)	{
 				return;
 			}
 
 #ifdef __EMSCRIPTEN__
-			emscripten_set_main_loop_arg(SDLApp::EmscriptenUpdate, this, -1, true);
+			emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);
 
 #else
 
@@ -187,7 +182,7 @@ namespace swgtk
 		}
 	}
 
-	void SDLApp::CloseApp() {
+	void App::CloseApp() {
 #ifdef __EMSCRIPTEN__
 		emscripten_cancel_main_loop();
 #else
@@ -198,10 +193,10 @@ namespace swgtk
 
 #ifdef __EMSCRIPTEN__
 
-	const SDLApp::timePoint& SDLApp::GetLastFrame() { return _lastFrameTime; }
+	const App::timePoint& App::GetLastFrame() { return _lastFrameTime; }
 
-	void SDLApp::EmscriptenUpdate(void* ptr) {
-		static_cast<SDLApp*>(ptr)->EventsAndTimeStep();
+	void App::EmscriptenUpdate(void* ptr) {
+		dynamic_cast<App*>(ptr)->EventsAndTimeStep();
 	}
 #endif
 

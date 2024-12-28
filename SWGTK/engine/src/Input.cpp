@@ -1,4 +1,4 @@
-#include "Input.hpp"
+#include "swgtk/Input.hpp"
 
 namespace swgtk
 {

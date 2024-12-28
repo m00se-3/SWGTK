@@ -1,19 +1,19 @@
-#include "TTFFont.hpp"
+#include "swgtk/TTFFont.hpp"
 
 namespace swgtk::sdl
 {    
-    void FontGroup::AddFont(FontStyle styleMask, float size, const std::filesystem::path& filename) {
-        const auto hash = Hash(styleMask, size);
-        
-        if (!_ttfFonts.contains(hash))
+    float FontGroup::_defaultFontSize = 16.0f; // NOLINT
+    
+    void FontGroup::AddFont(FontStyle styleMask, const std::filesystem::path& filename) {
+        if (!_ttfFonts.contains(styleMask))
         {
             auto str = filename.string();
             
-            TTF_Font* ttf = TTF_OpenFont(str.c_str(), size);
+            TTF_Font* ttf = TTF_OpenFont(str.c_str(), _defaultFontSize);
 
             if (ttf != nullptr) 
             {
-                _ttfFonts.insert_or_assign(hash, ttf);
+                _ttfFonts.insert_or_assign(styleMask, ttf);
             }
         }
     }
@@ -25,23 +25,19 @@ namespace swgtk::sdl
         }
     }
 
-    TTF_Font* FontGroup::GetTTF(FontStyle mask, int size) {
-        const auto key = Hash(mask, size);
-        
-        if (_ttfFonts.contains(key))
+    TTF_Font* FontGroup::GetTTF(FontStyle mask) {
+        if (_ttfFonts.contains(mask))
         {
-            return _ttfFonts.at(key);
+            return _ttfFonts.at(mask);
         }
 
         return nullptr;
     }
 
-    const TTF_Font* FontGroup::GetTTF(FontStyle mask, int size) const {
-        const auto key = Hash(mask, size);
-        
-        if (_ttfFonts.contains(key))
+    const TTF_Font* FontGroup::GetTTF(FontStyle mask) const {
+        if (_ttfFonts.contains(mask))
         {
-            return _ttfFonts.at(key);
+            return _ttfFonts.at(mask);
         }
 
         return nullptr;

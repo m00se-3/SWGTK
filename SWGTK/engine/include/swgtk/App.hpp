@@ -1,55 +1,46 @@
-#ifndef SDLAPP_HPP
-#define SDLAPP_HPP
+#ifndef SWGTK_APP_HPP
+#define SWGTK_APP_HPP
 
 #include <SDL3/SDL_video.h>
 #include <chrono>
-#include <gsl/gsl-lite.hpp>
 #include <memory>
 
 #ifdef __EMSCRIPTEN__
 #include "emscripten.h"
 #endif
 
-#include "TTFFont.hpp"
-#include "Scene.hpp"
-
-#ifdef _DEBUG
-#include <cstdio>
-#define DEBUG_PRINT(Debug_Message) std::fputs(Debug_Message, stderr); // NOLINT
-
-#else
-#define DEBUG_PRINT(Debug_Message)
-#endif
+#include "swgtk/TTFFont.hpp"
+#include "swgtk/Scene.hpp"
+#include <swgtk/Macros.hpp>
 
 extern "C" {
 	struct SDL_Window;
 	struct SDL_Renderer;
 }
 
-namespace swgtk
-{
+namespace swgtk {
 
 	/*
 		This class is designed to handle SDL windows and events.
 	*/
-	class SDLApp {
+	class App {
 	public:
 #ifdef __EMSCRIPTEN__
-		SDLApp();
-		SDLApp(const SDLApp&) = delete;
-		SDLApp(SDLApp&&) = delete;
-		SDLApp& operator=(const SDLApp&) = delete;
-		SDLApp& operator=(SDLApp&&) = delete;
+		App();
+		App(const App&) = delete;
+		App(App&&) = delete;
+		App& operator=(const App&) = delete;
+		App& operator=(App&&) = delete;
 #else
-		SDLApp(int argc, const char** argv);
-		SDLApp(const SDLApp&) = delete;
-		SDLApp(SDLApp&&) = delete;
-		SDLApp& operator=(const SDLApp&) = delete;
-		SDLApp& operator=(SDLApp&&) = delete;
+		App(int argc, const char** argv);
+		App(const App&) = delete;
+		App(App&&) = delete;
+		App& operator=(const App&) = delete;
+		App& operator=(App&&) = delete;
 #endif
-		~SDLApp();
+		~App();
 		
-		void Run(gsl::owner<GameScene::Node*> logicNode);
+		void Run(Scene::NodeProxy logicNode);
 		void InitHeadless();
 		void InitGraphical();
 		void EventsAndTimeStep();
@@ -58,7 +49,7 @@ namespace swgtk
 		[[nodiscard]] constexpr SSC GetSceneStatus(this auto&& self) { return self._currentSSC; }
 
 		// [[nodiscard]] constexpr TTF_Font* GetTTF(this SDLApp& self, sdl::FontStyle style, int size) { return self._fonts.GetTTF(style, size); }
-		[[nodiscard]] constexpr SDL_Renderer* Renderer(this auto&& self) { return self._renderer; }
+		[[nodiscard]] constexpr std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
 		[[nodiscard]] constexpr std::pair<int, int> GetWindowSize(this auto&& self)	{
@@ -68,9 +59,12 @@ namespace swgtk
 			return std::make_pair(width, height);
 		}
 
-		constexpr void SetNewSceneNode(gsl::owner<GameScene::Node*> ptr) { _nextSceneNode = ptr; }
+		constexpr void SetNewSceneNode(Scene::NodeProxy ptr) { _nextSceneNode = ptr.ptr; }
+		constexpr void SetBackgroundColor(const SDL_FColor& color) { 
+			_bgColor = color; 
+			if(_renderer && _renderer->IsDeviceInitialized()) { _renderer->SetBackgroundColor(color); }
+		}
 
-		// The following functions are for emscripten.
 #ifdef __EMSCRIPTEN__
 
 		const timePoint& GetLastFrame();
@@ -83,19 +77,21 @@ namespace swgtk
 		using timePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
 		SDL_Window* _window = nullptr;
-		SDL_Renderer* _renderer = nullptr;
-		gsl::owner<GameScene::Node*> _nextSceneNode = nullptr;
+		std::shared_ptr<RendererBase> _renderer;
+		InputSystem _input;
 
-		std::unique_ptr<GameScene> _currentScene;
+		Scene::Node* _nextSceneNode = nullptr;
+		std::unique_ptr<Scene> _currentScene;
 		sdl::FontGroup _fonts;
 
 		SSC _currentSSC = SSC::Ok;
-
-		timePoint _lastFrameTime, _currentFrameTime;
 		bool _running = true;
 
 		// A mostly unused flag, until we get 'headless server' mode.
 		bool _headless = false;
+		SDL_FColor _bgColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f };
+
+		timePoint _lastFrameTime, _currentFrameTime;
 	};
 }
-#endif // !SDLAPP_HPP
+#endif // !APP_HPP

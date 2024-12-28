@@ -26,27 +26,30 @@ namespace swgtk::sdl
 
     class FontGroup {
     public:
-        FontGroup() = default;
-        ~FontGroup() = default;
-
-        FontGroup(const FontGroup&) = delete;
-        FontGroup(FontGroup&&) = delete;
-        FontGroup& operator=(const FontGroup&) = delete;
-        FontGroup& operator=(FontGroup&&) = delete;
-
-        void AddFont(FontStyle styleMask, float size, const std::filesystem::path& filename);
+        void AddFont(FontStyle styleMask, const std::filesystem::path& filename);
         void ClearTTFFonts();
+        [[nodiscard]] constexpr bool SetFontSize(FontStyle style, float size) { 
+            if(_ttfFonts.contains(style)) {
+                return TTF_SetFontSize(_ttfFonts.at(style), size);
+            }
 
-        [[nodiscard]] TTF_Font* GetTTF(FontStyle mask, int size);
-        [[nodiscard]] const TTF_Font* GetTTF(FontStyle mask, int size) const;
+            return false;
+         }
+
+         constexpr void SetAllFontSizes(float size) { 
+            for(auto& font : _ttfFonts) {
+                TTF_SetFontSize(font.second, size);
+            }
+         }
+
+        static constexpr void SetDefaultFontSize(float size) { _defaultFontSize = size; };
+        static float _defaultFontSize;
+
+        [[nodiscard]] TTF_Font* GetTTF(FontStyle mask);
+        [[nodiscard]] const TTF_Font* GetTTF(FontStyle mask) const;
 
     private:
-        [[nodiscard]] constexpr static int64_t Hash(FontStyle style, int size) {
-            constexpr const int styleOffset = 32;
-            return (int64_t)style << styleOffset | (int64_t)size;
-        }
-
-        std::unordered_map<int64_t, TTF_Font*> _ttfFonts;
+        std::unordered_map<FontStyle, TTF_Font*> _ttfFonts;
     };
 }
 

@@ -1,8 +1,11 @@
 #ifndef SWGTK_INPUT_HPP
 #define SWGTK_INPUT_HPP
 
-#include "SDL3/SDL_mouse.h"
-#include "SDL3/SDL_keycode.h"
+#include <SDL3/SDL_mouse.h>
+#include <SDL3/SDL_rect.h>
+#include <SDL3/SDL_keyboard.h>
+#include <span>
+#include <array>
 
 namespace swgtk
 {
@@ -61,6 +64,82 @@ namespace swgtk
 	struct MouseState {
 		MButton buttons;
 		float x, y;
+	};
+
+	class InputSystem {
+	public:
+		static constexpr auto numberOfMouseButtons = 6u;
+
+		/*
+			Input state and event polling for the client's logic.
+		*/
+
+		[[nodiscard]] constexpr auto GetScrollX() const { return _scroll.x; }
+		[[nodiscard]] constexpr auto GetScrollY() const { return _scroll.y; }
+		[[nodiscard]] constexpr bool IsKeyPressed(LayoutCode code) const { return (_keyEvent.first == code && _keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyReleased(LayoutCode code) const { return (_keyEvent.first == code && !_keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _keyboardState[static_cast<size_t>(code)]; }
+		[[nodiscard]] constexpr std::pair<LayoutCode, bool> GetCurrentKeyEvent() const { return _keyEvent; }
+		[[nodiscard]] constexpr KeyMod GetKeyMods() const { return _modifiers; }
+		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Pressed; }
+		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Released; }
+		[[nodiscard]] constexpr bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_mouseState.buttons) & static_cast<uint32_t>(button)); }
+		[[nodiscard]] constexpr auto GetMouseX() const { return _mouseState.x; }
+		[[nodiscard]] constexpr auto GetMouseY() const { return _mouseState.y; }
+		[[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{ _mouseState.x, _mouseState.y }; }
+
+		/*
+			Input state and event management.
+		*/
+
+		constexpr void SetMouseState(const MouseState& event) { _mouseState = event; }
+		constexpr void SetModState(const SDL_Keymod& state) { _modifiers = static_cast<KeyMod>(state); }
+		constexpr void ResetScroll() { _scroll = { .x=0.f, .y=0.f }; }
+		constexpr void AddScroll(float amountX, float amountY) { _scroll = { .x=amountX, .y=amountY }; }
+		constexpr void SetMouseEvent(MButton button, MButtonState state) { _mouseEvents.at(static_cast<size_t>(button)) = state; }
+
+		constexpr void ResetKeyEvent()
+		{
+			_keyEvent.first = LayoutCode::Unknown;
+			_keyEvent.second = false;	
+		}
+
+		constexpr void SetKeyEvent(LayoutCode code, bool pressed)
+		{	
+			_keyEvent.first = code;
+			_keyEvent.second = pressed;
+		}
+
+		constexpr void SetKeyboardState() 
+		{
+			int numKeys{};
+			const bool* state = SDL_GetKeyboardState(&numKeys);
+			_keyboardState = std::span<const bool>{ state, static_cast<size_t>(numKeys) };
+		}
+		
+		constexpr void ResetMouseEvents() {
+			for (auto& s : _mouseEvents)
+			{
+				s = MButtonState::None;
+			}
+		}
+
+	private:
+		/*
+			State management variables for input polling.
+		*/
+
+		MouseState _mouseState{};
+		KeyMod _modifiers = KeyMod::None;
+		std::span<const bool>_keyboardState;
+
+		/*
+			Variables for processing input events.
+		*/
+
+		std::array<MButtonState, numberOfMouseButtons> _mouseEvents = { MButtonState::None }; 
+		std::pair<LayoutCode, bool> _keyEvent = std::make_pair(LayoutCode::Unknown, false);
+		SDL_FPoint _scroll{};
 	};
 }
 
