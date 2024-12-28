@@ -4,39 +4,14 @@
 #include <SDL3/SDL_video.h>
 #include <chrono>
 #include <memory>
-#include <span>
 #include <string>
 
 #include "SDL3/SDL.h"
 #include "SDL3_mixer/SDL_mixer.h"
-#include "swgtk/Simple2DRenderer.hpp"
 
 
 namespace swgtk
 {
-
-#ifdef __EMSCRIPTEN__
-	App::App()
-		: _lastFrameTime(std::chrono::high_resolution_clock::now()),
-		_currentFrameTime()
-	{
-		InitGraphical();
-	}
-#else
-	App::App(int argc, const char** argv) {
-		const std::span<const char*> args{argv, static_cast<size_t>(argc)};		
-
-		// Because I plan on eventually having a headless version, I'm guarding
-		// window creation with the --headless cmd flag.
-		if (args.size() > 1u && strcmp(args[1u], "--headless") == 0) {
-			InitHeadless();
-		} else {
-			InitGraphical();
-		}
-
-	}
-#endif // __EMSCRIPTEN__
-
 	App::~App() {
 		if (!_headless)	{
 			_fonts.ClearTTFFonts();
@@ -50,11 +25,7 @@ namespace swgtk
 		}
 	}
 
-	void App::InitHeadless() {
-		_headless = true;
-	}
-
-	void App::InitGraphical() {
+	bool App::InitGraphics(std::shared_ptr<RendererBase> renderPtr) {
 		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
 		constexpr int MixFlags = 0;
 
@@ -63,17 +34,13 @@ namespace swgtk
 
 			if (_window != nullptr)	{
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-				_renderer = CreateRenderer<Simple2DRenderer>();
-			} else {
-				DEBUG_PRINT(std::format("Failed to create window. - {}\n", SDL_GetError()).c_str())
-				return;
+				_renderer = renderPtr;
+				return true;
 			}
+		} 
 
-		} else {
-			DEBUG_PRINT(std::format("SDL failed to initialize. - {}\n", SDL_GetError()).c_str())
-			return;
-		}
-
+		DEBUG_PRINT(std::format("SDL failed to initialize. - {}\n", SDL_GetError()).c_str())
+		return false;
 	}
 
 	void App::EventsAndTimeStep() {
@@ -92,29 +59,28 @@ namespace swgtk
 		while (SDL_PollEvent(&e)) {
 			switch (e.type)	{
 			case SDL_EVENT_MOUSE_BUTTON_UP:
-			case SDL_EVENT_MOUSE_BUTTON_DOWN:
-				{
+			case SDL_EVENT_MOUSE_BUTTON_DOWN: {
 					_input.SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released);
 					break;
 				}
 
 			case SDL_EVENT_KEY_DOWN:
-			case SDL_EVENT_KEY_UP:
-				{
+			case SDL_EVENT_KEY_UP: {
 					_input.SetKeyEvent(LayoutCode(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
 					break;
 				}
 
-			case SDL_EVENT_MOUSE_WHEEL:
-				{
+			case SDL_EVENT_MOUSE_WHEEL: {
 					_input.AddScroll(e.wheel.x, e.wheel.y);
 					break;
 				}
 
-			case SDL_EVENT_QUIT:
-				{
+			case SDL_EVENT_QUIT: {
 					CloseApp();
 					break;
+				}
+			default: {
+				// Unsupported event.
 				}
 			}
 		}
@@ -130,7 +96,7 @@ namespace swgtk
 			_input.SetMouseState(mouse);
 		}
 
-		_currentFrameTime = std::chrono::high_resolution_clock::now();
+		_currentFrameTime = std::chrono::steady_clock::now();
 
 		const auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
 		_lastFrameTime = _currentFrameTime;

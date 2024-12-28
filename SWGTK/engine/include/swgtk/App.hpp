@@ -1,6 +1,7 @@
 #ifndef SWGTK_APP_HPP
 #define SWGTK_APP_HPP
 
+#include "swgtk/RendererBase.hpp"
 #include <SDL3/SDL_video.h>
 #include <chrono>
 #include <memory>
@@ -26,13 +27,13 @@ namespace swgtk {
 	class App {
 	public:
 #ifdef __EMSCRIPTEN__
-		App();
+		App() = default;
 		App(const App&) = delete;
 		App(App&&) = delete;
 		App& operator=(const App&) = delete;
 		App& operator=(App&&) = delete;
 #else
-		App(int argc, const char** argv);
+		App() = default;
 		App(const App&) = delete;
 		App(App&&) = delete;
 		App& operator=(const App&) = delete;
@@ -41,14 +42,17 @@ namespace swgtk {
 		~App();
 		
 		void Run(Scene::NodeProxy logicNode);
-		void InitHeadless();
-		void InitGraphical();
 		void EventsAndTimeStep();
 		void CloseApp();
+		[[nodiscard]] bool InitGraphics(std::shared_ptr<RendererBase> renderPtr);
+		constexpr bool InitHeadless() {
+			_headless = true;
+			return true;
+		}
 
 		[[nodiscard]] constexpr SSC GetSceneStatus(this auto&& self) { return self._currentSSC; }
 
-		// [[nodiscard]] constexpr TTF_Font* GetTTF(this SDLApp& self, sdl::FontStyle style, int size) { return self._fonts.GetTTF(style, size); }
+		[[nodiscard]] constexpr TTF_Font* GetTTF(this auto&& self, sdl::FontStyle style) { return self._fonts.GetTTF(style); }
 		[[nodiscard]] constexpr std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
@@ -74,7 +78,7 @@ namespace swgtk {
 #endif // __EMSCRIPTEN__
 
 	private:
-		using timePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
+		using timePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
 		SDL_Window* _window = nullptr;
 		std::shared_ptr<RendererBase> _renderer;
@@ -91,7 +95,7 @@ namespace swgtk {
 		bool _headless = false;
 		SDL_FColor _bgColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f };
 
-		timePoint _lastFrameTime, _currentFrameTime;
+		timePoint _lastFrameTime = std::chrono::steady_clock::now(), _currentFrameTime;
 	};
 }
 #endif // !APP_HPP

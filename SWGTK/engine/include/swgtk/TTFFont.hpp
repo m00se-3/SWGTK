@@ -24,6 +24,10 @@ namespace swgtk::sdl
         Italic_Strike = Italic | Strikethrough,
     };
 
+    /**
+     * @brief A FontGroup represents a single font family. (e.g. Sans, Roboto, etc.)
+     * 
+     */
     class FontGroup {
     public:
         void AddFont(FontStyle styleMask, const std::filesystem::path& filename);
