@@ -11,8 +11,6 @@
 
 namespace swgtk
 {
-	Simple2DRenderer::~Simple2DRenderer() { DestroyDevice(); }
-
 	bool Simple2DRenderer::PrepareDevice(SDL_Window* window, SDL_FColor bgColor) {
 		_render = SDL_CreateRenderer(window, nullptr);
 		
@@ -32,7 +30,7 @@ namespace swgtk
 		SDL_DestroyRenderer(_render);
 	}
 	
-	Texture Simple2DRenderer::LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode)	{
+	Texture Simple2DRenderer::LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode) const {
 	    if(std::filesystem::exists(img)) {
 			auto* texture = IMG_LoadTexture(_render, img.string().c_str());
 			SDL_SetTextureBlendMode(texture, blendMode);

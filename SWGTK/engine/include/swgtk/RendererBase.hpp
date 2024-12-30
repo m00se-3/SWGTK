@@ -62,14 +62,11 @@ namespace swgtk {
          */
         virtual void DestroyDevice() = 0;
 
-        template<std::derived_from<RendererBase> T>
-        [[nodiscard]] T* GetImpl() { return static_cast<T*>(this); }
+        constexpr virtual std::shared_ptr<RendererBase> GetRef() = 0;
     };
 
-    template<std::derived_from<RendererBase> T, typename... Args>
-    [[nodiscard]] constexpr std::shared_ptr<T> CreateRenderer(Args&&... args) {
-        return std::make_shared<T>(std::forward<Args>(args)...);
-    }
+    template<std::derived_from<RendererBase> T>
+    [[nodiscard]] constexpr std::shared_ptr<T> RenderImpl(std::shared_ptr<RendererBase> ptr) { return ptr; }    
 }
 
 #endif
