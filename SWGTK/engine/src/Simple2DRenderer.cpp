@@ -1,32 +1,26 @@
 #include "swgtk/Simple2DRenderer.hpp"
 
 #include "SDL3_image/SDL_image.h"
+#include "SDL3_ttf/SDL_ttf.h"
 #include "swgtk/RendererBase.hpp"
 #include <SDL3/SDL_pixels.h>
+#include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
 #include <filesystem>
 #include <sol/optional_implementation.hpp>
+#include <string_view>
 
 namespace swgtk
 {
 	bool Simple2DRenderer::PrepareDevice(SDL_Window* window, SDL_FColor bgColor) {
 		_render = SDL_CreateRenderer(window, nullptr);
 		
-		if(_render != nullptr) {
-			_textEngine = TTF_CreateRendererTextEngine(_render);
-
-			if(_textEngine != nullptr) {
-				return SetDrawColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-			}
-		}
-
-		return false;
+		return (_render != nullptr && SetDrawColor(bgColor));
 	}
 
 	void Simple2DRenderer::DestroyDevice() {
-		TTF_DestroyRendererTextEngine(_textEngine);
 		SDL_DestroyRenderer(_render);
 	}
 	
@@ -39,6 +33,83 @@ namespace swgtk
 	    }
 
 	    return Texture{};
+	}
+
+	void Simple2DRenderer::DrawPlainText(std::string_view text, TTF_Font* font, SDL_FRect pos, SDL_Color color) const {		
+		auto* ttf = TTF_RenderText_Solid(font, text.data(), text.size(), color);
+
+		if(ttf == nullptr) {
+			DEBUG_PRINT(SDL_GetError());
+			return;
+		}
+
+		auto* texture = SDL_CreateTextureFromSurface(_render, ttf);
+		SDL_RenderTexture(_render, texture, nullptr, &pos);
+		SDL_DestroySurface(ttf);
+	}
+
+	Texture Simple2DRenderer::LoadPlainText(std::string_view text, TTF_Font* font, SDL_Color color) const {
+		auto* surf = TTF_RenderText_Solid(font, text.data(), text.size(), color);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
+	}
+
+	Texture Simple2DRenderer::LoadBlendedText(std::string_view text, TTF_Font* font, SDL_Color color) const {
+		auto* surf = TTF_RenderText_Blended(font, text.data(), text.size(), color);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
+	}
+
+	Texture Simple2DRenderer::LoadShadedText(std::string_view text, TTF_Font* font, SDL_Color bg, SDL_Color fg) const {
+		auto* surf = TTF_RenderText_Shaded(font, text.data(), text.size(), fg, bg);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
+	}
+
+	Texture Simple2DRenderer::LoadLCDText(std::string_view text, TTF_Font* font, SDL_Color bg, SDL_Color fg) const {
+		auto* surf = TTF_RenderText_LCD(font, text.data(), text.size(), fg, bg);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
+	}
+
+	Texture Simple2DRenderer::LoadPlainWrapText(std::string_view text, TTF_Font* font, int wrapLen, SDL_Color color) const {
+		auto* surf = TTF_RenderText_Solid_Wrapped(font, text.data(), text.size(), color, wrapLen);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
+	}
+
+	Texture Simple2DRenderer::LoadBlendedWrapText(std::string_view text, TTF_Font* font, int wrapLen, SDL_Color color) const {
+		auto* surf = TTF_RenderText_Blended_Wrapped(font, text.data(), text.size(), color, wrapLen);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
+	}
+
+	Texture Simple2DRenderer::LoadShadedWrapText(std::string_view text, TTF_Font* font, int wrapLen, SDL_Color bg, SDL_Color fg) const {
+		auto* surf = TTF_RenderText_Shaded_Wrapped(font, text.data(), text.size(), fg, bg, wrapLen);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
+	}
+
+	Texture Simple2DRenderer::LoadLCDWrapText(std::string_view text, TTF_Font* font, int wrapLen, SDL_Color bg, SDL_Color fg) const {
+		auto* surf = TTF_RenderText_LCD_Wrapped(font, text.data(), text.size(), fg, bg, wrapLen);
+		auto* texture = SDL_CreateTextureFromSurface(_render, surf);
+
+		SDL_DestroySurface(surf);
+		return Texture{texture};
 	}
 
 	void Simple2DRenderer::InitLua(sol::state& lua) {

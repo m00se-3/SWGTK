@@ -4,6 +4,7 @@ project ("SWGTK")
 
 include("CPM.cmake")
 include("cmake/Config.cmake")
+include(CTest)
 
 # Add CCache, if available
 
@@ -59,7 +60,7 @@ if (freetype_ADDED)
   add_library(Freetype::Freetype ALIAS freetype)
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#preview-3.1.6")
+CPMAddPackage("gh:libsdl-org/SDL#prerelease-3.1.10")
 CPMAddPackage("gh:libsdl-org/SDL_image#preview-3.1.0")
 
 # If any more external dependencies become necessary in the future, they should be added before any SDL.(For consistency)
@@ -80,7 +81,6 @@ CPMAddPackage(
     OPTIONS 
     "SDL3MIXER_OPUS false"
     "SDL3MIXER_MOD false"
-    "SDL3MIXER_WAVPACK false"
 )
 
 # Include sub-projects.

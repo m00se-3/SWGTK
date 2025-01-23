@@ -2,8 +2,6 @@
 
 namespace swgtk::sdl
 {    
-    float FontGroup::_defaultFontSize = 16.0f; // NOLINT
-    
     void FontGroup::AddFont(FontStyle styleMask, const std::filesystem::path& filename) {
         if (!_ttfFonts.contains(styleMask))
         {

@@ -26,6 +26,7 @@ namespace swgtk::sdl
 
     /**
      * @brief A FontGroup represents a single font family. (e.g. Sans, Roboto, etc.)
+     * This class contains an unordered_map of styles to use when rendering.(See enum class FontStyle)
      * 
      */
     class FontGroup {
@@ -46,14 +47,14 @@ namespace swgtk::sdl
             }
          }
 
-        static constexpr void SetDefaultFontSize(float size) { _defaultFontSize = size; };
-        static float _defaultFontSize;
+        constexpr void SetDefaultFontSize(float size) { _defaultFontSize = size; };
 
         [[nodiscard]] TTF_Font* GetTTF(FontStyle mask);
         [[nodiscard]] const TTF_Font* GetTTF(FontStyle mask) const;
 
     private:
         std::unordered_map<FontStyle, TTF_Font*> _ttfFonts;
+        float _defaultFontSize = 16.0f; //NOLINT
     };
 }
 

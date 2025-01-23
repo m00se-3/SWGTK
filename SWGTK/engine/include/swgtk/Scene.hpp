@@ -86,7 +86,7 @@ namespace swgtk
 		[[nodiscard]] static constexpr NodeProxy CreateSceneNode(
 			std::function<SSC(Scene&)> createFunc,
 			std::function<SSC(Scene&, float)> updateFunc,
-			std::optional<std::function<void(Scene&)>> destroyFunc
+			std::optional<std::function<void(Scene&)>> destroyFunc = std::nullopt
 		) {
 			return NodeProxy {
 				new Node { createFunc, updateFunc, destroyFunc }
@@ -105,7 +105,7 @@ namespace swgtk
 		[[nodiscard]] constexpr InputSystem* AppInput(this auto&& self) { return self._input; }
 
 		template<std::derived_from<RendererBase> T>	
-		[[nodiscard]] constexpr auto AppRenderer(this auto&& self) { return self._renderer->template GetImpl<T>(); }
+		[[nodiscard]] constexpr auto AppRenderer(this auto&& self) { return RenderImpl<T>(self._renderer); }
 
 	private:
 		App* _parent = nullptr;

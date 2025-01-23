@@ -21,10 +21,10 @@ namespace swgtk
 
 		[[nodiscard]] constexpr auto Get() const { return _texture; }
 
-		constexpr void SetBlend(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture.get(), mode); }
-		constexpr void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+		constexpr void SetBlendMode(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture.get(), mode); }
+		constexpr void SetTint(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-		[[nodiscard]] constexpr SDL_BlendMode GetBlend() const
+		[[nodiscard]] constexpr SDL_BlendMode GetBlendMode() const
 		{
 			SDL_BlendMode blend{};
 
@@ -32,7 +32,7 @@ namespace swgtk
 			return blend;
 		}
 
-		[[nodiscard]] constexpr SDL_Color GetColor() const 
+		[[nodiscard]] constexpr SDL_Color GetTint() const 
 		{
 			SDL_Color color{};
 

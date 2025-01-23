@@ -19,7 +19,8 @@ namespace swgtk {
      */
     class RendererBase {
     protected:
-        static constexpr float defaultAlphaFloat = 1.0f;
+        static constexpr auto defaultAlphaFloat = 1.0f;
+        static constexpr auto defaultAlphaInt = 255u;
 
     public:
         RendererBase() = default;
@@ -66,7 +67,7 @@ namespace swgtk {
     };
 
     template<std::derived_from<RendererBase> T>
-    [[nodiscard]] constexpr std::shared_ptr<T> RenderImpl(std::shared_ptr<RendererBase> ptr) { return ptr; }    
+    [[nodiscard]] constexpr T* RenderImpl(std::shared_ptr<RendererBase> ptr) { return dynamic_cast<T*>(ptr.get()); }    
 }
 
 #endif

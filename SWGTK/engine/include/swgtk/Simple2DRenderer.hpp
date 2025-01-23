@@ -7,6 +7,8 @@
 #include "SDL3/SDL_blendmode.h"
 #include "SDL3/SDL_render.h"
 #include <SDL3/SDL_error.h>
+#include <SDL3/SDL_oldnames.h>
+#include <SDL3/SDL_rect.h>
 #include <swgtk/RendererBase.hpp>
 #include <swgtk/Macros.hpp>
 #include <sol/sol.hpp>
@@ -19,20 +21,20 @@
 namespace swgtk
 {
     class Simple2DRenderer : public RendererBase, std::enable_shared_from_this<Simple2DRenderer>{
-		
-		constexpr Simple2DRenderer() = default;
-
 	public:
+
+		constexpr Simple2DRenderer() = default;
 		Simple2DRenderer(const Simple2DRenderer &) = delete;
 		Simple2DRenderer(Simple2DRenderer &&) = delete;
 		Simple2DRenderer &operator=(const Simple2DRenderer &) = delete;
 		Simple2DRenderer &operator=(Simple2DRenderer &&) = delete;
-		constexpr ~Simple2DRenderer() { DestroyDevice(); }
+		constexpr ~Simple2DRenderer() override { DestroyDevice(); }
 
-		constexpr void BufferClear() override { SDL_RenderClear(_render); };
-		constexpr void BufferPresent() override { SDL_RenderPresent(_render); };
+		constexpr void BufferClear() override { SDL_RenderClear(_render); }
+
+		constexpr void BufferPresent() override { SDL_RenderPresent(_render); }
 		constexpr void SetBackgroundColor(const SDL_FColor& color) override { SetDrawColor(color); }
-		[[nodiscard]] constexpr bool IsDeviceInitialized() const override { return _render != nullptr && _textEngine != nullptr; }
+		[[nodiscard]] constexpr bool IsDeviceInitialized() const override { return _render != nullptr; }
 
 		[[nodiscard]] bool PrepareDevice(SDL_Window* window, SDL_FColor bgColor = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) override;
 		void DestroyDevice() override;
@@ -59,27 +61,47 @@ namespace swgtk
 		}
 		
 		/**
-		 * @brief Draw unscaled text at the specified location with the specified font.
+		 * @brief Draw text at the specified location with the specified font. Uses SDL_ttf's fastest algorithm.
 		 * 
 		 * @param text 
 		 * @param font 
-		 * @param posX 
-		 * @param posY 
+		 * @param pos - Destination rectangle
+		 * @param color
 		 */
-		constexpr void DrawText(std::string_view text, TTF_Font* font, float posX, float posY) const {		
-			auto* ttf = TTF_CreateText(_textEngine, font, text.data(), text.size());
+		void DrawPlainText(std::string_view text, TTF_Font* font, SDL_FRect pos,
+		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
-			if(ttf == nullptr) {
-				DEBUG_PRINT(SDL_GetError());
-				return;
-			}
+		/*
+			Combines SDL_ttf's API with SDL_Textures to preload text renderables as Textures. These can be rotated and tinted as needed.
+		*/
 
-			auto color = GetDrawColor();
-			TTF_SetTextColorFloat(ttf, color.r, color.g, color.b, color.a);
+		[[nodiscard]] Texture LoadPlainText(std::string_view text, TTF_Font* font,
+		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
-			TTF_DrawRendererText(ttf, posX, posY);
-			TTF_DestroyText(ttf);
-		}						
+		[[nodiscard]] Texture LoadBlendedText(std::string_view text, TTF_Font* font,
+		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+
+		[[nodiscard]] Texture LoadShadedText(std::string_view text, TTF_Font* font,
+		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
+		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+
+		[[nodiscard]] Texture LoadLCDText(std::string_view text, TTF_Font* font,
+		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
+		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+
+		[[nodiscard]] Texture LoadPlainWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
+		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+
+		[[nodiscard]] Texture LoadBlendedWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
+		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+
+		[[nodiscard]] Texture LoadShadedWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
+		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
+		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+
+		[[nodiscard]] Texture LoadLCDWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
+		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
+		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
 		/*
 			Used to draw arbitray shapes from a list of verticies. This is helpful when drawing things like particles.
@@ -108,7 +130,6 @@ namespace swgtk
 
 	private:
 		SDL_Renderer* _render = nullptr;
-		TTF_TextEngine* _textEngine = nullptr;
     };
 }
 

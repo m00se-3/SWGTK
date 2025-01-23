@@ -52,7 +52,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Simple2DRenderer.cpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/RendererBase.cpp
 
 	${Added_Sources}
 )

@@ -52,6 +52,7 @@ namespace swgtk {
 
 		[[nodiscard]] constexpr SSC GetSceneStatus(this auto&& self) { return self._currentSSC; }
 
+		constexpr void AddTTF(this auto&& self, std::string_view path, sdl::FontStyle style) { self._fonts.AddFont(style, path); }
 		[[nodiscard]] constexpr TTF_Font* GetTTF(this auto&& self, sdl::FontStyle style) { return self._fonts.GetTTF(style); }
 		[[nodiscard]] constexpr std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
