@@ -1,10 +1,10 @@
 #include "swgtk/App.hpp"
 
+#include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
 #include <chrono>
 #include <memory>
-#include <string>
 
 #include "SDL3/SDL.h"
 #include "SDL3_mixer/SDL_mixer.h"
@@ -14,7 +14,7 @@ namespace swgtk
 {
 	App::~App() {
 		if (!_headless)	{
-			_fonts.ClearTTFFonts();
+			_fonts.ClearFonts();
 			
 			
 			SDL_DestroyWindow(_window);
@@ -39,7 +39,7 @@ namespace swgtk
 			}
 		} 
 
-		DEBUG_PRINT(std::format("SDL failed to initialize. - {}\n", SDL_GetError()).c_str())
+		DEBUG_PRINT("SDL failed to initialize. - {}\n", SDL_GetError())
 		return false;
 	}
 
@@ -52,26 +52,26 @@ namespace swgtk
 		
 		SDL_Event e;
 
-		_input.ResetScroll();
-		_input.ResetMouseEvents();
-		_input.ResetKeyEvent();
+		ResetScroll();
+		ResetMouseEvents();
+		ResetKeyEvent();
 
 		while (SDL_PollEvent(&e)) {
 			switch (e.type)	{
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-					_input.SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released);
+					SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released);
 					break;
 				}
 
 			case SDL_EVENT_KEY_DOWN:
 			case SDL_EVENT_KEY_UP: {
-					_input.SetKeyEvent(LayoutCode(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
+					SetKeyEvent(LayoutCode(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
 					break;
 				}
 
 			case SDL_EVENT_MOUSE_WHEEL: {
-					_input.AddScroll(e.wheel.x, e.wheel.y);
+					AddScroll(e.wheel.x, e.wheel.y);
 					break;
 				}
 
@@ -86,14 +86,14 @@ namespace swgtk
 		}
 
 
-		_input.SetKeyboardState();
-		_input.SetModState(SDL_GetModState());
+		SetKeyboardState();
+		SetModState(SDL_GetModState());
 
 		{
 			MouseState mouse{};
 			mouse.buttons = MButton{ SDL_GetMouseState(&mouse.x, &mouse.y) };
 
-			_input.SetMouseState(mouse);
+			SetMouseState(mouse);
 		}
 
 		_currentFrameTime = std::chrono::steady_clock::now();
@@ -113,13 +113,13 @@ namespace swgtk
 	void App::Run(Scene::NodeProxy logicNode) {
 		if (!_headless)	{
 			if(!_renderer->PrepareDevice(_window, _bgColor)) {
-				DEBUG_PRINT(std::format("Failed to initialize rendering context. - {}\n", SDL_GetError()).c_str())
+				DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
 				return;
 			}
 
 			SDL_ShowWindow(_window);
 
-			_currentScene = std::make_unique<Scene>(this, &_input, logicNode);
+			_currentScene = std::make_unique<Scene>(this, logicNode);
 			
 			if (_currentScene->Create() != SSC::Ok)	{
 				return;

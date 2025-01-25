@@ -5,26 +5,27 @@
 
 namespace swgtk {
     SSC TextTest::Create(Scene& scene) {
+        constexpr auto colorDefault = 255u;
+
         auto* app = scene.AppRoot();
-        auto fontsDir = project::AssetsDir() + "/fonts/roboto";
+        const std::filesystem::path fontsDir = std::filesystem::path{project::AssetsDir()} / "fonts" / "roboto";
 
-        app->AddTTF(fontsDir + "/Roboto-Medium.ttf", sdl::FontStyle::Normal);
-
-        std::puts("Creating test...\n");
+        app->AddFont(fontsDir / "Roboto-Medium.ttf", FontStyle::Normal);
 
         auto* render = scene.AppRenderer<Simple2DRenderer>();
-        _mouse.texture = render->LoadPlainWrapText("Hello\nWorld!", app->GetTTF(sdl::FontStyle::Normal), 0, SDL_Color{255u, 0u, 0u, 255u});
+        _mouse.texture = render->LoadPlainWrapText("Hello\nWorld!", app->GetFont(FontStyle::Normal), 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
         
         return SSC::Ok;
     }
 
     SSC TextTest::Update(Scene& scene, float dt) {
-        constexpr auto speed = 2.0;
-        auto* input = scene.AppInput(); // Why did I do this again?
+        // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers) - Reason: It's pointless to create constants for this test.
+
+        auto* app = scene.AppRoot(); 
         auto* render = scene.AppRenderer<Simple2DRenderer>();
 
-        _mouse.pos = input->GetMousePos();
-        _mouse.angle += dt * speed;
+        _mouse.pos = app->GetMousePos();
+        _mouse.angle += dt * 2.0;
 
         if(_mouse.angle > std::numbers::pi * 2.0) { _mouse.angle -= (std::numbers::pi * 2.0); }
 
@@ -42,6 +43,8 @@ namespace swgtk {
         // This interface needs to be improved, it needs to not take things by pointer if possible, especially since the pointers 
         // are definitly going to out live the draw call no matter what.
         render->DrawTexture(_mouse.texture.Get().get(), nullptr, &rect, (_mouse.angle / std::numbers::pi) * 180.0);
+
+        // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
         return SSC::Ok;
     }

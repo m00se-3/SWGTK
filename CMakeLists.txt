@@ -60,8 +60,8 @@ if (freetype_ADDED)
   add_library(Freetype::Freetype ALIAS freetype)
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#prerelease-3.1.10")
-CPMAddPackage("gh:libsdl-org/SDL_image#preview-3.1.0")
+CPMAddPackage("gh:libsdl-org/SDL#release-3.2.0")
+CPMAddPackage("gh:libsdl-org/SDL_image#prerelease-3.1.1")
 
 # If any more external dependencies become necessary in the future, they should be added before any SDL.(For consistency)
 
@@ -82,6 +82,8 @@ CPMAddPackage(
     "SDL3MIXER_OPUS false"
     "SDL3MIXER_MOD false"
 )
+
+CPMAddPackage("gh:fmtlib/fmt#11.1.2")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")

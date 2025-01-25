@@ -39,7 +39,7 @@ namespace swgtk
 		auto* ttf = TTF_RenderText_Solid(font, text.data(), text.size(), color);
 
 		if(ttf == nullptr) {
-			DEBUG_PRINT(SDL_GetError());
+			DEBUG_PRINT("{}", SDL_GetError())
 			return;
 		}
 

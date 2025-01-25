@@ -81,7 +81,7 @@ namespace swgtk
 			Node* ptr = nullptr;
 		};
 	
-		Scene(App* parent, InputSystem* input, NodeProxy node);
+		Scene(App* parent, NodeProxy node);
 
 		[[nodiscard]] static constexpr NodeProxy CreateSceneNode(
 			std::function<SSC(Scene&)> createFunc,
@@ -102,7 +102,6 @@ namespace swgtk
 		void GenerateNewScene(NodeProxy ptr); // The user uses this function.
 
 		[[nodiscard]] constexpr App* AppRoot(this auto&& self) { return self._parent; }
-		[[nodiscard]] constexpr InputSystem* AppInput(this auto&& self) { return self._input; }
 
 		template<std::derived_from<RendererBase> T>	
 		[[nodiscard]] constexpr auto AppRenderer(this auto&& self) { return RenderImpl<T>(self._renderer); }
@@ -111,7 +110,6 @@ namespace swgtk
 		App* _parent = nullptr;
 		std::shared_ptr<RendererBase> _renderer;
 		std::unique_ptr<Node> _root;
-		InputSystem* _input = nullptr;
 		SSC _sceneState = SSC::Ok;
 
 	};

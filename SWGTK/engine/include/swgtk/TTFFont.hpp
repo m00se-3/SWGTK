@@ -6,7 +6,7 @@
 #include <cstdint>
 #include "SDL3_ttf/SDL_ttf.h"
 
-namespace swgtk::sdl
+namespace swgtk
 {
     enum class FontStyle : int32_t {
         None = 32,
@@ -31,8 +31,8 @@ namespace swgtk::sdl
      */
     class FontGroup {
     public:
-        void AddFont(FontStyle styleMask, const std::filesystem::path& filename);
-        void ClearTTFFonts();
+        void AddFont(const std::filesystem::path& filename, FontStyle styleMask);
+        void ClearFonts();
         [[nodiscard]] constexpr bool SetFontSize(FontStyle style, float size) { 
             if(_ttfFonts.contains(style)) {
                 return TTF_SetFontSize(_ttfFonts.at(style), size);
@@ -49,8 +49,14 @@ namespace swgtk::sdl
 
         constexpr void SetDefaultFontSize(float size) { _defaultFontSize = size; };
 
-        [[nodiscard]] TTF_Font* GetTTF(FontStyle mask);
-        [[nodiscard]] const TTF_Font* GetTTF(FontStyle mask) const;
+        [[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle mask) {
+            if (self._ttfFonts.contains(mask))
+            {
+                return self._ttfFonts.at(mask);
+            }
+
+            return nullptr;
+        }
 
     private:
         std::unordered_map<FontStyle, TTF_Font*> _ttfFonts;

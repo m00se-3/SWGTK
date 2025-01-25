@@ -1,6 +1,7 @@
 #ifndef SWGTK_APP_HPP
 #define SWGTK_APP_HPP
 
+#include "swgtk/Input.hpp"
 #include "swgtk/RendererBase.hpp"
 #include <SDL3/SDL_video.h>
 #include <chrono>
@@ -52,8 +53,8 @@ namespace swgtk {
 
 		[[nodiscard]] constexpr SSC GetSceneStatus(this auto&& self) { return self._currentSSC; }
 
-		constexpr void AddTTF(this auto&& self, std::string_view path, sdl::FontStyle style) { self._fonts.AddFont(style, path); }
-		[[nodiscard]] constexpr TTF_Font* GetTTF(this auto&& self, sdl::FontStyle style) { return self._fonts.GetTTF(style); }
+		constexpr void AddFont(this auto&& self, const std::filesystem::path& path, FontStyle style) { self._fonts.AddFont(path, style); }
+		[[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle style) { return self._fonts.GetFont(style); }
 		[[nodiscard]] constexpr std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
@@ -68,6 +69,60 @@ namespace swgtk {
 		constexpr void SetBackgroundColor(const SDL_FColor& color) { 
 			_bgColor = color; 
 			if(_renderer && _renderer->IsDeviceInitialized()) { _renderer->SetBackgroundColor(color); }
+		}
+
+		/*
+			Input state and event polling for the client's logic.
+		*/
+
+		[[nodiscard]] constexpr auto GetScrollX() const { return _input.scroll.x; }
+		[[nodiscard]] constexpr auto GetScrollY() const { return _input.scroll.y; }
+		[[nodiscard]] constexpr bool IsKeyPressed(LayoutCode code) const { return (_input.keyEvent.first == code && _input.keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyReleased(LayoutCode code) const { return (_input.keyEvent.first == code && !_input.keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _input.keyboardState[static_cast<size_t>(code)]; }
+		[[nodiscard]] constexpr std::pair<LayoutCode, bool> GetCurrentKeyEvent() const { return _input.keyEvent; }
+		[[nodiscard]] constexpr KeyMod GetKeyMods() const { return _input.modifiers; }
+		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Pressed; }
+		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Released; }
+		[[nodiscard]] constexpr bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_input.mouseState.buttons) & static_cast<uint32_t>(button)); }
+		[[nodiscard]] constexpr auto GetMouseX() const { return _input.mouseState.x; }
+		[[nodiscard]] constexpr auto GetMouseY() const { return _input.mouseState.y; }
+		[[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{ _input.mouseState.x, _input.mouseState.y }; }
+
+		/*
+			Input state and event management.
+		*/
+
+		constexpr void SetMouseState(const MouseState& event) { _input.mouseState = event; }
+		constexpr void SetModState(const SDL_Keymod& state) { _input.modifiers = static_cast<KeyMod>(state); }
+		constexpr void ResetScroll() { _input.scroll = { .x=0.f, .y=0.f }; }
+		constexpr void AddScroll(float amountX, float amountY) { _input.scroll = { .x=amountX, .y=amountY }; }
+		constexpr void SetMouseEvent(MButton button, MButtonState state) { _input.mouseEvents.at(static_cast<size_t>(button)) = state; }
+
+		constexpr void ResetKeyEvent()
+		{
+			_input.keyEvent.first = LayoutCode::Unknown;
+			_input.keyEvent.second = false;	
+		}
+
+		constexpr void SetKeyEvent(LayoutCode code, bool pressed)
+		{	
+			_input.keyEvent.first = code;
+			_input.keyEvent.second = pressed;
+		}
+
+		constexpr void SetKeyboardState() 
+		{
+			int numKeys{};
+			const bool* state = SDL_GetKeyboardState(&numKeys);
+			_input.keyboardState = std::span<const bool>{ state, static_cast<size_t>(numKeys) };
+		}
+		
+		constexpr void ResetMouseEvents() {
+			for (auto& s : _input.mouseEvents)
+			{
+				s = MButtonState::None;
+			}
 		}
 
 #ifdef __EMSCRIPTEN__
@@ -87,7 +142,7 @@ namespace swgtk {
 
 		Scene::Node* _nextSceneNode = nullptr;
 		std::unique_ptr<Scene> _currentScene;
-		sdl::FontGroup _fonts;
+		FontGroup _fonts;
 
 		SSC _currentSSC = SSC::Ok;
 		bool _running = true;

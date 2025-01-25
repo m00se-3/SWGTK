@@ -7,8 +7,8 @@
 
 namespace swgtk
 {
-	Scene::Scene(App* parent, InputSystem* input, NodeProxy node)
-	: _parent(parent), _renderer(parent->Renderer()), _root(node.ptr), _input(input)
+	Scene::Scene(App* parent, NodeProxy node)
+	: _parent(parent), _renderer(parent->Renderer()), _root(node.ptr)
 	{
 	}
 
@@ -81,16 +81,16 @@ namespace swgtk
 				}
 			);
 
-			lua.new_enum<sdl::FontStyle>("FontStyle",
+			lua.new_enum<FontStyle>("FontStyle",
 				{
-					std::make_pair("Normal", sdl::FontStyle::Normal),
-					std::make_pair("Bold", sdl::FontStyle::Bold),
-					std::make_pair("Italic", sdl::FontStyle::Italic),
-					std::make_pair("Underlined", sdl::FontStyle::Underlined),
-					std::make_pair("Bold_Italic", sdl::FontStyle::Bold_Italic),
-					std::make_pair("Bold_Underlinded", sdl::FontStyle::Bold_Underlinded),
-					std::make_pair("Bold_Italic_Underlined", sdl::FontStyle::Bold_Italic_Underlined),
-					std::make_pair("Italic_Underlined", sdl::FontStyle::Italic_Underlined)
+					std::make_pair("Normal", FontStyle::Normal),
+					std::make_pair("Bold", FontStyle::Bold),
+					std::make_pair("Italic", FontStyle::Italic),
+					std::make_pair("Underlined", FontStyle::Underlined),
+					std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
+					std::make_pair("Bold_Underlinded", FontStyle::Bold_Underlinded),
+					std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
+					std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
 				}
 			);
 		}
@@ -213,51 +213,51 @@ namespace swgtk
 		);
 
 		lua["GetScrollX"] = [this]() -> float {
-				return _input->GetScrollX();
+				return _parent->GetScrollX();
 			};
 
 		lua["GetScrollY"] = [this]() -> float {
-				return _input->GetScrollY();
+				return _parent->GetScrollY();
 			};
 
 		lua["IsKeyPressed"] = [this](LayoutCode key) -> bool {
-				return _input->IsKeyPressed(key);
+				return _parent->IsKeyPressed(key);
 			};
 
 		lua["IsKeyReleased"] = [this](LayoutCode key) -> bool {
-				return _input->IsKeyReleased(key);
+				return _parent->IsKeyReleased(key);
 			};
 
 		lua["IsKeyHeld"] = [this](LayoutCode key) -> bool {
-				return _input->IsKeyHeld(key);
+				return _parent->IsKeyHeld(key);
 			};
 
 		lua["IsButtonPressed"] = [this](MButton btn) -> bool {
-				return _input->IsButtonPressed(btn);
+				return _parent->IsButtonPressed(btn);
 			};
 
 		lua["IsButtonReleased"] = [this](MButton btn) -> bool {
-				return _input->IsButtonReleased(btn);
+				return _parent->IsButtonReleased(btn);
 			};
 
 		lua["IsButtonHeld"] = [this](MButton btn) -> bool {
-				return _input->IsButtonHeld(btn);
+				return _parent->IsButtonHeld(btn);
 			};
 
 		lua["GetKeyMods"] = [this]() -> KeyMod {
-				return _input->GetKeyMods();
+				return _parent->GetKeyMods();
 			};
 
 		lua["GetMouseX"] = [this]() -> float {
-				return _input->GetMouseX();
+				return _parent->GetMouseX();
 			};
 
 		lua["GetMouseY"] = [this]() -> float {
-				return _input->GetMouseY();
+				return _parent->GetMouseY();
 			};
 		
 		lua["GetMousePos"] = [this]() -> SDL_FPoint {
-				return _input->GetMousePos();
+				return _parent->GetMousePos();
 		};
 		
 	}

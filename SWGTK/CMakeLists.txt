@@ -67,6 +67,7 @@ target_link_libraries(
 	SDL3_ttf::SDL3_ttf
 	lua
 	sol2
+	fmt::fmt
 )
 
 add_subdirectory("tests")
