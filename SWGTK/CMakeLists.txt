@@ -16,9 +16,6 @@ if(CLANG_TIDY_PROGRAM)
 
 endif()
 
-set(Added_Sources "")
-set(Added_Headers "")
-
 target_sources(
 	SWGTK	
 
@@ -43,8 +40,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/TTFFont.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Macros.hpp
 
-	${Added_Headers}
-
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/App.cpp
@@ -53,7 +48,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Simple2DRenderer.cpp
 
-	${Added_Sources}
 )
 
 target_link_libraries(

@@ -2,6 +2,7 @@
 #define SWGTK_TEXTURE_HPP
 
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_surface.h>
 #include <memory>
 
 namespace swgtk
@@ -19,10 +20,16 @@ namespace swgtk
 		constexpr Texture() = default;
 		constexpr explicit Texture(SDL_Texture* texture) : _texture(std::shared_ptr<SDL_Texture>{texture, Texture::DestroyTexture}) {}
 
+		[[nodiscard]] constexpr auto operator*() const { return _texture.get(); }
 		[[nodiscard]] constexpr auto Get() const { return _texture; }
 
 		constexpr void SetBlendMode(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture.get(), mode); }
-		constexpr void SetTint(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+		constexpr void SetTint(float r, float g, float b, float a) {
+			SDL_SetTextureColorModFloat(_texture.get(), r, g, b);
+			SDL_SetTextureAlphaModFloat(_texture.get(), a);
+		}
+
+		constexpr void SetScaleMode(SDL_ScaleMode mode) { SDL_SetTextureScaleMode(_texture.get(), mode); }
 
 		[[nodiscard]] constexpr SDL_BlendMode GetBlendMode() const
 		{
@@ -32,14 +39,29 @@ namespace swgtk
 			return blend;
 		}
 
-		[[nodiscard]] constexpr SDL_Color GetTint() const 
+		[[nodiscard]] constexpr SDL_FColor GetTint() const 
 		{
-			SDL_Color color{};
+			SDL_FColor color{};
 
-			SDL_GetTextureColorMod(_texture.get(), &color.r, &color.g, &color.b);
-			SDL_GetTextureAlphaMod(_texture.get(), &color.a);
+			SDL_GetTextureColorModFloat(_texture.get(), &color.r, &color.g, &color.b);
+			SDL_GetTextureAlphaModFloat(_texture.get(), &color.a);
 
 			return color;
+		}
+
+		[[nodiscard]] constexpr SDL_ScaleMode GetScaleMode() const {
+			SDL_ScaleMode mode{};
+
+			SDL_GetTextureScaleMode(_texture.get(), &mode);
+
+			return mode;
+		}
+
+		[[nodiscard]] constexpr std::pair<float, float> GetSize() const {
+			float w{}, y{};
+
+			SDL_GetTextureSize(_texture.get(), &w, &y);
+			return {w,y};
 		}
 
 	private:

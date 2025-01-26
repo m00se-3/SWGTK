@@ -2,6 +2,7 @@
 #include <Project.hpp>
 #include <swgtk/Simple2DRenderer.hpp>
 #include <SDL3/SDL_main.h>
+#include <numbers>
 
 namespace swgtk {
     SSC TextTest::Create(Scene& scene) {
@@ -31,10 +32,10 @@ namespace swgtk {
 
         auto rect = SDL_FRect{};
 
-        // TODO: create a funciton to tidy this up.
-        SDL_GetTextureSize(_mouse.texture.Get().get(), &rect.w, &rect.h);
-        rect.w *= 2.0f;
-        rect.h *= 2.0f;
+        auto s = _mouse.texture.GetSize();
+
+        rect.w = s.first * 2.0f;
+        rect.h = s.second * 2.0f;
 
         rect.x = _mouse.pos.x - (rect.w / 2.0f);
         rect.y = _mouse.pos.y - (rect.h / 2.0f);
@@ -42,7 +43,7 @@ namespace swgtk {
         // Rotating in SDL3 is in degrees...
         // This interface needs to be improved, it needs to not take things by pointer if possible, especially since the pointers 
         // are definitly going to out live the draw call no matter what.
-        render->DrawTexture(_mouse.texture.Get().get(), nullptr, &rect, (_mouse.angle / std::numbers::pi) * 180.0);
+        render->DrawTexture(*_mouse.texture, nullptr, &rect, (_mouse.angle / std::numbers::pi) * 180.0);
 
         // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
@@ -55,10 +56,12 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
     swgtk::App app;
     swgtk::TextTest test;
 
-    if(app.InitGraphics(swgtk::Simple2DRenderer::Create())) {
+    if(app.InitGraphics("Text Test", swgtk::Simple2DRenderer::Create())) {
         app.Run(swgtk::Scene::CreateSceneNode(
             [&test](swgtk::Scene& sc){ return test.Create(sc); },
             [&test](swgtk::Scene& sc, float dt) { return test.Update(sc, dt); }
         ));
     }
+
+    return 0;
 }

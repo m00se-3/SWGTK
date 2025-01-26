@@ -45,7 +45,7 @@ namespace swgtk {
 		void Run(Scene::NodeProxy logicNode);
 		void EventsAndTimeStep();
 		void CloseApp();
-		[[nodiscard]] bool InitGraphics(std::shared_ptr<RendererBase> renderPtr);
+		[[nodiscard]] bool InitGraphics(const char* appName, std::shared_ptr<RendererBase> renderPtr);
 		constexpr bool InitHeadless() {
 			_headless = true;
 			return true;

@@ -25,12 +25,12 @@ namespace swgtk
 		}
 	}
 
-	bool App::InitGraphics(std::shared_ptr<RendererBase> renderPtr) {
+	bool App::InitGraphics(const char* appName, std::shared_ptr<RendererBase> renderPtr) {
 		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
 		constexpr int MixFlags = 0;
 
 		if (SDL_Init(InitFlags) && TTF_Init() && Mix_Init(MixFlags) == MixFlags) {
-			_window = SDL_CreateWindow("Game", 800, 600, SDL_WINDOW_HIDDEN); // NOLINT
+			_window = SDL_CreateWindow(appName, 800, 600, SDL_WINDOW_HIDDEN); // NOLINT
 
 			if (_window != nullptr)	{
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
