@@ -15,7 +15,7 @@ namespace swgtk
                 _ttfFonts.insert_or_assign(styleMask, ttf);
             }
 
-            DEBUG_PRINT2("Error opening font file {}: {}\n", filename.filename().c_str(), SDL_GetError());
+            DEBUG_PRINT2("Error opening font file {}: {}\n", filename.filename().string(), SDL_GetError());
         }
     }
 

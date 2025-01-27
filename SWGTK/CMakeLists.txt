@@ -16,6 +16,8 @@ if(CLANG_TIDY_PROGRAM)
 
 endif()
 
+target_include_directories(SWGTK PUBLIC ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
+
 target_sources(
 	SWGTK	
 

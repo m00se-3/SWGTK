@@ -1,13 +1,12 @@
-#include "swgtk/App.hpp"
+#include <swgtk/App.hpp>
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
+#include <SDL3_mixer/SDL_mixer.h>
+
 #include <chrono>
 #include <memory>
-
-#include "SDL3/SDL.h"
-#include "SDL3_mixer/SDL_mixer.h"
 
 
 namespace swgtk
@@ -101,8 +100,6 @@ namespace swgtk
 		const auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
 		_lastFrameTime = _currentFrameTime;
 
-		_renderer->BufferClear();
-		
 		// std::ratio<1,1> converts the timeDiff duration into seconds.
 		_currentSSC = _currentScene->Update(std::chrono::duration<float, std::ratio<1,1>>(timeDiff).count());
 
@@ -112,7 +109,7 @@ namespace swgtk
 
 	void App::Run(Scene::NodeProxy logicNode) {
 		if (!_headless)	{
-			if(!_renderer->PrepareDevice(_window, _bgColor)) {
+			if(!_renderer->PrepareDevice(_window)) {
 				DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
 				return;
 			}

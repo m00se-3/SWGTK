@@ -1,7 +1,6 @@
 #include <TextTest.hpp>
 #include <Project.hpp>
 #include <swgtk/Simple2DRenderer.hpp>
-#include <SDL3/SDL_main.h>
 #include <numbers>
 
 namespace swgtk {
@@ -12,10 +11,13 @@ namespace swgtk {
         const std::filesystem::path fontsDir = std::filesystem::path{project::AssetsDir()} / "fonts" / "roboto";
 
         app->AddFont(fontsDir / "Roboto-Medium.ttf", FontStyle::Normal);
+        app->AddFont(fontsDir / "Roboto-Bold.ttf", FontStyle::Bold);
 
         auto* render = scene.AppRenderer<Simple2DRenderer>();
         _mouse.texture = render->LoadPlainWrapText("Hello\nWorld!", app->GetFont(FontStyle::Normal), 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
         
+        _background = render->LoadLCDWrapText("EAT!\nSLEEP!\nCODE!", app->GetFont(FontStyle::Bold));
+
         return SSC::Ok;
     }
 
@@ -40,10 +42,15 @@ namespace swgtk {
         rect.x = _mouse.pos.x - (rect.w / 2.0f);
         rect.y = _mouse.pos.y - (rect.h / 2.0f);
 
+        render->BufferClear();
+
+        render->DrawTexture(*_background, nullptr, nullptr);
+
         // Rotating in SDL3 is in degrees...
         // This interface needs to be improved, it needs to not take things by pointer if possible, especially since the pointers 
         // are definitly going to out live the draw call no matter what.
         render->DrawTexture(*_mouse.texture, nullptr, &rect, (_mouse.angle / std::numbers::pi) * 180.0);
+
 
         // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
@@ -62,6 +69,4 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
             [&test](swgtk::Scene& sc, float dt) { return test.Update(sc, dt); }
         ));
     }
-
-    return 0;
 }

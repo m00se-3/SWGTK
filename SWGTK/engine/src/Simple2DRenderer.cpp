@@ -3,6 +3,7 @@
 #include "SDL3_image/SDL_image.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "swgtk/RendererBase.hpp"
+#include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
@@ -14,14 +15,48 @@
 
 namespace swgtk
 {
-	bool Simple2DRenderer::PrepareDevice(SDL_Window* window, SDL_FColor bgColor) {
+	bool Simple2DRenderer::PrepareDevice(SDL_Window* window) {
 		_render = SDL_CreateRenderer(window, nullptr);
 		
-		return (_render != nullptr && SetDrawColor(bgColor));
+		if(_render == nullptr) { return false; }
+		_buffers.emplace_back();
+
+		return true;
 	}
 
 	void Simple2DRenderer::DestroyDevice() {
+		_buffers.clear();
 		SDL_DestroyRenderer(_render);
+	}
+
+	void Simple2DRenderer::BufferClear(SDL_FColor color, size_t bufferID) {
+		auto tmpColor = GetDrawColor();
+		auto* tmpTarget = SDL_GetRenderTarget(_render);
+		
+		SetDrawColor(color);
+		
+		if(bufferID == 0ull) {
+			SDL_SetRenderTarget(_render, nullptr);
+			SDL_RenderClear(_render); 
+		} else if(_buffers.size() > bufferID) {
+			SDL_SetRenderTarget(_render, *_buffers.at(bufferID));
+			SDL_RenderClear(_render); 
+		}
+
+		SetDrawColor(tmpColor);
+		SDL_SetRenderTarget(_render, tmpTarget);
+	}
+
+	void Simple2DRenderer::BufferPresent() {
+		SDL_SetRenderTarget(_render, nullptr);
+		SDL_RenderPresent(_render);
+	}
+
+	void Simple2DRenderer::RenderDrawTarget(size_t id) {
+		if(id > 0ull && id < _buffers.size()) {
+			SDL_SetRenderTarget(_render, nullptr);
+			DrawTexture(*_buffers.at(id), nullptr, nullptr);
+		}
 	}
 	
 	Texture Simple2DRenderer::LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode) const {

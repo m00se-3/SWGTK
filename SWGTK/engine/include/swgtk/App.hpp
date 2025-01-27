@@ -66,10 +66,6 @@ namespace swgtk {
 		}
 
 		constexpr void SetNewSceneNode(Scene::NodeProxy ptr) { _nextSceneNode = ptr.ptr; }
-		constexpr void SetBackgroundColor(const SDL_FColor& color) { 
-			_bgColor = color; 
-			if(_renderer && _renderer->IsDeviceInitialized()) { _renderer->SetBackgroundColor(color); }
-		}
 
 		/*
 			Input state and event polling for the client's logic.
@@ -149,7 +145,6 @@ namespace swgtk {
 
 		// A mostly unused flag, until we get 'headless server' mode.
 		bool _headless = false;
-		SDL_FColor _bgColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f };
 
 		timePoint _lastFrameTime = std::chrono::steady_clock::now(), _currentFrameTime;
 	};

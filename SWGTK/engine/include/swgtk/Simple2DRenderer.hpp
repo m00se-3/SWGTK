@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <string_view>
 #include <span>
+#include <vector>
 
 namespace swgtk
 {
@@ -30,13 +31,31 @@ namespace swgtk
 		Simple2DRenderer &operator=(Simple2DRenderer &&) = delete;
 		constexpr ~Simple2DRenderer() override { DestroyDevice(); }
 
-		constexpr void BufferClear() override { SDL_RenderClear(_render); }
+		void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}, size_t bufferID = 0ull) override;
+		void BufferPresent() override;
 
-		constexpr void BufferPresent() override { SDL_RenderPresent(_render); }
+		constexpr size_t CreateDrawLayer() {
+			auto indexAfterEmplace = _buffers.size();
+			int w{}, h{};
+			SDL_GetRenderOutputSize(_render, &w, &h);
+			_buffers.emplace_back(SDL_CreateTexture(_render, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h));
+			return indexAfterEmplace;
+		}
+
+		constexpr void SetDrawTarget(size_t id = 0ull) {
+			if(id == 0ull) {
+				SDL_SetRenderTarget(_render, nullptr);
+			} else if(id < _buffers.size()) {
+				SDL_SetRenderTarget(_render, *_buffers.at(id));
+			}
+		}
+
+		void RenderDrawTarget(size_t id);
+
 		constexpr void SetBackgroundColor(const SDL_FColor& color) override { SetDrawColor(color); }
 		[[nodiscard]] constexpr bool IsDeviceInitialized() const override { return _render != nullptr; }
 
-		[[nodiscard]] bool PrepareDevice(SDL_Window* window, SDL_FColor bgColor = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) override;
+		[[nodiscard]] bool PrepareDevice(SDL_Window* window) override;
 		void DestroyDevice() override;
 
 		[[nodiscard]] constexpr std::shared_ptr<RendererBase> GetRef() override { return shared_from_this(); }
@@ -130,6 +149,7 @@ namespace swgtk
 
 	private:
 		SDL_Renderer* _render = nullptr;
+		std::vector<Texture> _buffers;
     };
 }
 

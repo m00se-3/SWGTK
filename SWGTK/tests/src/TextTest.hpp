@@ -19,7 +19,7 @@ namespace swgtk {
 
     private:
         MouseCursor _mouse{};
-
+        Texture _background;
     };
 
 }
