@@ -1,7 +1,7 @@
+#include "swgtk/Utility.hpp"
 #include <TextTest.hpp>
 #include <Project.hpp>
 #include <swgtk/Simple2DRenderer.hpp>
-#include <numbers>
 
 namespace swgtk {
     SSC TextTest::Create(Scene& scene) {
@@ -30,7 +30,7 @@ namespace swgtk {
         _mouse.pos = app->GetMousePos();
         _mouse.angle += dt * 2.0;
 
-        if(_mouse.angle > std::numbers::pi * 2.0) { _mouse.angle -= (std::numbers::pi * 2.0); }
+        if(_mouse.angle > math::pi2) { _mouse.angle -= (math::pi2); }
 
         auto rect = SDL_FRect{};
 
@@ -44,12 +44,10 @@ namespace swgtk {
 
         render->BufferClear();
 
-        render->DrawTexture(*_background, nullptr, nullptr);
+        render->DrawTexture(*_background);
 
         // Rotating in SDL3 is in degrees...
-        // This interface needs to be improved, it needs to not take things by pointer if possible, especially since the pointers 
-        // are definitly going to out live the draw call no matter what.
-        render->DrawTexture(*_mouse.texture, nullptr, &rect, (_mouse.angle / std::numbers::pi) * 180.0);
+        render->DrawTexture(*_mouse.texture, std::nullopt, rect, math::radiansToDegrees(_mouse.angle));
 
 
         // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

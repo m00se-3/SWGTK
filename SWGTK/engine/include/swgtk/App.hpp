@@ -13,7 +13,7 @@
 
 #include "swgtk/TTFFont.hpp"
 #include "swgtk/Scene.hpp"
-#include <swgtk/Macros.hpp>
+#include <swgtk/Utility.hpp>
 
 extern "C" {
 	struct SDL_Window;

@@ -3,6 +3,7 @@
 #include "SDL3_image/SDL_image.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "swgtk/RendererBase.hpp"
+#include <SDL3/SDL_error.h>
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
@@ -17,57 +18,83 @@ namespace swgtk
 {
 	bool Simple2DRenderer::PrepareDevice(SDL_Window* window) {
 		_render = SDL_CreateRenderer(window, nullptr);
-		
-		if(_render == nullptr) { return false; }
-		_buffers.emplace_back();
 
-		return true;
+		return _render != nullptr;
 	}
 
 	void Simple2DRenderer::DestroyDevice() {
-		_buffers.clear();
 		SDL_DestroyRenderer(_render);
 	}
 
-	void Simple2DRenderer::BufferClear(SDL_FColor color, size_t bufferID) {
+	void Simple2DRenderer::BufferClear(SDL_FColor color) {
 		auto tmpColor = GetDrawColor();
-		auto* tmpTarget = SDL_GetRenderTarget(_render);
 		
 		SetDrawColor(color);
-		
-		if(bufferID == 0ull) {
-			SDL_SetRenderTarget(_render, nullptr);
-			SDL_RenderClear(_render); 
-		} else if(_buffers.size() > bufferID) {
-			SDL_SetRenderTarget(_render, *_buffers.at(bufferID));
-			SDL_RenderClear(_render); 
-		}
-
+		SDL_RenderClear(_render);
 		SetDrawColor(tmpColor);
-		SDL_SetRenderTarget(_render, tmpTarget);
 	}
 
 	void Simple2DRenderer::BufferPresent() {
 		SDL_SetRenderTarget(_render, nullptr);
 		SDL_RenderPresent(_render);
 	}
-
-	void Simple2DRenderer::RenderDrawTarget(size_t id) {
-		if(id > 0ull && id < _buffers.size()) {
-			SDL_SetRenderTarget(_render, nullptr);
-			DrawTexture(*_buffers.at(id), nullptr, nullptr);
-		}
-	}
 	
 	Texture Simple2DRenderer::LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode) const {
 	    if(std::filesystem::exists(img)) {
 			auto* texture = IMG_LoadTexture(_render, img.string().c_str());
-			SDL_SetTextureBlendMode(texture, blendMode);
-		
-			return Texture{ texture };
+			
+			if(texture != nullptr) {
+				SDL_SetTextureBlendMode(texture, blendMode);
+				return Texture{ texture };
+			}
+
+			DEBUG_PRINT2("Failed to load image {}: {}\n", img.c_str(), SDL_GetError())
 	    }
 
 	    return Texture{};
+	}
+
+	Texture Simple2DRenderer::CreateRenderableTexture(int width, int height, SDL_PixelFormat format, SDL_BlendMode blendMode) const {
+		if( width < 0 || height < 0) {
+			DEBUG_PRINT2("Invalid texture dimensions: {}, {}\n", width, height)
+			return Texture{};
+		}
+
+		auto* texture = SDL_CreateTexture(_render, format, SDL_TEXTUREACCESS_TARGET, width, height);
+
+		if(texture == nullptr) {
+			DEBUG_PRINT("Error creating renderable texture: {}\n", SDL_GetError())
+			return Texture{};
+		}
+
+		SDL_SetTextureBlendMode(texture, blendMode);
+		return Texture{ texture };
+	}
+
+	Texture Simple2DRenderer::CreateTextureFromSurface(Surface surface) const {
+		auto* texture = SDL_CreateTextureFromSurface(_render, *surface);
+
+		if(texture == nullptr) {
+			DEBUG_PRINT("Failed to create texture: {}\n", SDL_GetError())
+			return Texture{};
+		}
+
+		return Texture{ texture };
+	}
+
+	void Simple2DRenderer::DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest) const {
+		const auto* source = src ? &src.value() : nullptr;
+		const auto* destination = dest ? &dest.value() : nullptr;
+		
+		SDL_RenderTexture(_render, texture, source, destination);
+	}
+
+	void Simple2DRenderer::DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest, double angle, const std::optional<SDL_FPoint>& center, SDL_FlipMode flip) const{
+		const auto* source = src ? &src.value() : nullptr;
+		const auto* destination = dest ? &dest.value() : nullptr;
+		const auto* cen = center ? &center.value() : nullptr;
+		
+		SDL_RenderTextureRotated(_render, texture, source, destination, angle, cen, flip);
 	}
 
 	void Simple2DRenderer::DrawPlainText(std::string_view text, TTF_Font* font, SDL_FRect pos, SDL_Color color) const {		
@@ -170,8 +197,7 @@ namespace swgtk
 			};
 
 		lua["DrawTexture"] = [this](SDL_Texture* texture, sol::optional<SDL_FRect> src, sol::optional<SDL_FRect> dest, sol::optional<double> angle, sol::optional<SDL_FPoint> center, sol::optional<SDL_FlipMode> flip) {
-				DrawTexture(texture, (src) ? &src.value() : nullptr, (dest) ? &dest.value() : nullptr,
-									angle.value_or(0.0), (center) ? &center.value() : nullptr, flip.value_or(SDL_FLIP_NONE));
+				DrawTexture(texture, *src, *dest, angle.value_or(0.0), *center, flip.value_or(SDL_FLIP_NONE));
 			};
 	}
 }

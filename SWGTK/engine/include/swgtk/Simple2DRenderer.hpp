@@ -8,16 +8,17 @@
 #include "SDL3/SDL_render.h"
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_oldnames.h>
+#include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 #include <swgtk/RendererBase.hpp>
-#include <swgtk/Macros.hpp>
+#include <swgtk/Utility.hpp>
 #include <sol/sol.hpp>
 
 #include <memory>
 #include <filesystem>
 #include <string_view>
 #include <span>
-#include <vector>
+#include <optional>
 
 namespace swgtk
 {
@@ -31,26 +32,8 @@ namespace swgtk
 		Simple2DRenderer &operator=(Simple2DRenderer &&) = delete;
 		constexpr ~Simple2DRenderer() override { DestroyDevice(); }
 
-		void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}, size_t bufferID = 0ull) override;
+		void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) override;
 		void BufferPresent() override;
-
-		constexpr size_t CreateDrawLayer() {
-			auto indexAfterEmplace = _buffers.size();
-			int w{}, h{};
-			SDL_GetRenderOutputSize(_render, &w, &h);
-			_buffers.emplace_back(SDL_CreateTexture(_render, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h));
-			return indexAfterEmplace;
-		}
-
-		constexpr void SetDrawTarget(size_t id = 0ull) {
-			if(id == 0ull) {
-				SDL_SetRenderTarget(_render, nullptr);
-			} else if(id < _buffers.size()) {
-				SDL_SetRenderTarget(_render, *_buffers.at(id));
-			}
-		}
-
-		void RenderDrawTarget(size_t id);
 
 		constexpr void SetBackgroundColor(const SDL_FColor& color) override { SetDrawColor(color); }
 		[[nodiscard]] constexpr bool IsDeviceInitialized() const override { return _render != nullptr; }
@@ -65,19 +48,8 @@ namespace swgtk
 			return SDL_SetRenderDrawColorFloat(_render, color.r, color.g, color.b, color.a); 
 		}
 
-		/*
-			It is okay to allow nullptr for the rectangles, since SDL handles nullptr for us.
-		*/
-		constexpr void DrawTexture(SDL_Texture* texture, SDL_FRect* src, SDL_FRect* dest) const {
-			SDL_RenderTexture(_render, texture, src, dest);
-		}
-
-		/*
-			It is okay to allow nullptr for the source, destination, and center, since SDL handles nullptr for us.
-		*/
-		constexpr void DrawTexture(SDL_Texture* texture, SDL_FRect* src, SDL_FRect* dest, double angle, SDL_FPoint* center = nullptr, SDL_FlipMode flip = SDL_FLIP_NONE) const {
-			SDL_RenderTextureRotated(_render, texture, src, dest, angle, center, flip);
-		}
+		void DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;		
+		void DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest, double angle, const std::optional<SDL_FPoint>& center = std::nullopt, SDL_FlipMode flip = SDL_FLIP_NONE) const;
 		
 		/**
 		 * @brief Draw text at the specified location with the specified font. Uses SDL_ttf's fastest algorithm.
@@ -133,6 +105,8 @@ namespace swgtk
 		}
 
 		[[nodiscard]] Texture LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const;
+		[[nodiscard]] Texture CreateRenderableTexture(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const;
+		[[nodiscard]] Texture CreateTextureFromSurface(Surface surface) const;
 
 		[[nodiscard]] constexpr SDL_FColor GetDrawColor() const {
 			SDL_FColor res;
@@ -149,7 +123,6 @@ namespace swgtk
 
 	private:
 		SDL_Renderer* _render = nullptr;
-		std::vector<Texture> _buffers;
     };
 }
 

@@ -38,7 +38,7 @@ namespace swgtk {
          * @param color    - Optional color to clear the layer to. Default is Black.
          * 
          */
-        constexpr virtual void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}, size_t bufferID = 0ull) = 0;
+        constexpr virtual void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) = 0;
 
         /**
          * @brief After finishing your draw calls, call this function to present the new frame

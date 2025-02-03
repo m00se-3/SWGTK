@@ -40,7 +40,7 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Simple2DRenderer.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RendererBase.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/TTFFont.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Macros.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
 
 	PRIVATE 
 
