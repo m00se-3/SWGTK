@@ -22,7 +22,7 @@
 
 namespace swgtk
 {
-    class Simple2DRenderer : public RendererBase, std::enable_shared_from_this<Simple2DRenderer>{
+    class Simple2DRenderer : public RendererBase, public std::enable_shared_from_this<Simple2DRenderer>{
 	public:
 
 		constexpr Simple2DRenderer() = default;

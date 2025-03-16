@@ -7,27 +7,27 @@ namespace swgtk {
     SSC TextTest::Create(Scene& scene) {
         constexpr auto colorDefault = 255u;
 
-        auto* app = scene.AppRoot();
+        _app = scene.AppRoot();
+        _render = scene.AppRenderer<Simple2DRenderer>();
+
+
         const std::filesystem::path fontsDir = std::filesystem::path{project::AssetsDir()} / "fonts" / "roboto";
 
-        app->AddFont(fontsDir / "Roboto-Medium.ttf", FontStyle::Normal);
-        app->AddFont(fontsDir / "Roboto-Bold.ttf", FontStyle::Bold);
+        _app->AddFont(fontsDir / "Roboto-Medium.ttf", FontStyle::Normal);
+        _app->AddFont(fontsDir / "Roboto-Bold.ttf", FontStyle::Bold);
 
         auto* render = scene.AppRenderer<Simple2DRenderer>();
-        _mouse.texture = render->LoadPlainWrapText("Hello\nWorld!", app->GetFont(FontStyle::Normal), 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
+        _mouse.texture = render->LoadPlainWrapText("Hello\nWorld!", _app->GetFont(FontStyle::Normal), 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
         
-        _background = render->LoadLCDWrapText("EAT!\nSLEEP!\nCODE!", app->GetFont(FontStyle::Bold));
+        _background = render->LoadLCDWrapText("EAT!\nSLEEP!\nCODE!", _app->GetFont(FontStyle::Bold));
 
         return SSC::Ok;
     }
 
-    SSC TextTest::Update(Scene& scene, float dt) {
+    SSC TextTest::Update(float dt) {
         // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers) - Reason: It's pointless to create constants for this test.
 
-        auto* app = scene.AppRoot(); 
-        auto* render = scene.AppRenderer<Simple2DRenderer>();
-
-        _mouse.pos = app->GetMousePos();
+        _mouse.pos = _app->GetMousePos();
         _mouse.angle += dt * 2.0;
 
         if(_mouse.angle > math::pi2) { _mouse.angle -= (math::pi2); }
@@ -42,12 +42,12 @@ namespace swgtk {
         rect.x = _mouse.pos.x - (rect.w / 2.0f);
         rect.y = _mouse.pos.y - (rect.h / 2.0f);
 
-        render->BufferClear();
+        _render->BufferClear();
 
-        render->DrawTexture(*_background);
+        _render->DrawTexture(*_background);
 
         // Rotating in SDL3 is in degrees...
-        render->DrawTexture(*_mouse.texture, std::nullopt, rect, math::radiansToDegrees(_mouse.angle));
+        _render->DrawTexture(*_mouse.texture, std::nullopt, rect, math::radiansToDegrees(_mouse.angle));
 
 
         // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
@@ -58,13 +58,16 @@ namespace swgtk {
 
 
 int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
+    constexpr auto w = 800;
+    constexpr auto h = 600;
+
     swgtk::App app;
     swgtk::TextTest test;
 
-    if(app.InitGraphics("Text Test", swgtk::Simple2DRenderer::Create())) {
+    if(app.InitGraphics("Text Test", w, h, swgtk::Simple2DRenderer::Create())) {
         app.Run(swgtk::Scene::CreateSceneNode(
             [&test](swgtk::Scene& sc){ return test.Create(sc); },
-            [&test](swgtk::Scene& sc, float dt) { return test.Update(sc, dt); }
+            [&test](swgtk::Scene&, float dt) { return test.Update(dt); }
         ));
     }
 }

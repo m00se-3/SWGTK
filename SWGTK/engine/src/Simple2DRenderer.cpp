@@ -48,7 +48,7 @@ namespace swgtk
 				return Texture{ texture };
 			}
 
-			DEBUG_PRINT2("Failed to load image {}: {}\n", img.c_str(), SDL_GetError())
+			DEBUG_PRINT2("Failed to load image {}: {}\n", img.string().c_str(), SDL_GetError())
 	    }
 
 	    return Texture{};

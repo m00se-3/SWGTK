@@ -27,25 +27,18 @@ namespace swgtk {
 	*/
 	class App {
 	public:
-#ifdef __EMSCRIPTEN__
 		App() = default;
 		App(const App&) = delete;
 		App(App&&) = delete;
 		App& operator=(const App&) = delete;
 		App& operator=(App&&) = delete;
-#else
-		App() = default;
-		App(const App&) = delete;
-		App(App&&) = delete;
-		App& operator=(const App&) = delete;
-		App& operator=(App&&) = delete;
-#endif
 		~App();
 		
 		void Run(Scene::NodeProxy logicNode);
 		void EventsAndTimeStep();
 		void CloseApp();
-		[[nodiscard]] bool InitGraphics(const char* appName, std::shared_ptr<RendererBase> renderPtr);
+		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, std::shared_ptr<RendererBase> renderPtr);
+
 		constexpr bool InitHeadless() {
 			_headless = true;
 			return true;

@@ -11,7 +11,8 @@ namespace swgtk
 	*	@brief A simple RAII container class for SDL_Texture. This will delete the underlying SDL_Texure upon calling
 	*	the destructor.
 	*
-	*	The texture class is not responsible for creating textures, however it can be used to modify existing ones.
+	*	When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,
+	*	the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
 	*/
 	class Texture {
 		static constexpr void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); };
@@ -20,8 +21,8 @@ namespace swgtk
 		constexpr Texture() = default;
 		constexpr explicit Texture(SDL_Texture* texture) : _texture(std::shared_ptr<SDL_Texture>{texture, Texture::DestroyTexture}) {}
 
-		[[nodiscard]] constexpr auto operator*() const { return _texture.get(); }
-		[[nodiscard]] constexpr auto Get() const { return _texture; }
+		[[nodiscard]] constexpr auto operator*(this auto&& self) { return self._texture.get(); }
+		[[nodiscard]] constexpr auto Get(this auto&& self) { return self._texture; }
 
 		constexpr void SetBlendMode(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture.get(), mode); }
 		constexpr void SetTint(float r, float g, float b, float a) {

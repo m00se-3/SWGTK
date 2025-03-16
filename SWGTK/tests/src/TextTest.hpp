@@ -1,6 +1,7 @@
 #ifndef SWGTK_TEXTTEST_HPP
 #define SWGTK_TEXTTEST_HPP
 
+#include "swgtk/Simple2DRenderer.hpp"
 #include <swgtk/App.hpp>
 #include <swgtk/Scene.hpp>
 
@@ -15,11 +16,13 @@ namespace swgtk {
     class TextTest {
     public:
         SSC Create(Scene& scene);
-        SSC Update(Scene& scene, float dt);
+        SSC Update(float dt);
 
     private:
         MouseCursor _mouse{};
         Texture _background;
+        App* _app = nullptr;
+        Simple2DRenderer* _render = nullptr;
     };
 
 }

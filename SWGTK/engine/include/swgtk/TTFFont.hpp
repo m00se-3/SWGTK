@@ -24,6 +24,8 @@ namespace swgtk
         Italic_Strike = Italic | Strikethrough,
     };
 
+    constexpr static float defaultFontSize = 16.0f;
+
     /**
      * @brief A FontGroup represents a single font family. (e.g. Sans, Roboto, etc.)
      * This class contains an unordered_map of styles to use when rendering.(See enum class FontStyle)
@@ -60,7 +62,7 @@ namespace swgtk
 
     private:
         std::unordered_map<FontStyle, TTF_Font*> _ttfFonts;
-        float _defaultFontSize = 16.0f; //NOLINT
+        float _defaultFontSize = defaultFontSize;
     };
 }
 
