@@ -12,7 +12,7 @@ endif()
 if(CLANG_TIDY_PROGRAM)
   
   message("-- Enabling clang-tidy.\n")
-  set_property(TARGET SWGTK PROPERTY CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+  set_target_properties(SWGTK PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
 
 endif()
 

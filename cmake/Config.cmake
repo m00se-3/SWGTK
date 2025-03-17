@@ -16,7 +16,7 @@ else()
     find_program(CPPCHECK_PROGRAM cppcheck)
 endif()
 
-if(${CMAKE_CXX_COMPILER_ID} MATCHES MSVC)
+if($ENV{MSVC_IDE} MATCHES "ON")
 	include(${CMAKE_CURRENT_LIST_DIR}/MSVCOptions.cmake)
 else()
 	include(${CMAKE_CURRENT_LIST_DIR}/GNUOptions.cmake)

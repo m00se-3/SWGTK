@@ -1,12 +1,12 @@
-add_executable(text)
+add_executable(Test_TextSample)
 
-target_compile_options(text PRIVATE ${CompilerFlags})
-target_link_options(text PRIVATE ${LinkerFlags})
+target_compile_options(Test_TextSample PRIVATE ${CompilerFlags})
+target_link_options(Test_TextSample PRIVATE ${LinkerFlags})
 
-target_compile_features(text PRIVATE cxx_std_23)
+target_compile_features(Test_TextSample PRIVATE cxx_std_23)
 
 target_compile_definitions(
-	text 
+	Test_TextSample 
 
 	PRIVATE 
 
@@ -15,17 +15,17 @@ target_compile_definitions(
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-	target_compile_definitions(text PRIVATE _DEBUG)
+	target_compile_definitions(Test_TextSample PRIVATE _DEBUG)
 endif()
 
 if(CLANG_TIDY_PROGRAM)
   
-  set_property(TARGET text PROPERTY CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+  set_property(TARGET Test_TextSample PROPERTY CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
 
 endif()
 
 target_include_directories(
-	text
+	Test_TextSample
 
 	PUBLIC 
 
@@ -35,7 +35,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-	text	
+	Test_TextSample	
 
 	PRIVATE 
 
@@ -50,7 +50,7 @@ target_link_libraries(
 )
 
 target_sources(
-    text 
+    Test_TextSample 
 
 	PUBLIC 
 
@@ -62,4 +62,4 @@ target_sources(
     ${CMAKE_CURRENT_LIST_DIR}/src/TextTest.cpp
 )
 
-add_test(text_test text)
+add_test(text_test Test_TextSample)

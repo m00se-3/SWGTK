@@ -56,7 +56,7 @@ namespace swgtk
 			Node(Node &&) = delete;
 			Node &operator=(const Node &) = default;
 			Node &operator=(Node &&) = delete;
-			constexpr Node(
+			Node(
 				const std::function<SSC(Scene &)> &cr,
 				const std::function<SSC(Scene &, float)> &up,
 				const std::optional<std::function<void(Scene &)>> &ds =

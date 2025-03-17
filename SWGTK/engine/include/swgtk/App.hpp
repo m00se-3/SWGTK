@@ -46,12 +46,12 @@ namespace swgtk {
 
 		[[nodiscard]] constexpr SSC GetSceneStatus(this auto&& self) { return self._currentSSC; }
 
-		constexpr void AddFont(this auto&& self, const std::filesystem::path& path, FontStyle style) { self._fonts.AddFont(path, style); }
+		void AddFont(this auto&& self, const std::filesystem::path& path, FontStyle style) { self._fonts.AddFont(path, style); }
 		[[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle style) { return self._fonts.GetFont(style); }
-		[[nodiscard]] constexpr std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
+		[[nodiscard]] std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
-		[[nodiscard]] constexpr std::pair<int, int> GetWindowSize(this auto&& self)	{
+		[[nodiscard]] std::pair<int, int> GetWindowSize(this auto&& self)	{
 			int width{}, height{};
 			SDL_GetWindowSize(self._window, &width, &height);
 
@@ -100,7 +100,7 @@ namespace swgtk {
 			_input.keyEvent.second = pressed;
 		}
 
-		constexpr void SetKeyboardState() 
+		void SetKeyboardState() 
 		{
 			int numKeys{};
 			const bool* state = SDL_GetKeyboardState(&numKeys);

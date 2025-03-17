@@ -17,7 +17,7 @@ elseif(${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo)
 else()
     list(
         APPEND CompilerFlags 
-        "-02"
+        "-03"
         "-U_FORTIFY_SOURCE"
         "-D_FORTIFY_SOURCE=2"
     )
@@ -58,26 +58,26 @@ list(
 
 	"-Wall" 
 	"-Wextra" 
-    "-Wformat"
-    "-Wformat=2"
-    "-Wimplicit-fallthrough"
-    "-Werror=format-security"
-    "-Werror=implicit"
-    "-Werror=incompatible-pointer-types"
-    "-Werror=int-conversion"
+	"-Wformat"
+	"-Wformat=2"
+	"-Wimplicit-fallthrough"
+	"-Werror=format-security"
+	"-Werror=implicit"
+	"-Werror=incompatible-pointer-types"
+	"-Werror=int-conversion"
 	"-Wpedantic" 
 	"-Wno-newline-eof" 
 	"-Wno-c++98-compat" 
 	"-Wno-c++98-compat-pedantic"
 	"-Wconversion"
-    "-Wsign-conversion"
+	"-Wsign-conversion"
 
-    "-fstrict-flex-arrays=3"
-    "-fcf-protection=full"
-    "-fno-strict-overflow"
-    "-fno-strict-aliasing"
-    "-ftrivial-auto-var-init=zero"
-    "-fexceptions"
+	"-fstrict-flex-arrays=3"
+	"-fcf-protection=full"
+	"-fno-strict-overflow"
+	"-fno-strict-aliasing"
+	"-ftrivial-auto-var-init=zero"
+	"-fexceptions"
 )
 
 list(
@@ -91,37 +91,3 @@ list(
     "-pie"
     "-shared"
 )
-
-# Enable sanitizers if chosen
-
-if(${USE_ADDR_SANITIZER} MATCHES ON)
-    list(
-        APPEND CompilerFlags
-
-        "-fsanitize=address"
-    )
-endif()
-
-if((${USE_THREAD_SANITIZER} MATCHES ON) AND NOT ${CMAKE_HOST_WIN32})
-    list(
-        APPEND CompilerFlags
-
-        "-fsanitize=thread"
-    )
-endif()
-
-if((${USE_LEAK_SANITIZER} MATCHES ON) AND NOT ${CMAKE_HOST_WIN32})
-    list(
-        APPEND CompilerFlags
-
-        "-fsanitize=leak"
-    )
-endif()
-
-if(${USE_UND_SANITIZER} MATCHES ON)
-    list(
-        APPEND CompilerFlags
-
-        "-fsanitize=undefined"
-    )
-endif()

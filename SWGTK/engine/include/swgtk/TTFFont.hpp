@@ -35,7 +35,7 @@ namespace swgtk
     public:
         void AddFont(const std::filesystem::path& filename, FontStyle styleMask);
         void ClearFonts();
-        [[nodiscard]] constexpr bool SetFontSize(FontStyle style, float size) { 
+        [[nodiscard]] bool SetFontSize(FontStyle style, float size) { 
             if(_ttfFonts.contains(style)) {
                 return TTF_SetFontSize(_ttfFonts.at(style), size);
             }
@@ -43,7 +43,7 @@ namespace swgtk
             return false;
          }
 
-         constexpr void SetAllFontSizes(float size) { 
+         void SetAllFontSizes(float size) { 
             for(auto& font : _ttfFonts) {
                 TTF_SetFontSize(font.second, size);
             }

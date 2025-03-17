@@ -15,24 +15,24 @@ namespace swgtk
 	*	the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
 	*/
 	class Texture {
-		static constexpr void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); };
+		static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); };
 
 	public:
-		constexpr Texture() = default;
-		constexpr explicit Texture(SDL_Texture* texture) : _texture(std::shared_ptr<SDL_Texture>{texture, Texture::DestroyTexture}) {}
+		Texture() = default;
+		explicit Texture(SDL_Texture* texture) : _texture(std::shared_ptr<SDL_Texture>{texture, Texture::DestroyTexture}) {}
 
-		[[nodiscard]] constexpr auto operator*(this auto&& self) { return self._texture.get(); }
-		[[nodiscard]] constexpr auto Get(this auto&& self) { return self._texture; }
+		[[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
+		[[nodiscard]] auto Get(this auto&& self) { return self._texture; }
 
-		constexpr void SetBlendMode(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture.get(), mode); }
-		constexpr void SetTint(float r, float g, float b, float a) {
+		void SetBlendMode(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture.get(), mode); }
+		void SetTint(float r, float g, float b, float a) {
 			SDL_SetTextureColorModFloat(_texture.get(), r, g, b);
 			SDL_SetTextureAlphaModFloat(_texture.get(), a);
 		}
 
-		constexpr void SetScaleMode(SDL_ScaleMode mode) { SDL_SetTextureScaleMode(_texture.get(), mode); }
+		void SetScaleMode(SDL_ScaleMode mode) { SDL_SetTextureScaleMode(_texture.get(), mode); }
 
-		[[nodiscard]] constexpr SDL_BlendMode GetBlendMode() const
+		[[nodiscard]] SDL_BlendMode GetBlendMode() const
 		{
 			SDL_BlendMode blend{};
 
@@ -40,7 +40,7 @@ namespace swgtk
 			return blend;
 		}
 
-		[[nodiscard]] constexpr SDL_FColor GetTint() const 
+		[[nodiscard]] SDL_FColor GetTint() const 
 		{
 			SDL_FColor color{};
 
@@ -50,7 +50,7 @@ namespace swgtk
 			return color;
 		}
 
-		[[nodiscard]] constexpr SDL_ScaleMode GetScaleMode() const {
+		[[nodiscard]] SDL_ScaleMode GetScaleMode() const {
 			SDL_ScaleMode mode{};
 
 			SDL_GetTextureScaleMode(_texture.get(), &mode);
@@ -58,7 +58,7 @@ namespace swgtk
 			return mode;
 		}
 
-		[[nodiscard]] constexpr std::pair<float, float> GetSize() const {
+		[[nodiscard]] std::pair<float, float> GetSize() const {
 			float w{}, y{};
 
 			SDL_GetTextureSize(_texture.get(), &w, &y);

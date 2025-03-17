@@ -1,6 +1,10 @@
 ﻿cmake_minimum_required (VERSION 3.25)
 
-project ("SWGTK")
+project(
+	"SWGTK"
+	DESCRIPTION "SDL powered, Web enabled, Game Tool Kit" 
+	HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
+)
 
 include("CPM.cmake")
 include("cmake/Config.cmake")
@@ -49,26 +53,34 @@ if(lua_ADDED)
 
 endif()
 
-CPMAddPackage("gh:m00se-3/sol2#fix-clang_18")
+CPMAddPackage("gh:ThePhD/sol2@3.5.0")
 
 # SDL and external dependencies
 
-CPMAddPackage("gh:libsdl-org/freetype#VER-2-13-2")
+if($ENV{SWGTK_INSTALL_FREETYPE})
+  CPMAddPackage("gh:libsdl-org/freetype#VER-2-13-2")
 
-# Add a custom target alias for Freetype, since it uses a legacy version of cmake
-if (freetype_ADDED)
-  add_library(Freetype::Freetype ALIAS freetype)
+  # Add a custom target alias for Freetype, since it uses a legacy version of cmake
+  if (freetype_ADDED)
+    add_library(Freetype::Freetype ALIAS freetype)
+  endif()
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.0")
-CPMAddPackage("gh:libsdl-org/SDL_image#prerelease-3.1.1")
+CPMAddPackage("gh:libsdl-org/SDL#release-3.2.8")
+CPMAddPackage(
+  NAME "SDL_image"
+  GITHUB_REPOSITORY "libsdl-org/SDL_image"
+  GIT_TAG "release-3.2.4"
+  OPTIONS 
+  "SDLIMAGE_VENDORED false"
+)
 
 # If any more external dependencies become necessary in the future, they should be added before any SDL.(For consistency)
 
 CPMAddPackage(
   NAME "SDL3_ttf"
   GITHUB_REPOSITORY "libsdl-org/SDL_ttf"
-  GIT_TAG "main"
+  GIT_TAG "release-3.2.0"
   OPTIONS 
   "FREETYPE_LIBRARY ${freetype_BINARY_DIR}"
   "FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}"

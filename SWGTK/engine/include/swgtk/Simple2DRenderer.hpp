@@ -30,21 +30,21 @@ namespace swgtk
 		Simple2DRenderer(Simple2DRenderer &&) = delete;
 		Simple2DRenderer &operator=(const Simple2DRenderer &) = delete;
 		Simple2DRenderer &operator=(Simple2DRenderer &&) = delete;
-		constexpr ~Simple2DRenderer() override { DestroyDevice(); }
+		~Simple2DRenderer() override { DestroyDevice(); }
 
 		void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) override;
 		void BufferPresent() override;
 
-		constexpr void SetBackgroundColor(const SDL_FColor& color) override { SetDrawColor(color); }
+		void SetBackgroundColor(const SDL_FColor& color) override { SetDrawColor(color); }
 		[[nodiscard]] constexpr bool IsDeviceInitialized() const override { return _render != nullptr; }
 
 		[[nodiscard]] bool PrepareDevice(SDL_Window* window) override;
 		void DestroyDevice() override;
 
-		[[nodiscard]] constexpr std::shared_ptr<RendererBase> GetRef() override { return shared_from_this(); }
+		[[nodiscard]] std::shared_ptr<RendererBase> GetRef() override { return shared_from_this(); }
 
-		constexpr bool SetDrawColor(float r, float g, float b, float a = RendererBase::defaultAlphaFloat) const { return SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
-        constexpr bool SetDrawColor(SDL_FColor color = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) const { 
+		bool SetDrawColor(float r, float g, float b, float a = RendererBase::defaultAlphaFloat) const { return SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
+        bool SetDrawColor(SDL_FColor color = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) const { 
 			return SDL_SetRenderDrawColorFloat(_render, color.r, color.g, color.b, color.a); 
 		}
 
@@ -99,7 +99,7 @@ namespace swgtk
 
 			It's okay to allow for nullptr in 'texture' because SDL handles it for us.
 		*/ 
-		constexpr void DrawGeometry(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies) const {
+		void DrawGeometry(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies) const {
 			SDL_RenderGeometry(_render, texture, verticies.data(), static_cast<int>(std::ssize(verticies)),
 									indicies.data(), static_cast<int>(std::ssize(indicies)));
 		}
@@ -108,16 +108,16 @@ namespace swgtk
 		[[nodiscard]] Texture CreateRenderableTexture(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const;
 		[[nodiscard]] Texture CreateTextureFromSurface(Surface surface) const;
 
-		[[nodiscard]] constexpr SDL_FColor GetDrawColor() const {
-			SDL_FColor res;
+		[[nodiscard]] SDL_FColor GetDrawColor() const {
+			SDL_FColor res{};
 			SDL_GetRenderDrawColorFloat(_render, &res.r, &res.g, &res.b, &res.a);
 
 			return res;
 		}
 
-		constexpr bool SetDrawTarget(SDL_Texture* ptr = nullptr) const { return SDL_SetRenderTarget(_render, ptr); }
+		bool SetDrawTarget(SDL_Texture* ptr = nullptr) const { return SDL_SetRenderTarget(_render, ptr); }
 
-		[[nodiscard]] constexpr static auto Create() { return std::make_shared<Simple2DRenderer>(); }
+		[[nodiscard]] static auto Create() { return std::make_shared<Simple2DRenderer>(); }
 
 		void InitLua(sol::state& lua);
 
