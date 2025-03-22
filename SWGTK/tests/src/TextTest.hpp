@@ -17,9 +17,11 @@ namespace swgtk {
     public:
         SSC Create(Scene& scene);
         SSC Update(float dt);
+        SSC Render(float);
 
     private:
         MouseCursor _mouse{};
+        SDL_FRect _rect{};
         Texture _background;
         App* _app = nullptr;
         Simple2DRenderer* _render = nullptr;

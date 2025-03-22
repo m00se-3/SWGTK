@@ -58,6 +58,11 @@ namespace swgtk
 		None = 0u, Pressed = 1u, Released = 2u
 	};
 
+	struct MButtonData {
+		MButtonState state{};
+		uint8_t clicks{};
+	};
+
 	/*
 		A container struct storing the current state of the mouse
 	*/
@@ -81,7 +86,7 @@ namespace swgtk
 			Variables for processing input events.
 		*/
 
-		std::array<MButtonState, numberOfMouseButtons> mouseEvents = { MButtonState::None }; 
+		std::array<MButtonData, numberOfMouseButtons> mouseEvents = { MButtonData {.state=MButtonState::None, .clicks=0u} }; 
 		std::pair<LayoutCode, bool> keyEvent = std::make_pair(LayoutCode::Unknown, false);
 		SDL_FPoint scroll{};
 	};

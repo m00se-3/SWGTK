@@ -59,7 +59,10 @@ namespace swgtk
 			switch (e.type)	{
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-					SetMouseEvent(MButton{ e.button.button }, (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released);
+					SetMouseEvent(MButton{ e.button.button }, MButtonData {
+						.state = (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released,
+						.clicks = e.button.clicks
+					});
 					break;
 				}
 
@@ -99,9 +102,12 @@ namespace swgtk
 
 		const auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
 		_lastFrameTime = _currentFrameTime;
-
+		
 		// std::ratio<1,1> converts the timeDiff duration into seconds.
-		_currentSSC = _currentScene->Update(std::chrono::duration<float, std::ratio<1,1>>(timeDiff).count());
+		const auto deltaTime = std::chrono::duration<float, std::ratio<1,1>>(timeDiff).count();
+
+		_currentSSC = _currentScene->Update(deltaTime);
+		_currentSSC = _currentScene->Render(deltaTime);
 
 		_renderer->BufferPresent();
 

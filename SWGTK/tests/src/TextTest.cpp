@@ -32,22 +32,25 @@ namespace swgtk {
 
 		if(_mouse.angle > math::pi2) { _mouse.angle -= (math::pi2); }
 
-		auto rect = SDL_FRect{};
-
 		auto s = _mouse.texture.GetSize();
 
-		rect.w = s.first * 2.0f;
-		rect.h = s.second * 2.0f;
+		_rect.w = s.first * 2.0f;
+		_rect.h = s.second * 2.0f;
 
-		rect.x = _mouse.pos.x - (rect.w / 2.0f);
-		rect.y = _mouse.pos.y - (rect.h / 2.0f);
+		_rect.x = _mouse.pos.x - (_rect.w / 2.0f);
+		_rect.y = _mouse.pos.y - (_rect.h / 2.0f);
 
+		return SSC::Ok;
+	}
+
+	SSC TextTest::Render([[maybe_unused]]float dt) {
+		
 		_render->BufferClear();
 
 		_render->DrawTexture(*_background);
 
 		// Rotating in SDL3 is in degrees...
-		_render->DrawTexture(*_mouse.texture, std::nullopt, rect, math::radiansToDegrees(_mouse.angle));
+		_render->DrawTexture(*_mouse.texture, std::nullopt, _rect, math::radiansToDegrees(_mouse.angle));
 
 
 		// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
@@ -67,7 +70,8 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
 	if(app.InitGraphics("Text Test", w, h, swgtk::Simple2DRenderer::Create())) {
 		app.Run(swgtk::Scene::CreateSceneNode(
 			[&test](swgtk::Scene& sc){ return test.Create(sc); },
-			[&test](swgtk::Scene&, float dt) { return test.Update(dt); }
+			[&test](swgtk::Scene&, float dt) { return test.Update(dt); },
+			[&test](swgtk::Scene&, float dt) { return test.Render(dt); }
 		));
 	}
 }

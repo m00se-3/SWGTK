@@ -35,13 +35,15 @@ namespace swgtk
 
 		A game scene has the following lifetime:
 
-		- Create(GameScene&) is called once after the scene is initialized. This allows the program
+		- Create(Scene&) is called once after the scene is initialized. This allows the program
 			to initialize the simulation and allocate any needed resources.
 
-		- Update(GameScene&, float) is called once each frame. This is where all the simulation logic is
+		- Update(Scene&, float) is called once each frame. This is where all the simulation logic is
 			kept, including input handling.
+		
+		- Render(Scene&, float) is called once each frame after Update(). Your drawing code goes here.
 
-		- Destroy(GameScene&) is called once at the end of the scene's lifetime. This function is *optional*.
+		- Destroy(Scene&) is called once at the end of the scene's lifetime. This function is *optional*.
 			You only need to use it if you are using non-RAII structures for your allocated
 			resources. (This is not recommended!)
 	*/
@@ -59,19 +61,22 @@ namespace swgtk
 			Node(
 				const std::function<SSC(Scene &)> &cr,
 				const std::function<SSC(Scene &, float)> &up,
+				const std::function<SSC(Scene &, float)> &rn,
 				const std::optional<std::function<void(Scene &)>> &ds =
 					std::nullopt)
-				: _createFunc(cr), _updateFunc(up), _destroyFunc(ds) {}
+				: _createFunc(cr), _updateFunc(up), _renderFunc(rn), _destroyFunc(ds) {}
 
 			virtual constexpr ~Node() = default;
 
 			[[nodiscard]] constexpr SSC Create(this auto &&self, Scene &scene) { return self._createFunc(scene); }
 			[[nodiscard]] constexpr SSC Update(this auto&& self, Scene& scene, float dt) { return self._updateFunc(scene, dt); }
+			[[nodiscard]] constexpr SSC Render(this auto&& self, Scene& scene, float dt) { return self._renderFunc(scene, dt); }
 			constexpr void Destroy(this auto&& self, Scene& scene) { if(self._destroyFunc) { (self._destroyFunc.value())(scene); } }
 
 		private:
 			std::function<SSC(Scene&)> _createFunc;
 			std::function<SSC(Scene&, float)> _updateFunc;
+			std::function<SSC(Scene&, float)> _renderFunc;
 			std::optional<std::function<void(Scene&)>> _destroyFunc;
 		};
 
@@ -84,17 +89,19 @@ namespace swgtk
 		Scene(App* parent, NodeProxy node);
 
 		[[nodiscard]] static constexpr NodeProxy CreateSceneNode(
-			std::function<SSC(Scene&)> createFunc,
-			std::function<SSC(Scene&, float)> updateFunc,
-			std::optional<std::function<void(Scene&)>> destroyFunc = std::nullopt
+			const std::function<SSC(Scene&)>& createFunc,
+			const std::function<SSC(Scene&, float)>& updateFunc,
+			const std::function<SSC(Scene &, float)>& renderFunc,
+			const std::optional<std::function<void(Scene&)>>& destroyFunc = std::nullopt
 		) {
 			return NodeProxy {
-				new Node { createFunc, updateFunc, destroyFunc }
+				new Node { createFunc, updateFunc, renderFunc, destroyFunc }
 			};
 		}
 
 		[[nodiscard]] SSC Create();
 		[[nodiscard]] SSC Update(float dt);
+		[[nodiscard]] SSC Render(float dt);
 		void Destroy();
 		static void InitLua(sol::state& lua);
 		void InitLuaInput(sol::state& lua);

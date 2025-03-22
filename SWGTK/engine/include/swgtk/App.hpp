@@ -71,9 +71,10 @@ namespace swgtk {
 		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _input.keyboardState[static_cast<size_t>(code)]; }
 		[[nodiscard]] constexpr std::pair<LayoutCode, bool> GetCurrentKeyEvent() const { return _input.keyEvent; }
 		[[nodiscard]] constexpr KeyMod GetKeyMods() const { return _input.modifiers; }
-		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Pressed; }
-		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)) == MButtonState::Released; }
+		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)).state == MButtonState::Pressed; }
+		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)).state == MButtonState::Released; }
 		[[nodiscard]] constexpr bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_input.mouseState.buttons) & static_cast<uint32_t>(button)); }
+		[[nodiscard]] constexpr uint8_t GetButtonClicks(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)).clicks; }
 		[[nodiscard]] constexpr auto GetMouseX() const { return _input.mouseState.x; }
 		[[nodiscard]] constexpr auto GetMouseY() const { return _input.mouseState.y; }
 		[[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{ _input.mouseState.x, _input.mouseState.y }; }
@@ -82,11 +83,11 @@ namespace swgtk {
 			Input state and event management.
 		*/
 
-		constexpr void SetMouseState(const MouseState& event) { _input.mouseState = event; }
+		constexpr void SetMouseState(const MouseState& state) { _input.mouseState = state; }
 		constexpr void SetModState(const SDL_Keymod& state) { _input.modifiers = static_cast<KeyMod>(state); }
 		constexpr void ResetScroll() { _input.scroll = { .x=0.f, .y=0.f }; }
 		constexpr void AddScroll(float amountX, float amountY) { _input.scroll = { .x=amountX, .y=amountY }; }
-		constexpr void SetMouseEvent(MButton button, MButtonState state) { _input.mouseEvents.at(static_cast<size_t>(button)) = state; }
+		constexpr void SetMouseEvent(MButton button, MButtonData data) { _input.mouseEvents.at(static_cast<size_t>(button)) = data; }
 
 		constexpr void ResetKeyEvent()
 		{
@@ -110,7 +111,8 @@ namespace swgtk {
 		constexpr void ResetMouseEvents() {
 			for (auto& s : _input.mouseEvents)
 			{
-				s = MButtonState::None;
+				s.state = MButtonState::None;
+				s.clicks = 0u;
 			}
 		}
 
