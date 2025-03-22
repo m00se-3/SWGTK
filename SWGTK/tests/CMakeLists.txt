@@ -5,6 +5,8 @@ target_link_options(Test_TextSample PRIVATE ${LinkerFlags})
 
 target_compile_features(Test_TextSample PRIVATE cxx_std_23)
 
+set_target_properties(Test_TextSample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/SWGTK/tests)
+
 target_compile_definitions(
 	Test_TextSample 
 
