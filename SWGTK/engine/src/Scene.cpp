@@ -33,10 +33,6 @@ namespace swgtk
 		return _root->Update(*this, dt);
 	}
 
-	SSC Scene::Render(float dt) {
-		return _root->Render(*this, dt);
-	}
-
 	void Scene::Destroy()
 	{
 		_root->Destroy(*this);
@@ -54,15 +50,13 @@ namespace swgtk
 
 				sol::optional<std::function<void(Scene&)>> dest = functions["OnDestroy"];
 				sol::optional<std::function<SSC(Scene&, float)>> up = functions["OnUpdate"];
-				sol::optional<std::function<SSC(Scene&, float)>> rn = functions["OnRender"];
 				sol::optional<std::function<SSC(Scene&)>> cr = functions["OnCreate"];
 				
-				if(up && cr && rn)
+				if(up && cr)
 				{
 					return Scene::CreateSceneNode(
 						*cr,
 						*up,
-						*rn,
 						*dest
 					);
 				}

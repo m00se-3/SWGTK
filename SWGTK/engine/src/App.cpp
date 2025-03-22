@@ -107,7 +107,6 @@ namespace swgtk
 		const auto deltaTime = std::chrono::duration<float, std::ratio<1,1>>(timeDiff).count();
 
 		_currentSSC = _currentScene->Update(deltaTime);
-		_currentSSC = _currentScene->Render(deltaTime);
 
 		_renderer->BufferPresent();
 
