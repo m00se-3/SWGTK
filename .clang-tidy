@@ -5,4 +5,3 @@ Checks: -*, cppcoreguidelines-*,clang-analyzer-*,
   performance-*, readability-*,-readability-uppercase-literal-suffix, 
   -readability-identifier-length, -readability-isolate-declaration, -readability-magic-numbers,
   -performance-unnecessary-value-param, -misc-use-anonymous-namespace, -performance-enum-size
-HeaderFilterRegex: .*

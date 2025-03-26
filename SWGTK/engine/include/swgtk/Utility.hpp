@@ -24,14 +24,14 @@ namespace swgtk {
     public:
         constexpr Surface() = default;
         explicit Surface(SDL_Surface* surface) : _surface(SDL_DuplicateSurface(surface), Surface::DestroySurface) {}
-        Surface(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32) 
+        Surface(const int width, const int height, const SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32)
         : _surface(SDL_CreateSurface(width, height, format), Surface::DestroySurface) {
             if(!_surface) {
                 DEBUG_PRINT("Failed to create surface: {}\n", SDL_GetError())
             }
         }
 
-        Surface(int width, int height, SDL_PixelFormat format, void* pixels, int pitch)
+        Surface(const int width, const int height, const SDL_PixelFormat format, void* pixels, const int pitch)
         : _surface(SDL_CreateSurfaceFrom(width, height, format, pixels, pitch), Surface::DestroySurface) {
             if(!_surface) {
                 DEBUG_PRINT("Failed to create surface: {}\n", SDL_GetError())
@@ -40,21 +40,21 @@ namespace swgtk {
 
         [[nodiscard]] SDL_Surface* operator*() const { return _surface.get(); }
 
-        void Clear(SDL_FColor color = SDL_FColor { .r=0.0f, .g=0.0f, .b = 0.0f, .a=1.0f }) const { SDL_ClearSurface( _surface.get(), color.r, color.g, color.b, color.a); }
+        void Clear(const SDL_FColor& color = SDL_FColor { .r=0.0f, .g=0.0f, .b = 0.0f, .a=1.0f }) const { SDL_ClearSurface( _surface.get(), color.r, color.g, color.b, color.a); }
         
-        [[nodiscard]] SDL_FColor ReadPixel(int x, int y) const {
+        [[nodiscard]] SDL_FColor ReadPixel(const int x, const int y) const {
             float r{}, g{}, b{}, a{};
             SDL_ReadSurfacePixelFloat(_surface.get(), x, y, &r, &g, &b, &a);
             return SDL_FColor{ .r=r, .g=g, .b=b, .a=a };
         }
 
-        void DrawPixel(int x, int y, SDL_FColor color = SDL_FColor { .r=1.0f, .g=1.0f, .b = 1.0f, .a=1.0f }) const { SDL_WriteSurfacePixelFloat(_surface.get(), x, y, color.r, color.g, color.b, color.a); }
+        void DrawPixel(const int x, const int y, const SDL_FColor& color = SDL_FColor { .r=1.0f, .g=1.0f, .b = 1.0f, .a=1.0f }) const { SDL_WriteSurfacePixelFloat(_surface.get(), x, y, color.r, color.g, color.b, color.a); }
 
-        void FillRect(SDL_Rect rect, SDL_Color color = SDL_Color { .r=whiteColorValue, .g=whiteColorValue, .b =whiteColorValue, .a=whiteColorValue }) const {
+        void FillRect(const SDL_Rect &rect, const SDL_Color& color = SDL_Color { .r=whiteColorValue, .g=whiteColorValue, .b =whiteColorValue, .a=whiteColorValue }) const {
             SDL_FillSurfaceRect(_surface.get(), &rect, SDL_MapSurfaceRGBA(_surface.get(), color.r, color.g, color.b, color.a));
         }
 
-        void FillRects(std::span<SDL_Rect> rects, SDL_Color color = SDL_Color { .r=whiteColorValue, .g=whiteColorValue, .b =whiteColorValue, .a=whiteColorValue }) const {
+        void FillRects(const std::span<SDL_Rect> rects, const SDL_Color& color = SDL_Color { .r=whiteColorValue, .g=whiteColorValue, .b =whiteColorValue, .a=whiteColorValue }) const {
             SDL_FillSurfaceRects(_surface.get(), rects.data(), static_cast<int>(std::ssize(rects)),
              SDL_MapSurfaceRGBA(_surface.get(), color.r, color.g, color.b, color.a));
         }
@@ -67,25 +67,25 @@ namespace swgtk {
         inline constexpr double pi2 = std::numbers::pi * 2.0;
         inline constexpr float pi2f = std::numbers::pi_v<float> * 2.0f;
 
-        [[nodiscard]] constexpr double radiansToDegrees(double radians) {
+        [[nodiscard]] constexpr double radiansToDegrees(const double radians) {
             static constexpr auto oneEighty = 180.0;
             
             return  (radians / std::numbers::pi) * oneEighty;
         }
 
-        [[nodiscard]] constexpr float radiansToDegrees(float radians) {
+        [[nodiscard]] constexpr float radiansToDegrees(const float radians) {
             static constexpr auto oneEighty = 180.0f;
             
             return  (radians / std::numbers::pi_v<float>) * oneEighty;
         }
 
-        [[nodiscard]] constexpr double degreesToRadians(double degrees) {
+        [[nodiscard]] constexpr double degreesToRadians(const double degrees) {
             static constexpr auto oneEighty = 180.0;
 
             return (degrees / oneEighty) * std::numbers::pi;
         }
 
-        [[nodiscard]] constexpr float degreesToRadians(float degrees) {
+        [[nodiscard]] constexpr float degreesToRadians(const float degrees) {
             static constexpr auto oneEighty = 180.0f;
 
             return (degrees / oneEighty) * std::numbers::pi_v<float>;

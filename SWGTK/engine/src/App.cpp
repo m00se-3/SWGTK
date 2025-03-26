@@ -12,19 +12,16 @@
 namespace swgtk
 {
 	App::~App() {
-		if (!_headless)	{
-			_fonts.ClearFonts();
-			
-			
-			SDL_DestroyWindow(_window);
+		_fonts.ClearFonts();
 
-			Mix_Quit();
-			TTF_Quit();
-			SDL_Quit();
-		}
+		SDL_DestroyWindow(_window);
+
+		Mix_Quit();
+		TTF_Quit();
+		SDL_Quit();
 	}
 
-	bool App::InitGraphics(const char* appName, int width, int height, std::shared_ptr<RendererBase> renderPtr) {
+	bool App::InitGraphics(const char* appName, const int width, const int height, const std::shared_ptr<RendererBase> &renderPtr) {
 		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
 		constexpr int MixFlags = 0;
 
@@ -42,13 +39,7 @@ namespace swgtk
 		return false;
 	}
 
-	void App::EventsAndTimeStep() {
-		// If a scene change occurs, that is all we want to do for this frame.
-		if(_currentSSC == SSC::ChangeScene) {
-			_currentSSC = _currentScene->Create();
-			return;
-		}
-		
+	bool App::EventsAndTimeStep() {
 		SDL_Event e;
 
 		ResetScroll();
@@ -68,7 +59,7 @@ namespace swgtk
 
 			case SDL_EVENT_KEY_DOWN:
 			case SDL_EVENT_KEY_UP: {
-					SetKeyEvent(LayoutCode(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
+					SetKeyEvent(static_cast<LayoutCode>(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
 					break;
 				}
 
@@ -106,48 +97,40 @@ namespace swgtk
 		// std::ratio<1,1> converts the timeDiff duration into seconds.
 		const auto deltaTime = std::chrono::duration<float, std::ratio<1,1>>(timeDiff).count();
 
-		_currentSSC = _currentScene->Update(deltaTime);
+		const bool result = _currentScene->Update(deltaTime);
 
 		_renderer->BufferPresent();
 
+		return result;
 	}
 
-	void App::Run(Scene::NodeProxy logicNode) {
-		if (!_headless)	{
-			if(!_renderer->PrepareDevice(_window)) {
-				DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
-				return;
-			}
+	void App::Run(const std::function<bool(Scene&)>& createFunc,
+			const std::function<bool(Scene&, float)>& updateFunc,
+			const std::optional<std::function<void(Scene&)>>& destroyFunc) {
 
-			SDL_ShowWindow(_window);
+		_currentScene = std::make_unique<Scene>(this, createFunc, updateFunc, destroyFunc);
 
-			_currentScene = std::make_unique<Scene>(this, logicNode);
-			
-			if (_currentScene->Create() != SSC::Ok)	{
-				return;
-			}
+		if(!_renderer->PrepareDevice(_window)) {
+			DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
+			return;
+		}
+
+		SDL_ShowWindow(_window);
+
+		if (!_currentScene->Create())	{
+			return;
+		}
 
 #ifdef __EMSCRIPTEN__
-			emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);
+		emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);
 
 #else
 
-			while (_running) {
-				if (_currentSSC == SSC::Fail) {
-					break;
-				}
+		while (_running && EventsAndTimeStep()) {
 
-				if(_nextSceneNode != nullptr) {
-					_currentScene->SetNewScene(_nextSceneNode);
-					_nextSceneNode = nullptr;
-					_currentSSC = SSC::ChangeScene;
-				}
-					
-				EventsAndTimeStep();
-			}
+		}
 
 #endif // __EMSCRIPTEN__
-		}
 	}
 
 	void App::CloseApp() {
@@ -168,5 +151,57 @@ namespace swgtk
 	}
 #endif
 
+	void App::InitLua(sol::state& lua) {
+		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
+
+		// Define useful enums and types.
+
+		{
+			lua.new_enum<FontStyle>("FontStyle",
+				{
+					std::make_pair("Normal", FontStyle::Normal),
+					std::make_pair("Bold", FontStyle::Bold),
+					std::make_pair("Italic", FontStyle::Italic),
+					std::make_pair("Underlined", FontStyle::Underlined),
+					std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
+					std::make_pair("Bold_Underlined", FontStyle::Bold_Underlined),
+					std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
+					std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
+				}
+			);
+		}
+
+		auto point = lua.new_usertype<SDL_Point>(
+		"Vec2i", "x", &SDL_Point::x, "y", &SDL_Point::y
+		);
+
+		point["new"] = [](sol::optional<int> nx, sol::optional<int> ny) -> SDL_Point {
+				return SDL_Point{ nx.value_or(0), ny.value_or(0) };
+			};
+
+		auto pointf = lua.new_usertype<SDL_FPoint>(
+		"Vec2f", "x", &SDL_FPoint::x, "y", &SDL_FPoint::y
+		);
+
+		pointf["new"] = [](sol::optional<float> nx, sol::optional<float> ny) -> SDL_FPoint {
+			return SDL_FPoint{ nx.value_or(0.0f), ny.value_or(0.0f) };
+		};
+
+		auto rect = lua.new_usertype<SDL_Rect>(
+		"Recti",	"x", &SDL_Rect::x, "y", &SDL_Rect::y, "w", &SDL_Rect::w, "h", &SDL_Rect::h
+		);
+
+		rect["new"] = [](sol::optional<int> nx, sol::optional<int> ny, sol::optional<int> nw, sol::optional<int> nh) -> SDL_Rect {
+				return SDL_Rect{ nx.value_or(0), ny.value_or(0), nw.value_or(0), nh.value_or(0) };
+			};
+
+		auto rectf = lua.new_usertype<SDL_FRect>(
+		"Rectf", "x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
+		);
+
+		rectf["new"] = [](sol::optional<float> nx, sol::optional<float> ny, sol::optional<float> nw, sol::optional<float> nh) -> SDL_FRect {
+				return SDL_FRect{ nx.value_or(0.0f), ny.value_or(0.0f), nw.value_or(0.0f), nh.value_or(0.0f) };
+			};
+	}
 
 }

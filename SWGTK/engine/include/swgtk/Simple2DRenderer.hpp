@@ -6,8 +6,6 @@
 #include "SDL3_ttf/SDL_ttf.h"
 #include "SDL3/SDL_blendmode.h"
 #include "SDL3/SDL_render.h"
-#include <SDL3/SDL_error.h>
-#include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 #include <swgtk/RendererBase.hpp>
@@ -30,9 +28,9 @@ namespace swgtk
 		Simple2DRenderer(Simple2DRenderer &&) = delete;
 		Simple2DRenderer &operator=(const Simple2DRenderer &) = delete;
 		Simple2DRenderer &operator=(Simple2DRenderer &&) = delete;
-		~Simple2DRenderer() override { DestroyDevice(); }
+		~Simple2DRenderer() override { Simple2DRenderer::DestroyDevice(); }
 
-		void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) override;
+		void BufferClear(const SDL_FColor& color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) override;
 		void BufferPresent() override;
 
 		void SetBackgroundColor(const SDL_FColor& color) override { SetDrawColor(color); }
@@ -43,13 +41,16 @@ namespace swgtk
 
 		[[nodiscard]] std::shared_ptr<RendererBase> GetRef() override { return shared_from_this(); }
 
-		bool SetDrawColor(float r, float g, float b, float a = RendererBase::defaultAlphaFloat) const { return SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
-        bool SetDrawColor(SDL_FColor color = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) const { 
-			return SDL_SetRenderDrawColorFloat(_render, color.r, color.g, color.b, color.a); 
+		void SetDrawColor(const float r, const float g, const float b, const float a = RendererBase::defaultAlphaFloat) const { SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
+        void SetDrawColor(const SDL_FColor& color = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) const {
+			SDL_SetRenderDrawColorFloat(_render, color.r, color.g, color.b, color.a);
 		}
 
 		void DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;		
-		void DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest, double angle, const std::optional<SDL_FPoint>& center = std::nullopt, SDL_FlipMode flip = SDL_FLIP_NONE) const;
+		void DrawTexture(SDL_Texture *texture, const std::optional<SDL_FRect> &src,
+		                 const std::optional<SDL_FRect> &dest, double angle,
+		                 const std::optional<SDL_FPoint> &center = std::nullopt,
+		                 SDL_FlipMode flip = SDL_FLIP_NONE) const;
 		
 		/**
 		 * @brief Draw text at the specified location with the specified font. Uses SDL_ttf's fastest algorithm.
@@ -59,32 +60,42 @@ namespace swgtk
 		 * @param pos - Destination rectangle
 		 * @param color
 		 */
-		void DrawPlainText(std::string_view text, TTF_Font* font, SDL_FRect pos,
-		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+		void DrawPlainText(std::string_view text, TTF_Font *font, const SDL_FRect &pos,
+		                   const SDL_Color &color = SDL_Color{
+			                   .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
+		                   }) const;
 
 		/*
 			Combines SDL_ttf's API with SDL_Textures to preload text renderables as Textures. These can be rotated and tinted as needed.
 		*/
 
-		[[nodiscard]] Texture LoadPlainText(std::string_view text, TTF_Font* font,
-		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+		[[nodiscard]] Texture LoadPlainText(std::string_view text, TTF_Font *font,
+		                                    const SDL_Color &color = SDL_Color{
+			                                    .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
+		                                    }) const;
 
-		[[nodiscard]] Texture LoadBlendedText(std::string_view text, TTF_Font* font,
-		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+		[[nodiscard]] Texture LoadBlendedText(std::string_view text, TTF_Font *font,
+		                                      const SDL_Color &color = SDL_Color{
+			                                      .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
+		                                      }) const;
 
-		[[nodiscard]] Texture LoadShadedText(std::string_view text, TTF_Font* font,
-		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
-		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+		[[nodiscard]] Texture LoadShadedText(std::string_view text, TTF_Font *font,
+		                                     const SDL_Color &bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt},
+		                                     const SDL_Color &fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const;
 
-		[[nodiscard]] Texture LoadLCDText(std::string_view text, TTF_Font* font,
-		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
-		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+		[[nodiscard]] Texture LoadLCDText(std::string_view text, TTF_Font *font,
+		                                  const SDL_Color &bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt},
+		                                  const SDL_Color &fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const;
 
-		[[nodiscard]] Texture LoadPlainWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
-		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+		[[nodiscard]] Texture LoadPlainWrapText(std::string_view text, TTF_Font *font, int wrapLen = 0,
+		                                        const SDL_Color &color = SDL_Color{
+			                                        .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
+		                                        }) const;
 
-		[[nodiscard]] Texture LoadBlendedWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
-		 SDL_Color color = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
+		[[nodiscard]] Texture LoadBlendedWrapText(std::string_view text, TTF_Font *font, int wrapLen = 0,
+		                                          const SDL_Color &color = SDL_Color{
+			                                          .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
+		                                          }) const;
 
 		[[nodiscard]] Texture LoadShadedWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
 		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
@@ -95,18 +106,18 @@ namespace swgtk
 		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
 		/*
-			Used to draw arbitray shapes from a list of verticies. This is helpful when drawing things like particles.
+			Used to draw arbitrary shapes from a list of vertices. This is helpful when drawing things like particles.
 
 			It's okay to allow for nullptr in 'texture' because SDL handles it for us.
 		*/ 
-		void DrawGeometry(SDL_Texture* texture, std::span<SDL_Vertex> verticies, std::span<int> indicies) const {
-			SDL_RenderGeometry(_render, texture, verticies.data(), static_cast<int>(std::ssize(verticies)),
-									indicies.data(), static_cast<int>(std::ssize(indicies)));
+		void DrawGeometry(SDL_Texture* texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
+			SDL_RenderGeometry(_render, texture, vertices.data(), static_cast<int>(std::ssize(vertices)),
+									indices.data(), static_cast<int>(std::ssize(indices)));
 		}
 
 		[[nodiscard]] Texture LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const;
 		[[nodiscard]] Texture CreateRenderableTexture(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const;
-		[[nodiscard]] Texture CreateTextureFromSurface(Surface surface) const;
+		[[nodiscard]] Texture CreateTextureFromSurface(const Surface &surface) const;
 
 		[[nodiscard]] SDL_FColor GetDrawColor() const {
 			SDL_FColor res{};

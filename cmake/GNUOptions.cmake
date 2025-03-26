@@ -71,6 +71,7 @@ list(
 	"-Wno-c++98-compat-pedantic"
 	"-Wconversion"
 	"-Wsign-conversion"
+	"-fvisibility=hidden"
 
 	"-fstrict-flex-arrays=3"
 	"-fcf-protection=full"

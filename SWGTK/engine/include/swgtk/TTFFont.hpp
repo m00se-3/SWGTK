@@ -17,7 +17,7 @@ namespace swgtk
         Strikethrough = TTF_STYLE_STRIKETHROUGH,
         Bold_Italic = Bold | Italic,
         Bold_Strike = Bold | Strikethrough,
-        Bold_Underlinded = Bold | Underlined,
+        Bold_Underlined = Bold | Underlined,
         Bold_Italic_Underlined = Bold | Italic | Underlined,
         Bold_Italic_Strike = Bold | Italic | Strikethrough,
         Italic_Underlined = Italic | Underlined,
@@ -34,8 +34,8 @@ namespace swgtk
     class FontGroup {
     public:
         void AddFont(const std::filesystem::path& filename, FontStyle styleMask);
-        void ClearFonts();
-        [[nodiscard]] bool SetFontSize(FontStyle style, float size) { 
+        void ClearFonts() const;
+        [[nodiscard]] bool SetFontSize(const FontStyle style, const float size) const {
             if(_ttfFonts.contains(style)) {
                 return TTF_SetFontSize(_ttfFonts.at(style), size);
             }
@@ -43,13 +43,13 @@ namespace swgtk
             return false;
          }
 
-         void SetAllFontSizes(float size) { 
-            for(auto& font : _ttfFonts) {
-                TTF_SetFontSize(font.second, size);
+         void SetAllFontSizes(const float size) const {
+            for(const auto&[fst, snd] : _ttfFonts) {
+                TTF_SetFontSize(snd, size);
             }
          }
 
-        constexpr void SetDefaultFontSize(float size) { _defaultFontSize = size; };
+        constexpr void SetDefaultFontSize(const float size) { _defaultFontSize = size; };
 
         [[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle mask) {
             if (self._ttfFonts.contains(mask))

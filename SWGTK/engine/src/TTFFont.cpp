@@ -3,14 +3,12 @@
 
 namespace swgtk
 {    
-    void FontGroup::AddFont(const std::filesystem::path& filename, FontStyle styleMask) {
+    void FontGroup::AddFont(const std::filesystem::path& filename, const FontStyle styleMask) {
         if (!_ttfFonts.contains(styleMask))
         {
-            auto str = filename.string();
-            
-            TTF_Font* ttf = TTF_OpenFont(str.c_str(), _defaultFontSize);
+            const auto str = filename.string();
 
-            if (ttf == nullptr) 
+            if (TTF_Font* ttf = TTF_OpenFont(str.c_str(), _defaultFontSize); ttf == nullptr)
             {
                 DEBUG_PRINT2("Error opening font file {}: {}\n", filename.filename().string(), SDL_GetError());
             } else {
@@ -20,10 +18,10 @@ namespace swgtk
         }
     }
 
-    void FontGroup::ClearFonts() {
-        for (auto& font : _ttfFonts)
+    void FontGroup::ClearFonts() const {
+        for (const auto&[style, font] : _ttfFonts)
         {
-            TTF_CloseFont(font.second);
+            TTF_CloseFont(font);
         }
     }
 

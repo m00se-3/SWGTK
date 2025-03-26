@@ -15,8 +15,8 @@ namespace swgtk {
 
     class TextTest {
     public:
-        SSC Create(Scene& scene);
-        SSC Update(float dt);
+        bool Create(Scene& scene);
+        bool Update(float dt);
 
     private:
         MouseCursor _mouse{};

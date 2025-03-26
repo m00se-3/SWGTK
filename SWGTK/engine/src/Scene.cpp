@@ -1,127 +1,33 @@
 #include "swgtk/Scene.hpp"
 
-#include <filesystem>
 #include <utility>
+#include <swgtk/Input.hpp>
+#include <SDL3/SDL_rect.h>
 
 #include "swgtk/App.hpp"
 
 namespace swgtk
 {
-	Scene::Scene(App* parent, NodeProxy node)
-	: _parent(parent), _renderer(parent->Renderer()), _root(node.ptr)
+	Scene::Scene(App* parent, const std::function<bool(Scene&)>& createFunc,
+			const std::function<bool(Scene&, float)>& updateFunc,
+			const std::optional<std::function<void(Scene&)>>& destroyFunc)
+	: _parent(parent), _renderer(parent->Renderer()), _root(std::make_unique<Node>(createFunc, updateFunc, destroyFunc))
 	{
 	}
 
-	void Scene::SetNewScene(Node*scene)
-	{
-		_root->Destroy(*this);
-		_root.reset(scene);
-	}
-
-	void Scene::GenerateNewScene(NodeProxy ptr)
-	{
-		_parent->SetNewSceneNode(ptr);
-	}
-
-	SSC Scene::Create()
-	{
+	bool Scene::Create() {
 		return _root->Create(*this);
 	}
 
-	SSC Scene::Update(float dt)
-	{
+	bool Scene::Update(const float dt) {
 		return _root->Update(*this, dt);
 	}
 
-	void Scene::Destroy()
-	{
+	void Scene::Destroy() {
 		_root->Destroy(*this);
 	}
 
-	Scene::NodeProxy CreateLuaScene(sol::state& state, const std::string& luaFileName)
-	{
-		if(std::filesystem::exists(luaFileName))
-		{
-			const sol::protected_function_result file = state.script_file(luaFileName);
-
-			if(file.valid())
-			{
-				sol::table functions = file;
-
-				sol::optional<std::function<void(Scene&)>> dest = functions["OnDestroy"];
-				sol::optional<std::function<SSC(Scene&, float)>> up = functions["OnUpdate"];
-				sol::optional<std::function<SSC(Scene&)>> cr = functions["OnCreate"];
-				
-				if(up && cr)
-				{
-					return Scene::CreateSceneNode(
-						*cr,
-						*up,
-						*dest
-					);
-				}
-			}
-		}
-
-		return Scene::NodeProxy{};
-	}
-
-	void Scene::InitLua(sol::state& lua)
-	{
-		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
-
-		// Define useful enums and types.
-
-		{
-			lua.new_enum<SSC>("SSC", 
-				{
-					std::make_pair("Ok", SSC::Ok),
-					std::make_pair("ChangeScene", SSC::ChangeScene),
-					std::make_pair("Fail", SSC::Fail)
-				}
-			);
-
-			lua.new_enum<FontStyle>("FontStyle",
-				{
-					std::make_pair("Normal", FontStyle::Normal),
-					std::make_pair("Bold", FontStyle::Bold),
-					std::make_pair("Italic", FontStyle::Italic),
-					std::make_pair("Underlined", FontStyle::Underlined),
-					std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
-					std::make_pair("Bold_Underlinded", FontStyle::Bold_Underlinded),
-					std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
-					std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
-				}
-			);
-		}
-
-		auto point = lua.new_usertype<SDL_FPoint>(
-		"Vec2f", "x", &SDL_FPoint::x, "y", &SDL_FPoint::y
-		);
-		
-		point["new"] = [](sol::optional<float> nx, sol::optional<float> ny) -> SDL_FPoint {
-				return SDL_FPoint{ nx.value_or(0.0f), ny.value_or(0.0f) };
-			};
-
-		auto rect = lua.new_usertype<SDL_Rect>(
-		"Rect",	"x", &SDL_Rect::x, "y", &SDL_Rect::y, "w", &SDL_Rect::w, "h", &SDL_Rect::h
-		);
-
-		rect["new"] = [](sol::optional<int> nx, sol::optional<int> ny, sol::optional<int> nw, sol::optional<int> nh) -> SDL_Rect {
-				return SDL_Rect{ nx.value_or(0), ny.value_or(0), nw.value_or(0), nh.value_or(0) };
-			};
-
-		auto rectf = lua.new_usertype<SDL_FRect>(
-		"RectF", "x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
-		);
-
-		rectf["new"] = [](sol::optional<float> nx, sol::optional<float> ny, sol::optional<float> nw, sol::optional<float> nh) -> SDL_FRect {
-				return SDL_FRect{ nx.value_or(0.0f), ny.value_or(0.0f), nw.value_or(0.0f), nh.value_or(0.0f) };
-			};
-	}
-
-	void Scene::InitLuaInput(sol::state& lua)
-	{
+	void Scene::InitLuaInput(sol::state& lua) const {
 		lua.new_enum<MButton>("MButton",
 			{
 				std::make_pair("None", MButton::None),
@@ -189,14 +95,14 @@ namespace swgtk
 				std::make_pair("R7", LayoutCode::R7), std::make_pair("R8", LayoutCode::R8), std::make_pair("R9", LayoutCode::R9),
 				std::make_pair("R0", LayoutCode::R0), std::make_pair("Enter", LayoutCode::Enter), std::make_pair("Esc", LayoutCode::Esc),
 				std::make_pair("Back", LayoutCode::Back), std::make_pair("Tab", LayoutCode::Tab), std::make_pair("Space", LayoutCode::Space),
-				std::make_pair("Rminus", LayoutCode::Rminus), std::make_pair("Equals", LayoutCode::Equals), std::make_pair("LBracket", LayoutCode::LBracket),
+				std::make_pair("Minus", LayoutCode::Minus), std::make_pair("Equals", LayoutCode::Equals), std::make_pair("LBracket", LayoutCode::LBracket),
 				std::make_pair("RBracket", LayoutCode::RBracket), std::make_pair("BSlash", LayoutCode::BSlash), std::make_pair("SemiColon", LayoutCode::SemiColon),
 				std::make_pair("Apostrophe", LayoutCode::Apostrophe), std::make_pair("Comma", LayoutCode::Comma), std::make_pair("Period", LayoutCode::Period),
 				std::make_pair("FSlash", LayoutCode::FSlash), std::make_pair("CapsLock", LayoutCode::CapsLock), std::make_pair("F1", LayoutCode::F1),
 				std::make_pair("F2", LayoutCode::F2), std::make_pair("F3", LayoutCode::F3), std::make_pair("F4", LayoutCode::F4),
 				std::make_pair("F5", LayoutCode::F5), std::make_pair("F6", LayoutCode::F6), std::make_pair("F7", LayoutCode::F7),
 				std::make_pair("F8", LayoutCode::F8), std::make_pair("F9", LayoutCode::F9), std::make_pair("F10", LayoutCode::F10),
-				std::make_pair("F11", LayoutCode::F11), std::make_pair("F12", LayoutCode::F12), std::make_pair("PRTSCRN", LayoutCode::PRTSCRN),
+				std::make_pair("F11", LayoutCode::F11), std::make_pair("F12", LayoutCode::F12), std::make_pair("PRTSCRN", LayoutCode::PrtScrn),
 				std::make_pair("ScrLock", LayoutCode::ScrLock), std::make_pair("Pause", LayoutCode::Pause), std::make_pair("Insert", LayoutCode::Insert),
 				std::make_pair("Home", LayoutCode::Home), std::make_pair("PgUp", LayoutCode::PgUp), std::make_pair("Delete", LayoutCode::Delete),
 				std::make_pair("End", LayoutCode::End), std::make_pair("PgDown", LayoutCode::PgDown), std::make_pair("Right", LayoutCode::Right),
@@ -220,27 +126,27 @@ namespace swgtk
 				return _parent->GetScrollY();
 			};
 
-		lua["IsKeyPressed"] = [this](LayoutCode key) -> bool {
+		lua["IsKeyPressed"] = [this](const LayoutCode key) -> bool {
 				return _parent->IsKeyPressed(key);
 			};
 
-		lua["IsKeyReleased"] = [this](LayoutCode key) -> bool {
+		lua["IsKeyReleased"] = [this](const LayoutCode key) -> bool {
 				return _parent->IsKeyReleased(key);
 			};
 
-		lua["IsKeyHeld"] = [this](LayoutCode key) -> bool {
+		lua["IsKeyHeld"] = [this](const LayoutCode key) -> bool {
 				return _parent->IsKeyHeld(key);
 			};
 
-		lua["IsButtonPressed"] = [this](MButton btn) -> bool {
+		lua["IsButtonPressed"] = [this](const MButton btn) -> bool {
 				return _parent->IsButtonPressed(btn);
 			};
 
-		lua["IsButtonReleased"] = [this](MButton btn) -> bool {
+		lua["IsButtonReleased"] = [this](const MButton btn) -> bool {
 				return _parent->IsButtonReleased(btn);
 			};
 
-		lua["IsButtonHeld"] = [this](MButton btn) -> bool {
+		lua["IsButtonHeld"] = [this](const MButton btn) -> bool {
 				return _parent->IsButtonHeld(btn);
 			};
 

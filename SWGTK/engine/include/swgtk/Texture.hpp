@@ -24,13 +24,13 @@ namespace swgtk
 		[[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
 		[[nodiscard]] auto Get(this auto&& self) { return self._texture; }
 
-		void SetBlendMode(SDL_BlendMode mode) { SDL_SetTextureBlendMode(_texture.get(), mode); }
-		void SetTint(float r, float g, float b, float a) {
+		void SetBlendMode(const SDL_BlendMode mode) const { SDL_SetTextureBlendMode(_texture.get(), mode); }
+		void SetTint(const float r, const float g, const float b, const float a) const {
 			SDL_SetTextureColorModFloat(_texture.get(), r, g, b);
 			SDL_SetTextureAlphaModFloat(_texture.get(), a);
 		}
 
-		void SetScaleMode(SDL_ScaleMode mode) { SDL_SetTextureScaleMode(_texture.get(), mode); }
+		void SetScaleMode(const SDL_ScaleMode mode) const { SDL_SetTextureScaleMode(_texture.get(), mode); }
 
 		[[nodiscard]] SDL_BlendMode GetBlendMode() const
 		{

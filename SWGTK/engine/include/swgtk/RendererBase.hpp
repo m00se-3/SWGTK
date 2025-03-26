@@ -34,11 +34,10 @@ namespace swgtk {
          * @brief Clears the rendering backend and prepares it for accepting draw calls. Draws to the current
          *          render buffer if the bufferID is not valid.
          * 
-         * @param bufferID - The layer number to clear. Default is 0.
          * @param color    - Optional color to clear the layer to. Default is Black.
          * 
          */
-        constexpr virtual void BufferClear(SDL_FColor color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) = 0;
+        constexpr virtual void BufferClear(const SDL_FColor& color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) = 0;
 
         /**
          * @brief After finishing your draw calls, call this function to present the new frame
@@ -51,7 +50,7 @@ namespace swgtk {
          * @brief Binds your SDL_Window object to the rendering backend and prepares the TTF_Text implementation.
          * 
          * @param window 
-         * @return true on sucess
+         * @return true on success
          * @return false failure
          */
         [[nodiscard]] virtual bool PrepareDevice(SDL_Window* window) = 0;
@@ -71,7 +70,7 @@ namespace swgtk {
     };
 
     template<std::derived_from<RendererBase> T>
-    [[nodiscard]] constexpr T* RenderImpl(std::shared_ptr<RendererBase> ptr) { return dynamic_cast<T*>(ptr.get()); }    
+    [[nodiscard]] constexpr T* RenderImpl(const std::shared_ptr<RendererBase>& ptr) { return dynamic_cast<T*>(ptr.get()); }
 }
 
 #endif

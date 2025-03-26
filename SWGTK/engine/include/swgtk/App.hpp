@@ -13,7 +13,6 @@
 
 #include "swgtk/TTFFont.hpp"
 #include "swgtk/Scene.hpp"
-#include <swgtk/Utility.hpp>
 
 extern "C" {
 	struct SDL_Window;
@@ -34,17 +33,14 @@ namespace swgtk {
 		App& operator=(App&&) = delete;
 		~App();
 		
-		void Run(Scene::NodeProxy logicNode);
-		void EventsAndTimeStep();
+		void Run(const std::function<bool(Scene&)>& createFunc,
+			const std::function<bool(Scene&, float)>& updateFunc,
+			const std::optional<std::function<void(Scene&)>>& destroyFunc = std::nullopt);
+		bool EventsAndTimeStep();
 		void CloseApp();
-		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, std::shared_ptr<RendererBase> renderPtr);
+		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, const std::shared_ptr<RendererBase>& renderPtr);
 
-		constexpr bool InitHeadless() {
-			_headless = true;
-			return true;
-		}
-
-		[[nodiscard]] constexpr SSC GetSceneStatus(this auto&& self) { return self._currentSSC; }
+		static void InitLua(sol::state& lua);
 
 		void AddFont(this auto&& self, const std::filesystem::path& path, FontStyle style) { self._fonts.AddFont(path, style); }
 		[[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle style) { return self._fonts.GetFont(style); }
@@ -58,16 +54,14 @@ namespace swgtk {
 			return std::make_pair(width, height);
 		}
 
-		constexpr void SetNewSceneNode(Scene::NodeProxy ptr) { _nextSceneNode = ptr.ptr; }
-
 		/*
 			Input state and event polling for the client's logic.
 		*/
 
 		[[nodiscard]] constexpr auto GetScrollX() const { return _input.scroll.x; }
 		[[nodiscard]] constexpr auto GetScrollY() const { return _input.scroll.y; }
-		[[nodiscard]] constexpr bool IsKeyPressed(LayoutCode code) const { return (_input.keyEvent.first == code && _input.keyEvent.second); }
-		[[nodiscard]] constexpr bool IsKeyReleased(LayoutCode code) const { return (_input.keyEvent.first == code && !_input.keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyPressed(const LayoutCode code) const { return (_input.keyEvent.first == code && _input.keyEvent.second); }
+		[[nodiscard]] constexpr bool IsKeyReleased(const LayoutCode code) const { return (_input.keyEvent.first == code && !_input.keyEvent.second); }
 		[[nodiscard]] constexpr bool IsKeyHeld(LayoutCode code) const{ return _input.keyboardState[static_cast<size_t>(code)]; }
 		[[nodiscard]] constexpr std::pair<LayoutCode, bool> GetCurrentKeyEvent() const { return _input.keyEvent; }
 		[[nodiscard]] constexpr KeyMod GetKeyMods() const { return _input.modifiers; }
@@ -86,8 +80,8 @@ namespace swgtk {
 		constexpr void SetMouseState(const MouseState& state) { _input.mouseState = state; }
 		constexpr void SetModState(const SDL_Keymod& state) { _input.modifiers = static_cast<KeyMod>(state); }
 		constexpr void ResetScroll() { _input.scroll = { .x=0.f, .y=0.f }; }
-		constexpr void AddScroll(float amountX, float amountY) { _input.scroll = { .x=amountX, .y=amountY }; }
-		constexpr void SetMouseEvent(MButton button, MButtonData data) { _input.mouseEvents.at(static_cast<size_t>(button)) = data; }
+		constexpr void AddScroll(const float amountX, const float amountY) { _input.scroll = { .x=amountX, .y=amountY }; }
+		constexpr void SetMouseEvent(MButton button, const MButtonData data) { _input.mouseEvents.at(static_cast<size_t>(button)) = data; }
 
 		constexpr void ResetKeyEvent()
 		{
@@ -95,7 +89,7 @@ namespace swgtk {
 			_input.keyEvent.second = false;	
 		}
 
-		constexpr void SetKeyEvent(LayoutCode code, bool pressed)
+		constexpr void SetKeyEvent(const LayoutCode code, const bool pressed)
 		{	
 			_input.keyEvent.first = code;
 			_input.keyEvent.second = pressed;
@@ -109,10 +103,10 @@ namespace swgtk {
 		}
 		
 		constexpr void ResetMouseEvents() {
-			for (auto& s : _input.mouseEvents)
+			for (auto&[state, clicks] : _input.mouseEvents)
 			{
-				s.state = MButtonState::None;
-				s.clicks = 0u;
+				state = MButtonState::None;
+				clicks = 0u;
 			}
 		}
 
@@ -131,17 +125,12 @@ namespace swgtk {
 		std::shared_ptr<RendererBase> _renderer;
 		InputSystem _input;
 
-		Scene::Node* _nextSceneNode = nullptr;
 		std::unique_ptr<Scene> _currentScene;
 		FontGroup _fonts;
 
-		SSC _currentSSC = SSC::Ok;
 		bool _running = true;
-
-		// A mostly unused flag, until we get 'headless server' mode.
-		bool _headless = false;
 
 		timePoint _lastFrameTime = std::chrono::steady_clock::now(), _currentFrameTime;
 	};
 }
-#endif // !APP_HPP
+#endif // SWGTK_APP_HPP
