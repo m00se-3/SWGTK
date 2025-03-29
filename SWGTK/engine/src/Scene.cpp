@@ -3,15 +3,14 @@
 #include <utility>
 #include <swgtk/Input.hpp>
 #include <SDL3/SDL_rect.h>
-
-#include "swgtk/App.hpp"
+#include <swgtk/Utility.hpp>
+#include <swgtk/App.hpp>
+#include <exception>
 
 namespace swgtk
 {
-	Scene::Scene(App* parent, const std::function<bool(Scene&)>& createFunc,
-			const std::function<bool(Scene&, float)>& updateFunc,
-			const std::optional<std::function<void(Scene&)>>& destroyFunc)
-	: _parent(parent), _renderer(parent->Renderer()), _root(std::make_unique<Node>(createFunc, updateFunc, destroyFunc))
+	Scene::Scene(const gsl::not_null<App*>& parent, std::shared_ptr<Node>&& node)
+	: _parent(parent), _renderer(parent->Renderer()), _root(std::move(node))
 	{
 	}
 
@@ -166,5 +165,37 @@ namespace swgtk
 				return _parent->GetMousePos();
 		};
 		
+	}
+
+	LuaGame::LuaGame(const std::filesystem::path& path) {
+		if(std::filesystem::exists(path)) {
+
+			if(const sol::protected_function_result file = _luaState.script_file(path); file.valid())
+			{
+				sol::optional<std::function<bool(Scene&)>> cr = _luaState["OnCreate"];
+				sol::optional<std::function<bool(Scene&, float)>> up = _luaState["OnUpdate"];
+
+				if(!cr) {
+					throw std::runtime_error("OnCreate function could not be found.");
+				}
+
+				if(!up) {
+					throw std::runtime_error("OnUpdate function could not be found.");
+				}
+
+				_createFunc = *cr;
+				_updateFunc = *up;
+			}
+		} else {
+			throw std::runtime_error(fmt::format("Could not load lua script: {}", path.string()));
+		}
+	}
+
+	bool LuaGame::Create(Scene& scene) {
+		return _createFunc(scene);
+	}
+
+	bool LuaGame::Update(Scene& scene, const float dt) {
+		return _updateFunc(scene, dt);
 	}
 }

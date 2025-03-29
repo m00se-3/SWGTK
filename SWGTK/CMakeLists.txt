@@ -32,6 +32,8 @@ target_sources(
 
 	FILES
 
+	PUBLIC
+
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/ErrCodes.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/App.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Texture.hpp
@@ -64,6 +66,7 @@ target_link_libraries(
 	lua
 	sol2
 	fmt::fmt
+	gsl::gsl-lite-v1
 )
 
 add_subdirectory("tests")

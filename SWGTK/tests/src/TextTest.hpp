@@ -2,7 +2,6 @@
 #define SWGTK_TEXTTEST_HPP
 
 #include "swgtk/Simple2DRenderer.hpp"
-#include <swgtk/App.hpp>
 #include <swgtk/Scene.hpp>
 
 namespace swgtk {
@@ -13,10 +12,10 @@ namespace swgtk {
         double angle = 0.0;
     };
 
-    class TextTest {
+    class TextTest : public swgtk::Scene::Node {
     public:
-        bool Create(Scene& scene);
-        bool Update(float dt);
+        bool Create(Scene& scene) override;
+        bool Update(Scene& s, float dt) override;
 
     private:
         MouseCursor _mouse{};

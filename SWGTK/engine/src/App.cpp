@@ -1,9 +1,11 @@
 #include <swgtk/App.hpp>
+#include <swgtk/Utility.hpp>
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3_mixer/SDL_mixer.h>
+#include <gsl/gsl-lite.hpp>
 
 #include <chrono>
 #include <memory>
@@ -26,9 +28,8 @@ namespace swgtk
 		constexpr int MixFlags = 0;
 
 		if (SDL_Init(InitFlags) && TTF_Init() && Mix_Init(MixFlags) == MixFlags) {
-			_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN);
 
-			if (_window != nullptr)	{
+			if (_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN); _window != nullptr)	{
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 				_renderer = renderPtr;
 				return true;
@@ -104,12 +105,11 @@ namespace swgtk
 		return result;
 	}
 
-	void App::Run(const std::function<bool(Scene&)>& createFunc,
-			const std::function<bool(Scene&, float)>& updateFunc,
-			const std::optional<std::function<void(Scene&)>>& destroyFunc) {
+	void App::RunLuaGame(const std::filesystem::path& path) {
+		RunGame<LuaGame>(path);
+	}
 
-		_currentScene = std::make_unique<Scene>(this, createFunc, updateFunc, destroyFunc);
-
+	void App::Run() {
 		if(!_renderer->PrepareDevice(_window)) {
 			DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
 			return;

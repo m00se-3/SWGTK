@@ -49,6 +49,7 @@ target_link_libraries(
 	lua
 	sol2
 	fmt::fmt
+	gsl::gsl-lite-v1
 )
 
 target_sources(

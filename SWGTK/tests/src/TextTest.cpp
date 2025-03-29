@@ -1,7 +1,7 @@
 #include "swgtk/Utility.hpp"
 #include <TextTest.hpp>
+#include <swgtk/App.hpp>
 #include <Project.hpp>
-#include <swgtk/Simple2DRenderer.hpp>
 
 namespace swgtk {
 	bool TextTest::Create(Scene& scene) {
@@ -22,7 +22,7 @@ namespace swgtk {
 		return true;
 	}
 
-	bool TextTest::Update(const float dt) {
+	bool TextTest::Update([[maybe_unused]] Scene& s, const float dt) {
 		// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers) - Reason: It's pointless to create constants for this test.
 
 		_mouse.pos = _app->GetMousePos();
@@ -61,11 +61,6 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
 	constexpr auto h = 600;
 
 	if(swgtk::App app; app.InitGraphics("Text Test", w, h, swgtk::Simple2DRenderer::Create())) {
-		swgtk::TextTest test;
-
-		app.Run(
-			[&test](swgtk::Scene& sc){ return test.Create(sc); },
-			[&test](swgtk::Scene&, const float dt) { return test.Update(dt); }
-		);
+		app.RunGame<swgtk::TextTest>();
 	}
 }

@@ -32,10 +32,15 @@ namespace swgtk {
 		App& operator=(const App&) = delete;
 		App& operator=(App&&) = delete;
 		~App();
-		
-		void Run(const std::function<bool(Scene&)>& createFunc,
-			const std::function<bool(Scene&, float)>& updateFunc,
-			const std::optional<std::function<void(Scene&)>>& destroyFunc = std::nullopt);
+
+		template<std::derived_from<Scene::Node> T, typename... Args>
+		constexpr void RunGame(Args&&... args) {
+			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<T>(std::forward<Args>(args)...));
+			Run();
+		}
+
+		void RunLuaGame(const std::filesystem::path& path);
+
 		bool EventsAndTimeStep();
 		void CloseApp();
 		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, const std::shared_ptr<RendererBase>& renderPtr);
@@ -119,6 +124,8 @@ namespace swgtk {
 #endif // __EMSCRIPTEN__
 
 	private:
+		void Run();
+
 		using timePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
 		SDL_Window* _window = nullptr;

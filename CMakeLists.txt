@@ -96,6 +96,7 @@ CPMAddPackage(
 )
 
 CPMAddPackage("gh:fmtlib/fmt#11.1.2")
+CPMAddPackage("gh:gsl-lite/gsl-lite@0.42.0")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")

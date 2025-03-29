@@ -1,14 +1,14 @@
 #ifndef SWGTK_SCENE_HPP
 #define SWGTK_SCENE_HPP
 
-#include "swgtk/RendererBase.hpp"
+#include <swgtk/RendererBase.hpp>
+
 #include <concepts>
-#include <optional>
-#include <swgtk/Simple2DRenderer.hpp>
 
 #include <sol/sol.hpp>
-#include <functional>
+#include <gsl/gsl-lite.hpp>
 #include <memory>
+#include <filesystem>
 
 namespace swgtk
 {
@@ -36,32 +36,25 @@ namespace swgtk
 
 		class Node {
 		public:
-			Node(const Node&) = default;
-			Node(Node&&) = delete;
-			Node& operator=(const Node&) = default;
-			Node& operator=(Node&&) = delete;
-			Node(
-				const std::function<bool(Scene&)>& cr,
-				const std::function<bool(Scene&, float)>& up,
-				const std::optional<std::function<void(Scene&)>>& ds =
-					std::nullopt)
-				: _createFunc(cr), _updateFunc(up), _destroyFunc(ds) {}
+			constexpr Node() = default;
+			constexpr Node(const Node&) = default;
+			constexpr Node(Node&&) = delete;
+			constexpr Node& operator=(const Node&) = default;
+			constexpr Node& operator=(Node&&) = delete;
+
+			constexpr explicit Node(const std::shared_ptr<Node>& parent) : _parent(parent) {}
 
 			virtual constexpr ~Node() = default;
 
-			[[nodiscard]] constexpr bool Create(this auto&& self, Scene& scene) { return self._createFunc(scene); }
-			[[nodiscard]] constexpr bool Update(this auto&& self, Scene& scene, float dt) { return self._updateFunc(scene, dt); }
-			constexpr void Destroy(this auto&& self, Scene& scene) { if(self._destroyFunc) { (self._destroyFunc.value())(scene); } }
+			[[nodiscard]] virtual constexpr bool Create(Scene& scene) = 0;
+			[[nodiscard]] virtual constexpr bool Update(Scene& scene, float dt) = 0;
+			virtual constexpr void Destroy(Scene&) {}
 
 		private:
-			std::function<bool(Scene&)> _createFunc;
-			std::function<bool(Scene&, float)> _updateFunc;
-			std::optional<std::function<void(Scene&)>> _destroyFunc;
+			std::shared_ptr<Node> _parent;
 		};
 
-		Scene(App* parent, const std::function<bool(Scene&)>& createFunc,
-		      const std::function<bool(Scene&, float)>& updateFunc,
-		      const std::optional<std::function<void(Scene&)>>& destroyFunc = std::nullopt);
+		Scene(const gsl::not_null<App*>& parent, std::shared_ptr<Node>&& node);
 
 		[[nodiscard]] bool Create();
 		[[nodiscard]] bool Update(const float dt);
@@ -74,10 +67,23 @@ namespace swgtk
 		[[nodiscard]] constexpr auto AppRenderer(this auto&& self) { return RenderImpl<T>(self._renderer); }
 
 	private:
-		App* _parent = nullptr;
+		gsl::not_null<App*> _parent;
 		std::shared_ptr<RendererBase> _renderer;
-		std::unique_ptr<Node> _root;
+		std::shared_ptr<Node> _root;
 
+	};
+
+	class LuaGame final : public Scene::Node {
+	public:
+		explicit LuaGame(const std::filesystem::path& path);
+
+		[[nodiscard]] bool Create(Scene& scene) override;
+		[[nodiscard]] bool Update(Scene& scene, float dt) override;
+
+	private:
+		sol::state _luaState;
+		std::function<bool(Scene&)> _createFunc;
+		std::function<bool(Scene&, float)> _updateFunc;
 	};
 
 }
