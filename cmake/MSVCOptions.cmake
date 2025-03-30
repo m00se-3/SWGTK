@@ -12,9 +12,8 @@ list(
 
 	"/Wall"
 	"/permissive-"
-    "/sdl"    
-    "/QSpectre"
-    "/QSpectre-load"
+  "/sdl"    
+	"/GS"
 )
 
 list(

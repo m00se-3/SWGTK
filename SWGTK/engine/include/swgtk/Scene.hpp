@@ -42,7 +42,7 @@ namespace swgtk
 			constexpr Node& operator=(const Node&) = default;
 			constexpr Node& operator=(Node&&) = delete;
 
-			constexpr explicit Node(const std::shared_ptr<Node>& parent) : _parent(parent) {}
+			explicit Node(const std::shared_ptr<Node>& parent) : _parent(parent) {}
 
 			virtual constexpr ~Node() = default;
 

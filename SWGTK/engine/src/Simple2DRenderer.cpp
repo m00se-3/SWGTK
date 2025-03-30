@@ -170,6 +170,10 @@ namespace swgtk
 
 	void Simple2DRenderer::InitLua(sol::state& lua) {
 		
+		// Type definitions
+
+		// SDL_Vertex
+
 		auto vertex = lua.new_usertype<SDL_Vertex>(
 		"Vertex2D", "position", &SDL_Vertex::position, "color", &SDL_Vertex::color, "tex_coord", &SDL_Vertex::tex_coord
 		);
@@ -181,6 +185,30 @@ namespace swgtk
 					.tex_coord=tex.value_or(SDL_FPoint{}) };
 			};
 
+		// swgtk::Texture
+
+		auto texture = lua.new_usertype<Texture>("Texture", sol::constructors<Texture(), Texture(SDL_Texture*)>());
+
+		texture["get"] = [](Texture& self) -> SDL_Texture* { return *self; };
+
+		texture["SetBlendMode"] = &Texture::SetBlendMode;
+
+		texture["SetTint"] = [](Texture& self, const float r, const float g, const float b, const sol::optional<float> a) {
+				self.SetTint(r, g, b, a.value_or(1.0f));
+			};
+
+		texture["SetScaleMode"] = &Texture::SetScaleMode;
+
+		texture["GetBlendMode"] = &Texture::GetBlendMode;
+
+		texture["GetTint"] = &Texture::GetTint;
+
+		texture["GetScaleMode"] = &Texture::GetScaleMode;
+
+		texture["GetSize"] = &Texture::GetSize;
+
+		// Renderer function definitions
+
 		lua["SetDrawColor"] = [this](const sol::optional<float> r, const sol::optional<float> g,
 		                             const sol::optional<float> b, const sol::optional<float> a) {
 				SetDrawColor(
@@ -190,6 +218,8 @@ namespace swgtk
 					a.value_or(RendererBase::defaultAlphaFloat)
 					);
 			};
+
+		lua["SetDrawTarget"] = [this](const sol::optional<SDL_Texture*> target) { SetDrawTarget(target.value_or(nullptr)); };
 
 		lua["DrawTexture"] = [this](SDL_Texture *texture, const sol::optional<SDL_FRect> &src,
 		                            const sol::optional<SDL_FRect> &dest) {
@@ -214,6 +244,10 @@ namespace swgtk
 
 		lua["CreateTextureFromSurface"] = [this] (const Surface &surface) -> Texture {
 			return CreateTextureFromSurface(surface);
+		};
+
+		lua["GetDrawColor"] = [this] () -> SDL_FColor {
+			return GetDrawColor();
 		};
 
 		lua["DrawGeometry"] = [this] (SDL_Texture* texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) {

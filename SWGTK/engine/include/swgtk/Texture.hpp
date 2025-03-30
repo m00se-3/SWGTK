@@ -25,6 +25,12 @@ namespace swgtk
 		[[nodiscard]] auto Get(this auto&& self) { return self._texture; }
 
 		void SetBlendMode(const SDL_BlendMode mode) const { SDL_SetTextureBlendMode(_texture.get(), mode); }
+
+		void SetTint(const SDL_FColor& color) const {
+			SDL_SetTextureColorModFloat(_texture.get(), color.r, color.g, color.b);
+			SDL_SetTextureAlphaModFloat(_texture.get(), color.a);
+		}
+
 		void SetTint(const float r, const float g, const float b, const float a) const {
 			SDL_SetTextureColorModFloat(_texture.get(), r, g, b);
 			SDL_SetTextureAlphaModFloat(_texture.get(), a);

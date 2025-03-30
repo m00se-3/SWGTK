@@ -170,7 +170,7 @@ namespace swgtk
 	LuaGame::LuaGame(const std::filesystem::path& path) {
 		if(std::filesystem::exists(path)) {
 
-			if(const sol::protected_function_result file = _luaState.script_file(path); file.valid())
+			if(const sol::protected_function_result file = _luaState.script_file(path.string()); file.valid())
 			{
 				sol::optional<std::function<bool(Scene&)>> cr = _luaState["OnCreate"];
 				sol::optional<std::function<bool(Scene&, float)>> up = _luaState["OnUpdate"];
