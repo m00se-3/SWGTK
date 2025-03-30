@@ -116,6 +116,8 @@ namespace swgtk
 		}
 
 		SDL_ShowWindow(_window);
+		_fonts.LoadDefaultFont();
+		_renderer->SetFont(_fonts.GetDefaultFont());
 
 		if (!_currentScene->Create())	{
 			return;

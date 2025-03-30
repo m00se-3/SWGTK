@@ -7,6 +7,7 @@
 
 extern "C" {
     struct SDL_Window;
+    struct TTF_Font;
 }
 
 namespace swgtk {
@@ -44,7 +45,7 @@ namespace swgtk {
          * to the screen.
          * 
          */
-        constexpr virtual void BufferPresent() = 0;
+        virtual void BufferPresent() = 0;
 
         /**
          * @brief Binds your SDL_Window object to the rendering backend and prepares the TTF_Text implementation.
@@ -55,8 +56,9 @@ namespace swgtk {
          */
         [[nodiscard]] virtual bool PrepareDevice(SDL_Window* window) = 0;
 
-        [[nodiscard]] constexpr virtual bool IsDeviceInitialized() const = 0;
-        constexpr virtual void SetBackgroundColor(const SDL_FColor&) = 0;
+        [[nodiscard]] virtual bool IsDeviceInitialized() const = 0;
+        virtual void SetBackgroundColor(const SDL_FColor&) = 0;
+        virtual void SetFont(TTF_Font* font) = 0;
 
         /**
          * @brief Destroy all the resources allocated by the rendering backend.

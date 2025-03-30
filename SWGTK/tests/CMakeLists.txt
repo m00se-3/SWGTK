@@ -5,14 +5,11 @@ target_link_options(Test_TextSample PRIVATE ${LinkerFlags})
 
 target_compile_features(Test_TextSample PRIVATE cxx_std_23)
 
-set_target_properties(Test_TextSample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${SWGTK_BINARY_DIR}/tests)
-
 target_compile_definitions(
 	Test_TextSample 
 
 	PRIVATE 
 
-	SWGTK_ASSETS="$ENV{Assets_Dir}"
 	SWGTK_CONFIG="$ENV{Config_Dir}"
 )
 

@@ -36,6 +36,8 @@ namespace swgtk
 		void SetBackgroundColor(const SDL_FColor& color) override { SetDrawColor(color); }
 		[[nodiscard]] constexpr bool IsDeviceInitialized() const override { return _render != nullptr; }
 
+		void SetFont(TTF_Font* font) override { _currentFont = font; }
+
 		[[nodiscard]] bool PrepareDevice(SDL_Window* window) override;
 		void DestroyDevice() override;
 
@@ -60,7 +62,7 @@ namespace swgtk
 		 * @param pos - Destination rectangle
 		 * @param color
 		 */
-		void DrawPlainText(std::string_view text, TTF_Font *font, const SDL_FRect &pos,
+		void DrawPlainText(std::string_view text, const SDL_FRect &pos,
 		                   const SDL_Color &color = SDL_Color{
 			                   .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                   }) const;
@@ -69,39 +71,39 @@ namespace swgtk
 			Combines SDL_ttf's API with SDL_Textures to preload text renderables as Textures. These can be rotated and tinted as needed.
 		*/
 
-		[[nodiscard]] Texture LoadPlainText(std::string_view text, TTF_Font *font,
+		[[nodiscard]] Texture LoadPlainText(std::string_view text,
 		                                    const SDL_Color &color = SDL_Color{
 			                                    .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                                    }) const;
 
-		[[nodiscard]] Texture LoadBlendedText(std::string_view text, TTF_Font *font,
+		[[nodiscard]] Texture LoadBlendedText(std::string_view text,
 		                                      const SDL_Color &color = SDL_Color{
 			                                      .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                                      }) const;
 
-		[[nodiscard]] Texture LoadShadedText(std::string_view text, TTF_Font *font,
+		[[nodiscard]] Texture LoadShadedText(std::string_view text,
 		                                     const SDL_Color &bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt},
 		                                     const SDL_Color &fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const;
 
-		[[nodiscard]] Texture LoadLCDText(std::string_view text, TTF_Font *font,
+		[[nodiscard]] Texture LoadLCDText(std::string_view text,
 		                                  const SDL_Color &bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt},
 		                                  const SDL_Color &fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const;
 
-		[[nodiscard]] Texture LoadPlainWrapText(std::string_view text, TTF_Font *font, int wrapLen = 0,
+		[[nodiscard]] Texture LoadPlainWrapText(std::string_view text, int wrapLen = 0,
 		                                        const SDL_Color &color = SDL_Color{
 			                                        .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                                        }) const;
 
-		[[nodiscard]] Texture LoadBlendedWrapText(std::string_view text, TTF_Font *font, int wrapLen = 0,
+		[[nodiscard]] Texture LoadBlendedWrapText(std::string_view text, int wrapLen = 0,
 		                                          const SDL_Color &color = SDL_Color{
 			                                          .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                                          }) const;
 
-		[[nodiscard]] Texture LoadShadedWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
+		[[nodiscard]] Texture LoadShadedWrapText(std::string_view text, int wrapLen = 0,
 		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
 		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
-		[[nodiscard]] Texture LoadLCDWrapText(std::string_view text, TTF_Font* font, int wrapLen = 0,
+		[[nodiscard]] Texture LoadLCDWrapText(std::string_view text, int wrapLen = 0,
 		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
 		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
@@ -134,6 +136,7 @@ namespace swgtk
 
 	private:
 		SDL_Renderer* _render = nullptr;
+		TTF_Font* _currentFont = nullptr;
     };
 }
 

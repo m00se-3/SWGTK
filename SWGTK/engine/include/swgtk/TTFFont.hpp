@@ -2,14 +2,14 @@
 #define SWGTK_TTF_FONT_HPP
 
 #include <filesystem>
-#include <unordered_map>
+#include <map>
 #include <cstdint>
 #include "SDL3_ttf/SDL_ttf.h"
 
 namespace swgtk
 {
-    enum class FontStyle : int32_t {
-        None = 32,
+    enum class FontStyle : uint32_t {
+        None = 32u,
         Normal = TTF_STYLE_NORMAL,
         Bold = TTF_STYLE_BOLD,
         Italic = TTF_STYLE_ITALIC,
@@ -26,42 +26,47 @@ namespace swgtk
 
     constexpr static float defaultFontSize = 16.0f;
 
-    /**
-     * @brief A FontGroup represents a single font family. (e.g. Sans, Roboto, etc.)
-     * This class contains an unordered_map of styles to use when rendering.(See enum class FontStyle)
-     * 
-     */
+    
     class FontGroup {
     public:
-        void AddFont(const std::filesystem::path& filename, FontStyle styleMask);
+        void LoadDefaultFont();
+        void AddFont(const std::filesystem::path& filename);
         void ClearFonts() const;
-        [[nodiscard]] bool SetFontSize(const FontStyle style, const float size) const {
-            if(_ttfFonts.contains(style)) {
-                return TTF_SetFontSize(_ttfFonts.at(style), size);
+
+        [[nodiscard]] TTF_Font* GetDefaultFont() const { return _ttfFonts.at("Natural Mono-Regular"); }
+
+        static void SetFontStyle(TTF_Font* font, const FontStyle style) {
+            TTF_SetFontStyle(font, std::to_underlying(style));
+        }
+
+        [[nodiscard]] static FontStyle GetFontStyle(TTF_Font* font) { return FontStyle{ TTF_GetFontStyle(font)}; }
+
+        [[nodiscard]] bool SetFontSize(const std::string& name, const float size) const {
+            if(_ttfFonts.contains(name)) {
+                return TTF_SetFontSize(_ttfFonts.at(name), size);
             }
 
             return false;
          }
 
          void SetAllFontSizes(const float size) const {
-            for(const auto&[fst, snd] : _ttfFonts) {
-                TTF_SetFontSize(snd, size);
+            for(const auto&[fst, ptr] : _ttfFonts) {
+                TTF_SetFontSize(ptr, size);
             }
          }
 
         constexpr void SetDefaultFontSize(const float size) { _defaultFontSize = size; };
 
-        [[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle mask) {
-            if (self._ttfFonts.contains(mask))
-            {
-                return self._ttfFonts.at(mask);
+        [[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, const std::string& name) {
+            if (self._ttfFonts.contains(name)) {
+                return self._ttfFonts.at(name);
             }
 
             return nullptr;
         }
 
     private:
-        std::unordered_map<FontStyle, TTF_Font*> _ttfFonts;
+        std::map<std::string, TTF_Font*> _ttfFonts;
         float _defaultFontSize = defaultFontSize;
     };
 }

@@ -10,14 +10,11 @@ namespace swgtk {
 		_app = scene.AppRoot();
 		_render = scene.AppRenderer<Simple2DRenderer>();
 
-		const std::filesystem::path fontsDir = std::filesystem::path{project::AssetsDir()} / "fonts" / "roboto";
+		_mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
 
-		_app->AddFont(fontsDir / "Roboto-Medium.ttf", FontStyle::Normal);
-		_app->AddFont(fontsDir / "Roboto-Bold.ttf", FontStyle::Bold);
-
-		_mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", _app->GetFont(FontStyle::Normal), 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
+		FontGroup::SetFontStyle(_app->GetDefaultFont(), FontStyle::Underlined);
 		
-		_background = _render->LoadLCDWrapText("EAT!\nSLEEP!\nCODE!", _app->GetFont(FontStyle::Bold));
+		_background = _render->LoadLCDWrapText("EAT!\nSLEEP!\nCODE!");
 
 		return true;
 	}

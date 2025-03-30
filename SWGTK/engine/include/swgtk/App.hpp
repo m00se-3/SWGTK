@@ -47,8 +47,12 @@ namespace swgtk {
 
 		static void InitLua(sol::state& lua);
 
+		[[nodiscard]] TTF_Font* GetDefaultFont(this auto&& self) { return self._fonts.GetDefaultFont(); }
 		void AddFont(this auto&& self, const std::filesystem::path& path, FontStyle style) { self._fonts.AddFont(path, style); }
 		[[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle style) { return self._fonts.GetFont(style); }
+		static void SetFontStyle(TTF_Font* font, const FontStyle style) { FontGroup::SetFontStyle(font, style); }
+		[[nodiscard]] static FontStyle GetFontStyle(TTF_Font* font) { return FontGroup::GetFontStyle(font); }
+
 		[[nodiscard]] std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 

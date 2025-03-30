@@ -5,6 +5,14 @@ target_link_options(SWGTK PRIVATE ${LinkerFlags})
 
 target_compile_features(SWGTK PRIVATE cxx_std_23)
 
+target_compile_definitions(
+	SWGTK 
+	
+	PUBLIC 
+	
+	SWGTK_DEFAULT_FONT_DIR="${CMAKE_CURRENT_LIST_DIR}/default_font"
+)
+
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 	target_compile_definitions(SWGTK PRIVATE _DEBUG)
 endif()
