@@ -1,6 +1,10 @@
 #include <swgtk/App.hpp>
 #include <swgtk/Utility.hpp>
 
+#include <swgtk/Simple2DRenderer.hpp>
+#include <swgtk/LuaGame.hpp>
+
+
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
@@ -40,7 +44,7 @@ namespace swgtk
 		return false;
 	}
 
-	bool App::EventsAndTimeStep() {
+	void App::EventsAndTimeStep() {
 		SDL_Event e;
 
 		ResetScroll();
@@ -90,46 +94,41 @@ namespace swgtk
 			SetMouseState(mouse);
 		}
 
-		_currentFrameTime = std::chrono::steady_clock::now();
-
-		const auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
-		_lastFrameTime = _currentFrameTime;
-		
-		// std::ratio<1,1> converts the timeDiff duration into seconds.
-		const auto deltaTime = std::chrono::duration<float, std::ratio<1,1>>(timeDiff).count();
-
-		const bool result = _currentScene->Update(deltaTime);
-
-		_renderer->BufferPresent();
-
-		return result;
+		_gameTimer.UpdateTime();
 	}
 
-	void App::RunLuaGame(const std::filesystem::path& path) {
-		RunGame<LuaGame>(path);
+	void App::RunLuaGame(const std::filesystem::path& path, sol::state& lua) {
+		_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<LuaGame>(path, lua));
+
+		if(InitializeGame()) {
+
+		}
 	}
 
-	void App::Run() {
+	bool App::InitializeGame() {
 		if(!_renderer->PrepareDevice(_window)) {
 			DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
-			return;
+			return false;
 		}
 
 		SDL_ShowWindow(_window);
 		_fonts.LoadDefaultFont();
-		_renderer->SetFont(_fonts.GetDefaultFont());
+		_renderer->SetFont(_fonts.GetDefaultFont().ptr);
 
-		if (!_currentScene->Create())	{
-			return;
-		}
+		return _currentScene->Create();
+	}
 
+	void App::Run() {
 #ifdef __EMSCRIPTEN__
 		emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);
 
 #else
 
-		while (_running && EventsAndTimeStep()) {
+		bool gameOk = true;
 
+		while (_running && gameOk) {
+			EventsAndTimeStep();
+			gameOk = GameTick();
 		}
 
 #endif // __EMSCRIPTEN__
@@ -153,57 +152,193 @@ namespace swgtk
 	}
 #endif
 
-	void App::InitLua(sol::state& lua) {
+	void App::InitLua(sol::state& lua, const bool acceptUserInput) {
 		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
 		// Define useful enums and types.
 
-		{
-			lua.new_enum<FontStyle>("FontStyle",
+		auto SDL_Point_Type = lua.new_usertype<SDL_Point>(
+		"Vec2i", "x", &SDL_Point::x, "y", &SDL_Point::y
+		);
+
+		SDL_Point_Type["new"] = [](const sol::optional<int> nx, const sol::optional<int> ny) -> SDL_Point {
+				return SDL_Point{ nx.value_or(0), ny.value_or(0) };
+			};
+
+		auto SDL_FPoint_Type = lua.new_usertype<SDL_FPoint>(
+		"Vec2f", "x", &SDL_FPoint::x, "y", &SDL_FPoint::y
+		);
+
+		SDL_FPoint_Type["new"] = [](const sol::optional<float> nx, const sol::optional<float> ny) -> SDL_FPoint {
+			return SDL_FPoint{ nx.value_or(0.0f), ny.value_or(0.0f) };
+		};
+
+		auto SDL_Rect_Type = lua.new_usertype<SDL_Rect>(
+		"Recti",	"x", &SDL_Rect::x, "y", &SDL_Rect::y, "w", &SDL_Rect::w, "h", &SDL_Rect::h
+		);
+
+		SDL_Rect_Type["new"] = [](const sol::optional<int> nx, const sol::optional<int> ny, const sol::optional<int> nw, const sol::optional<int> nh) -> SDL_Rect {
+				return SDL_Rect{ nx.value_or(0), ny.value_or(0), nw.value_or(0), nh.value_or(0) };
+			};
+
+		auto SDL_FRect_Type = lua.new_usertype<SDL_FRect>(
+		"Rectf", "x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
+		);
+
+		SDL_FRect_Type["new"] = [](const sol::optional<float> nx, const sol::optional<float> ny, const sol::optional<float> nw, const sol::optional<float> nh) -> SDL_FRect {
+				return SDL_FRect{ nx.value_or(0.0f), ny.value_or(0.0f), nw.value_or(0.0f), nh.value_or(0.0f) };
+			};
+
+		if(acceptUserInput) {
+			lua.new_enum<MButton>("MButton",
 				{
-					std::make_pair("Normal", FontStyle::Normal),
-					std::make_pair("Bold", FontStyle::Bold),
-					std::make_pair("Italic", FontStyle::Italic),
-					std::make_pair("Underlined", FontStyle::Underlined),
-					std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
-					std::make_pair("Bold_Underlined", FontStyle::Bold_Underlined),
-					std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
-					std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
+					std::make_pair("None", MButton::None),
+					std::make_pair("Left", MButton::Left),
+					std::make_pair("Middle", MButton::Middle),
+					std::make_pair("Right", MButton::Right),
+					std::make_pair("Ex1", MButton::Ex1),
+					std::make_pair("Ex2", MButton::Ex2),
+				}
+			);
+
+			lua.new_enum<KeyMod>("KeyMod",
+				{
+					std::make_pair("None", KeyMod::None),
+					std::make_pair("LShift", KeyMod::LShift),
+					std::make_pair("RShift", KeyMod::RShift),
+					std::make_pair("LCtrl", KeyMod::LCtrl),
+					std::make_pair("RCtrl", KeyMod::RCtrl),
+					std::make_pair("LAlt", KeyMod::LAlt),
+					std::make_pair("RAlt", KeyMod::RAlt),
+					std::make_pair("NumLock", KeyMod::NumLock),
+					std::make_pair("Caps", KeyMod::Caps),
+					std::make_pair("Ctrl", KeyMod::Ctrl),
+					std::make_pair("Shift", KeyMod::Shift),
+					std::make_pair("Alt", KeyMod::Alt),
+				}
+			);
+
+			lua.new_enum<KeyCode>("KeyValue",
+				{
+					std::make_pair("Unknown", KeyCode::Unknown), std::make_pair("Back", KeyCode::Back), std::make_pair("Tab", KeyCode::Tab), std::make_pair("Enter", KeyCode::Enter),
+					std::make_pair("Esc", KeyCode::Esc), std::make_pair("Space", KeyCode::Space), std::make_pair("Exlaim", KeyCode::Exlaim), std::make_pair("DblQuote", KeyCode::DblQuote),
+					std::make_pair("Hash", KeyCode::Hash), std::make_pair("Dollar", KeyCode::Dollar), std::make_pair("Prct", KeyCode::Prct), std::make_pair("Amp", KeyCode::Amp),
+					std::make_pair("Quote", KeyCode::Quote), std::make_pair("Ast", KeyCode::Ast), std::make_pair("Plus", KeyCode::Plus), std::make_pair("Comma", KeyCode::Comma),
+					std::make_pair("Minus", KeyCode::Minus), std::make_pair("Period", KeyCode::Period), std::make_pair("FSlash", KeyCode::FSlash), std::make_pair("R0", KeyCode::R0),
+					std::make_pair("R1", KeyCode::R1), std::make_pair("R2", KeyCode::R2), std::make_pair("R3", KeyCode::R3), std::make_pair("R4", KeyCode::R4),
+					std::make_pair("R5", KeyCode::R5), std::make_pair("R6", KeyCode::R6), std::make_pair("R7", KeyCode::R7), std::make_pair("R8", KeyCode::R8),
+					std::make_pair("R9", KeyCode::R9), std::make_pair("Colon", KeyCode::Colon), std::make_pair("SemiColon", KeyCode::SemiColon), std::make_pair("Less", KeyCode::Less),
+					std::make_pair("Equals", KeyCode::Equals), std::make_pair("Greater", KeyCode::Greater), std::make_pair("Question", KeyCode::Question), std::make_pair("At", KeyCode::At),
+					std::make_pair("LBracket", KeyCode::LBracket), std::make_pair("BSlash", KeyCode::BSlash), std::make_pair("RBracket", KeyCode::RBracket), std::make_pair("Caret", KeyCode::Caret),
+					std::make_pair("UnderScore", KeyCode::UnderScore), std::make_pair("BQuote", KeyCode::BQuote), std::make_pair("A", KeyCode::A), std::make_pair("B", KeyCode::B),
+					std::make_pair("C", KeyCode::C), std::make_pair("D", KeyCode::D), std::make_pair("E", KeyCode::E), std::make_pair("F", KeyCode::F),
+					std::make_pair("G", KeyCode::G), std::make_pair("H", KeyCode::H), std::make_pair("I", KeyCode::I), std::make_pair("J", KeyCode::J),
+					std::make_pair("K", KeyCode::K), std::make_pair("L", KeyCode::L), std::make_pair("M", KeyCode::M), std::make_pair("N", KeyCode::N),
+					std::make_pair("O", KeyCode::O), std::make_pair("P", KeyCode::P), std::make_pair("Q", KeyCode::Q), std::make_pair("R", KeyCode::R),
+					std::make_pair("S", KeyCode::S), std::make_pair("T", KeyCode::T), std::make_pair("U", KeyCode::U), std::make_pair("V", KeyCode::V),
+					std::make_pair("W", KeyCode::W), std::make_pair("X", KeyCode::X), std::make_pair("Y", KeyCode::Y), std::make_pair("Z", KeyCode::Z),
+					std::make_pair("Delete", KeyCode::Delete),
+				}
+			);
+
+			lua.new_enum<LayoutCode>("KeyLCode",
+				{
+					std::make_pair("Unknown", LayoutCode::Unknown), std::make_pair("A", LayoutCode::A), std::make_pair("B", LayoutCode::B),
+					std::make_pair("C", LayoutCode::C), std::make_pair("D", LayoutCode::D), std::make_pair("E", LayoutCode::E),
+					std::make_pair("F", LayoutCode::F), std::make_pair("G", LayoutCode::G), std::make_pair("H", LayoutCode::H),
+					std::make_pair("I", LayoutCode::I), std::make_pair("J", LayoutCode::J), std::make_pair("K", LayoutCode::K),
+					std::make_pair("L", LayoutCode::L), std::make_pair("M", LayoutCode::M), std::make_pair("N", LayoutCode::N),
+					std::make_pair("O", LayoutCode::O), std::make_pair("P", LayoutCode::P), std::make_pair("Q", LayoutCode::Q),
+					std::make_pair("R", LayoutCode::R), std::make_pair("S", LayoutCode::S), std::make_pair("T", LayoutCode::T),
+					std::make_pair("U", LayoutCode::U), std::make_pair("V", LayoutCode::V), std::make_pair("W", LayoutCode::W),
+					std::make_pair("X", LayoutCode::X), std::make_pair("Y", LayoutCode::Y), std::make_pair("Z", LayoutCode::Z),
+					std::make_pair("R1", LayoutCode::R1), std::make_pair("R2", LayoutCode::R2), std::make_pair("R3", LayoutCode::R3),
+					std::make_pair("R4", LayoutCode::R4), std::make_pair("R5", LayoutCode::R5), std::make_pair("R6", LayoutCode::R6),
+					std::make_pair("R7", LayoutCode::R7), std::make_pair("R8", LayoutCode::R8), std::make_pair("R9", LayoutCode::R9),
+					std::make_pair("R0", LayoutCode::R0), std::make_pair("Enter", LayoutCode::Enter), std::make_pair("Esc", LayoutCode::Esc),
+					std::make_pair("Back", LayoutCode::Back), std::make_pair("Tab", LayoutCode::Tab), std::make_pair("Space", LayoutCode::Space),
+					std::make_pair("Minus", LayoutCode::Minus), std::make_pair("Equals", LayoutCode::Equals), std::make_pair("LBracket", LayoutCode::LBracket),
+					std::make_pair("RBracket", LayoutCode::RBracket), std::make_pair("BSlash", LayoutCode::BSlash), std::make_pair("SemiColon", LayoutCode::SemiColon),
+					std::make_pair("Apostrophe", LayoutCode::Apostrophe), std::make_pair("Comma", LayoutCode::Comma), std::make_pair("Period", LayoutCode::Period),
+					std::make_pair("FSlash", LayoutCode::FSlash), std::make_pair("CapsLock", LayoutCode::CapsLock), std::make_pair("F1", LayoutCode::F1),
+					std::make_pair("F2", LayoutCode::F2), std::make_pair("F3", LayoutCode::F3), std::make_pair("F4", LayoutCode::F4),
+					std::make_pair("F5", LayoutCode::F5), std::make_pair("F6", LayoutCode::F6), std::make_pair("F7", LayoutCode::F7),
+					std::make_pair("F8", LayoutCode::F8), std::make_pair("F9", LayoutCode::F9), std::make_pair("F10", LayoutCode::F10),
+					std::make_pair("F11", LayoutCode::F11), std::make_pair("F12", LayoutCode::F12), std::make_pair("PRTSCRN", LayoutCode::PrtScrn),
+					std::make_pair("ScrLock", LayoutCode::ScrLock), std::make_pair("Pause", LayoutCode::Pause), std::make_pair("Insert", LayoutCode::Insert),
+					std::make_pair("Home", LayoutCode::Home), std::make_pair("PgUp", LayoutCode::PgUp), std::make_pair("Delete", LayoutCode::Delete),
+					std::make_pair("End", LayoutCode::End), std::make_pair("PgDown", LayoutCode::PgDown), std::make_pair("Right", LayoutCode::Right),
+					std::make_pair("Left", LayoutCode::Left), std::make_pair("Down", LayoutCode::Down), std::make_pair("Up", LayoutCode::Up),
+					std::make_pair("NumLock", LayoutCode::NumLock), std::make_pair("KPDivide", LayoutCode::KPDivide), std::make_pair("KPMultiply", LayoutCode::KPMultiply),
+					std::make_pair("KPMinus", LayoutCode::KPMinus), std::make_pair("KPPlus", LayoutCode::KPPlus), std::make_pair("KPEnter", LayoutCode::KPEnter),
+					std::make_pair("KP1", LayoutCode::KP1), std::make_pair("KP2", LayoutCode::KP2), std::make_pair("KP3", LayoutCode::KP3),
+					std::make_pair("KP4", LayoutCode::KP4), std::make_pair("KP5", LayoutCode::KP5), std::make_pair("KP6", LayoutCode::KP6),
+					std::make_pair("KP7", LayoutCode::KP7), std::make_pair("KP8", LayoutCode::KP8), std::make_pair("KP9", LayoutCode::KP9),
+					std::make_pair("KP0", LayoutCode::KP0), std::make_pair("KPPeriod", LayoutCode::KPPeriod), std::make_pair("LCtrl", LayoutCode::LCtrl),
+					std::make_pair("LShift", LayoutCode::LShift), std::make_pair("LAlt", LayoutCode::LAlt), std::make_pair("RCtrl", LayoutCode::RCtrl),
+					std::make_pair("RShift", LayoutCode::RShift), std::make_pair("RAlt", LayoutCode::RAlt),
 				}
 			);
 		}
 
-		auto point = lua.new_usertype<SDL_Point>(
-		"Vec2i", "x", &SDL_Point::x, "y", &SDL_Point::y
-		);
+		auto App_Type = lua.new_usertype<App>("Host", "Timer", &App::_gameTimer);
 
-		point["new"] = [](sol::optional<int> nx, sol::optional<int> ny) -> SDL_Point {
-				return SDL_Point{ nx.value_or(0), ny.value_or(0) };
-			};
+		auto Timer_Type = lua.new_usertype<Timer>("GameTimer", sol::constructors<Timer()>());
+		lua["App"] = this;
 
-		auto pointf = lua.new_usertype<SDL_FPoint>(
-		"Vec2f", "x", &SDL_FPoint::x, "y", &SDL_FPoint::y
-		);
+		// Define functions for the application.
 
-		pointf["new"] = [](sol::optional<float> nx, sol::optional<float> ny) -> SDL_FPoint {
-			return SDL_FPoint{ nx.value_or(0.0f), ny.value_or(0.0f) };
-		};
+		Timer_Type["GetSeconds"] = &Timer::GetSeconds;
 
-		auto rect = lua.new_usertype<SDL_Rect>(
-		"Recti",	"x", &SDL_Rect::x, "y", &SDL_Rect::y, "w", &SDL_Rect::w, "h", &SDL_Rect::h
-		);
+		App_Type["IsAppRunning"] = [this] () -> bool { return _running; };
 
-		rect["new"] = [](sol::optional<int> nx, sol::optional<int> ny, sol::optional<int> nw, sol::optional<int> nh) -> SDL_Rect {
-				return SDL_Rect{ nx.value_or(0), ny.value_or(0), nw.value_or(0), nh.value_or(0) };
-			};
+		App_Type["EventsAndTimeStep"] = &App::EventsAndTimeStep;
 
-		auto rectf = lua.new_usertype<SDL_FRect>(
-		"Rectf", "x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
-		);
+		App_Type["CloseApp"] = &App::CloseApp;
 
-		rectf["new"] = [](sol::optional<float> nx, sol::optional<float> ny, sol::optional<float> nw, sol::optional<float> nh) -> SDL_FRect {
-				return SDL_FRect{ nx.value_or(0.0f), ny.value_or(0.0f), nw.value_or(0.0f), nh.value_or(0.0f) };
-			};
+		App_Type["GetWindowSize"] = &App::GetWindowSize;
+
+		if(acceptUserInput) {
+			App_Type["GetScrollX"] = &App::GetScrollX;
+
+			App_Type["GetScrollY"] = &App::GetScrollY;
+
+			App_Type["IsKeyPressed"] = &App::IsKeyPressed;
+
+			App_Type["IsKeyReleased"] = &App::IsKeyReleased;
+
+			App_Type["IsKeyHeld"] = &App::IsKeyHeld;
+
+			App_Type["IsButtonPressed"] = &App::IsButtonPressed;
+
+			App_Type["IsButtonReleased"] = &App::IsButtonReleased;
+
+			App_Type["IsButtonHeld"] = &App::IsButtonHeld;
+
+			App_Type["GetMouseClicks"] = &App::GetMouseClicks;
+
+			App_Type["GetKeyMods"] = &App::GetKeyMods;
+
+			App_Type["GetMouseX"] = &App::GetKeyMods;
+
+			App_Type["GetMouseY"] = &App::GetMouseY;
+
+			App_Type["GetMousePos"] = &App::GetMousePos;
+		}
+
+		// We don't need float variations of these values and functions, because Lua uses the same number type for both.
+
+		auto mathTable = lua.create_table("Math");
+
+		mathTable["pi"] = std::numbers::pi;
+		mathTable["pi2"] = math::pi2;
+
+		lua.set_function("radiansToDegrees", [] (const double radians) { return math::radiansToDegrees(radians); });
+		mathTable["radiansToDegrees"] = lua["radiansToDegrees"];
+
+		lua.set_function("degreesToRadians", [] (const double degrees) { return math::radiansToDegrees(degrees); });
+		mathTable["degreesToRadians"] = lua["degreesToRadians"];
+
 	}
 
 }

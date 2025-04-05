@@ -4,10 +4,15 @@
 #include <filesystem>
 #include <map>
 #include <cstdint>
+#include <utility>
+#include <ranges>
+#include <sol/state.hpp>
+
 #include "SDL3_ttf/SDL_ttf.h"
 
 namespace swgtk
 {
+    // Wrapper for TTF_STYLE_* enum.
     enum class FontStyle : uint32_t {
         None = 32u,
         Normal = TTF_STYLE_NORMAL,
@@ -24,49 +29,65 @@ namespace swgtk
         Italic_Strike = Italic | Strikethrough,
     };
 
-    constexpr static float defaultFontSize = 16.0f;
+    constexpr inline float defaultFontSize = 16.0f;
 
-    
+    /**
+        @brief A light wrapper for TTF_Font pointers. Made, primarily, for the Lua bindings,
+        but is also used in C++ code.
+     */
+    struct Font {
+        TTF_Font* ptr = nullptr;
+    };
+
+    /**
+        @brief This is the primary container class for SDL_ttf fonts.
+     */
     class FontGroup {
     public:
         void LoadDefaultFont();
+
+        // Load font from a .ttf file.
         void AddFont(const std::filesystem::path& filename);
+
+        // Used internally, do not call.
         void ClearFonts() const;
 
-        [[nodiscard]] TTF_Font* GetDefaultFont() const { return _ttfFonts.at("Natural Mono-Regular"); }
+        [[nodiscard]] Font GetDefaultFont() const { return _ttfFonts.at("Natural Mono-Regular"); }
 
-        static void SetFontStyle(TTF_Font* font, const FontStyle style) {
-            TTF_SetFontStyle(font, std::to_underlying(style));
+        void InitLua(sol::state& lua);
+
+        static void SetFontStyle(const Font font, const FontStyle style) {
+            TTF_SetFontStyle(font.ptr, std::to_underlying(style));
         }
 
-        [[nodiscard]] static FontStyle GetFontStyle(TTF_Font* font) { return FontStyle{ TTF_GetFontStyle(font)}; }
+        [[nodiscard]] static FontStyle GetFontStyle(const Font font) { return FontStyle{ TTF_GetFontStyle(font.ptr)}; }
 
         [[nodiscard]] bool SetFontSize(const std::string& name, const float size) const {
             if(_ttfFonts.contains(name)) {
-                return TTF_SetFontSize(_ttfFonts.at(name), size);
+                return TTF_SetFontSize(_ttfFonts.at(name).ptr, size);
             }
 
             return false;
          }
 
          void SetAllFontSizes(const float size) const {
-            for(const auto&[fst, ptr] : _ttfFonts) {
-                TTF_SetFontSize(ptr, size);
+            for(const auto& font : _ttfFonts | std::views::values) {
+                TTF_SetFontSize(font.ptr, size);
             }
          }
 
         constexpr void SetDefaultFontSize(const float size) { _defaultFontSize = size; };
 
-        [[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, const std::string& name) {
-            if (self._ttfFonts.contains(name)) {
-                return self._ttfFonts.at(name);
+        [[nodiscard]] constexpr Font GetFont(const std::string& name) const {
+            if (_ttfFonts.contains(name)) {
+                return _ttfFonts.at(name);
             }
 
-            return nullptr;
+            return Font{};
         }
 
     private:
-        std::map<std::string, TTF_Font*> _ttfFonts;
+        std::map<std::string, Font> _ttfFonts;
         float _defaultFontSize = defaultFontSize;
     };
 }

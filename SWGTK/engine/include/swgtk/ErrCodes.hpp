@@ -3,6 +3,7 @@
 
 namespace swgtk
 {
+	// Not sure if I'm keeping these yet.
 	enum class LuaError
 	{
 		Ok,

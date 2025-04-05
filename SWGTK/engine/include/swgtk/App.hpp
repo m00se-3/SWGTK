@@ -3,8 +3,8 @@
 
 #include "swgtk/Input.hpp"
 #include "swgtk/RendererBase.hpp"
+#include <swgtk/Timer.hpp>
 #include <SDL3/SDL_video.h>
-#include <chrono>
 #include <memory>
 
 #ifdef __EMSCRIPTEN__
@@ -20,10 +20,12 @@ extern "C" {
 }
 
 namespace swgtk {
+	/**
+	  @brief This class is the root manager of the SWGTK framework.
 
-	/*
-		This class is designed to handle SDL windows and events.
-	*/
+	  App is where the engine code lives. Your code is injected during initialization, and
+	  App manages the lifetime of your game classes. (See swgtk::Scene::Node for more details)
+	 */
 	class App {
 	public:
 		App() = default;
@@ -36,29 +38,43 @@ namespace swgtk {
 		template<std::derived_from<Scene::Node> T, typename... Args>
 		constexpr void RunGame(Args&&... args) {
 			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<T>(std::forward<Args>(args)...));
-			Run();
+
+			if(InitializeGame()) {
+				Run();
+			}
 		}
 
-		void RunLuaGame(const std::filesystem::path& path);
+		void RunLuaGame(const std::filesystem::path& path, sol::state& lua);
 
-		bool EventsAndTimeStep();
+		void EventsAndTimeStep();
+		[[nodiscard]] bool GameTick() const {
+
+			const bool result = _currentScene->Update(_gameTimer.GetSeconds());
+
+			_renderer->BufferPresent();
+
+			return result;
+		}
+
 		void CloseApp();
 		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, const std::shared_ptr<RendererBase>& renderPtr);
 
-		static void InitLua(sol::state& lua);
+		void InitLua(sol::state& lua, bool acceptUserInput = false);
 
-		[[nodiscard]] TTF_Font* GetDefaultFont(this auto&& self) { return self._fonts.GetDefaultFont(); }
-		void AddFont(this auto&& self, const std::filesystem::path& path, FontStyle style) { self._fonts.AddFont(path, style); }
-		[[nodiscard]] constexpr TTF_Font* GetFont(this auto&& self, FontStyle style) { return self._fonts.GetFont(style); }
-		static void SetFontStyle(TTF_Font* font, const FontStyle style) { FontGroup::SetFontStyle(font, style); }
-		[[nodiscard]] static FontStyle GetFontStyle(TTF_Font* font) { return FontGroup::GetFontStyle(font); }
+		[[nodiscard]] Font GetDefaultFont() const { return _fonts.GetDefaultFont(); }
+		void AddFont(const std::filesystem::path& path) { _fonts.AddFont(path); }
+		[[nodiscard]] constexpr Font GetFont(const std::string& path) const { return _fonts.GetFont(path); }
+		static void SetFontStyle(const Font font, const FontStyle style) { FontGroup::SetFontStyle(font, style); }
+		[[nodiscard]] static FontStyle GetFontStyle(const Font font) { return FontGroup::GetFontStyle(font); }
+
+		[[nodiscard]] FontGroup& GetFontHandle() { return _fonts; }
 
 		[[nodiscard]] std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
-		[[nodiscard]] std::pair<int, int> GetWindowSize(this auto&& self)	{
+		[[nodiscard]] std::pair<int, int> GetWindowSize() const {
 			int width{}, height{};
-			SDL_GetWindowSize(self._window, &width, &height);
+			SDL_GetWindowSize(_window, &width, &height);
 
 			return std::make_pair(width, height);
 		}
@@ -77,7 +93,7 @@ namespace swgtk {
 		[[nodiscard]] constexpr bool IsButtonPressed(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)).state == MButtonState::Pressed; }
 		[[nodiscard]] constexpr bool IsButtonReleased(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)).state == MButtonState::Released; }
 		[[nodiscard]] constexpr bool IsButtonHeld(MButton button) const { return static_cast<bool>(static_cast<uint32_t>(_input.mouseState.buttons) & static_cast<uint32_t>(button)); }
-		[[nodiscard]] constexpr uint8_t GetButtonClicks(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)).clicks; }
+		[[nodiscard]] constexpr uint8_t GetMouseClicks(MButton button) const { return _input.mouseEvents.at(static_cast<uint32_t>(button)).clicks; }
 		[[nodiscard]] constexpr auto GetMouseX() const { return _input.mouseState.x; }
 		[[nodiscard]] constexpr auto GetMouseY() const { return _input.mouseState.y; }
 		[[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{ _input.mouseState.x, _input.mouseState.y }; }
@@ -128,9 +144,8 @@ namespace swgtk {
 #endif // __EMSCRIPTEN__
 
 	private:
+		bool InitializeGame();
 		void Run();
-
-		using timePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
 		SDL_Window* _window = nullptr;
 		std::shared_ptr<RendererBase> _renderer;
@@ -138,10 +153,9 @@ namespace swgtk {
 
 		std::unique_ptr<Scene> _currentScene;
 		FontGroup _fonts;
+		Timer _gameTimer;
 
 		bool _running = true;
-
-		timePoint _lastFrameTime = std::chrono::steady_clock::now(), _currentFrameTime;
 	};
 }
 #endif // SWGTK_APP_HPP

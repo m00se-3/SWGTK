@@ -18,6 +18,9 @@
 #endif
 
 namespace swgtk {
+    /**
+        @brief A reference-counted RAII wrapper for the SDL_Surface type.
+     */
     class Surface {
         static void DestroySurface(SDL_Surface* surface) { SDL_DestroySurface(surface); };
         static constexpr uint8_t whiteColorValue = 255u;
@@ -63,6 +66,7 @@ namespace swgtk {
         std::shared_ptr<SDL_Surface> _surface;
     };
 
+    // A collection of math functions and pre-calculated values.
     namespace math {
         inline constexpr double pi2 = std::numbers::pi * 2.0;
         inline constexpr float pi2f = std::numbers::pi_v<float> * 2.0f;

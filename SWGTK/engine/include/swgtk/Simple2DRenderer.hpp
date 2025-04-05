@@ -43,13 +43,13 @@ namespace swgtk
 
 		[[nodiscard]] std::shared_ptr<RendererBase> GetRef() override { return shared_from_this(); }
 
-		void SetDrawColor(const float r, const float g, const float b, const float a = RendererBase::defaultAlphaFloat) const { SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
+		void SetDrawColor(const float r, const float g, const float b, const float a = defaultAlphaFloat) const { SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
         void SetDrawColor(const SDL_FColor& color = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) const {
 			SDL_SetRenderDrawColorFloat(_render, color.r, color.g, color.b, color.a);
 		}
 
-		void DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;		
-		void DrawTexture(SDL_Texture *texture, const std::optional<SDL_FRect> &src,
+		void DrawTexture(Texture texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;
+		void DrawTexture(Texture texture, const std::optional<SDL_FRect> &src,
 		                 const std::optional<SDL_FRect> &dest, double angle,
 		                 const std::optional<SDL_FPoint> &center = std::nullopt,
 		                 SDL_FlipMode flip = SDL_FLIP_NONE) const;
@@ -58,14 +58,18 @@ namespace swgtk
 		 * @brief Draw text at the specified location with the specified font. Uses SDL_ttf's fastest algorithm.
 		 * 
 		 * @param text 
-		 * @param font 
 		 * @param pos - Destination rectangle
 		 * @param color
 		 */
-		void DrawPlainText(std::string_view text, const SDL_FRect &pos,
+		void DrawPlainText(std::string_view text, const SDL_FRect& pos,
 		                   const SDL_Color &color = SDL_Color{
 			                   .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                   }) const;
+
+    	void DrawPlainWrapText(std::string_view text, const SDL_FRect& pos, int wrapLen = 0,
+												  const SDL_Color &color = SDL_Color{
+													  .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
+												  }) const;
 
 		/*
 			Combines SDL_ttf's API with SDL_Textures to preload text renderables as Textures. These can be rotated and tinted as needed.
@@ -107,7 +111,7 @@ namespace swgtk
 		 SDL_Color bg = SDL_Color{ .r=0u, .g=0u, .b=0u, .a=defaultAlphaInt },
 		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
-		/*
+		/**
 			Used to draw arbitrary shapes from a list of vertices. This is helpful when drawing things like particles.
 
 			It's okay to allow for nullptr in 'texture' because SDL handles it for us.

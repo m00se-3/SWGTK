@@ -8,7 +8,7 @@
 namespace swgtk
 {
 	/**
-	*	@brief A simple RAII container class for SDL_Texture. This will delete the underlying SDL_Texure upon calling
+	*	@brief A simple, reference-counted, RAII container class for SDL_Texture. This will delete the underlying SDL_Texture upon calling
 	*	the destructor.
 	*
 	*	When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,

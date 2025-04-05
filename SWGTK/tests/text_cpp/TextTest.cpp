@@ -1,7 +1,6 @@
-#include "swgtk/Utility.hpp"
+#include <swgtk/Utility.hpp>
 #include <TextTest.hpp>
 #include <swgtk/App.hpp>
-#include <Project.hpp>
 
 namespace swgtk {
 	bool TextTest::Create(Scene& scene) {
@@ -39,10 +38,10 @@ namespace swgtk {
 
 		_render->BufferClear();
 
-		_render->DrawTexture(*_background);
+		_render->DrawTexture(_background);
 
 		// Rotating in SDL3 is in degrees...
-		_render->DrawTexture(*_mouse.texture, std::nullopt, rect, math::radiansToDegrees(_mouse.angle));
+		_render->DrawTexture(_mouse.texture, std::nullopt, rect, math::radiansToDegrees(_mouse.angle));
 
 
 		// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

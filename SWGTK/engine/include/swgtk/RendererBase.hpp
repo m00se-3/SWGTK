@@ -12,6 +12,9 @@ extern "C" {
 
 namespace swgtk {
 
+    static constexpr auto defaultAlphaFloat = 1.0f;
+    static constexpr auto defaultAlphaInt = 255u;
+
     /**
      * @brief class RendererBase
      * 
@@ -19,10 +22,6 @@ namespace swgtk {
      * 
      */
     class RendererBase {
-    protected:
-        static constexpr auto defaultAlphaFloat = 1.0f;
-        static constexpr auto defaultAlphaInt = 255u;
-
     public:
         RendererBase() = default;
         RendererBase(const RendererBase &) = default;
@@ -35,7 +34,7 @@ namespace swgtk {
          * @brief Clears the rendering backend and prepares it for accepting draw calls. Draws to the current
          *          render buffer if the bufferID is not valid.
          * 
-         * @param color    - Optional color to clear the layer to. Default is Black.
+         * @param color Optional color to clear the layer to. Default is Black.
          * 
          */
         constexpr virtual void BufferClear(const SDL_FColor& color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) = 0;
@@ -71,6 +70,12 @@ namespace swgtk {
         constexpr virtual std::shared_ptr<RendererBase> GetRef() = 0;
     };
 
+    /**
+     * @brief Used for getting a non-owning reference to the rendering system so you can use it in your code.
+     * @tparam T The Rendering system you are currently using, a child of RendererBase.
+     * @param ptr The engines base pointer to the renderer, typically obtained by calling Scene::AppRenderer().
+     * @return A non-owning pointer to the exact type of renderer your game is using.
+     */
     template<std::derived_from<RendererBase> T>
     [[nodiscard]] constexpr T* RenderImpl(const std::shared_ptr<RendererBase>& ptr) { return dynamic_cast<T*>(ptr.get()); }
 }

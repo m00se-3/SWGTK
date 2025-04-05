@@ -1,5 +1,7 @@
 ﻿add_library(SWGTK STATIC)
 
+set(SWGTK_ENGINE_INTERNALS ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
+
 target_compile_options(SWGTK PRIVATE ${CompilerFlags})
 target_link_options(SWGTK PRIVATE ${LinkerFlags})
 
@@ -11,6 +13,7 @@ target_compile_definitions(
 	PUBLIC 
 	
 	SWGTK_DEFAULT_FONT_DIR="${CMAKE_CURRENT_LIST_DIR}/default_font"
+	SWGTK_ENGINE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/engine.lua"
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
@@ -24,7 +27,14 @@ if(CLANG_TIDY_PROGRAM)
 
 endif()
 
-target_include_directories(SWGTK PUBLIC ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
+if(CPPCHECK_PROGRAM)
+
+	message("--- Enabling cppcheck.\n")
+	set_target_properties(SWGTK PROPERTIES CXX_CPPCHECK ${CPPCHECK_PROGRAM})
+
+endif()
+
+target_include_directories(SWGTK PUBLIC ${SWGTK_ENGINE_INTERNALS})
 
 target_sources(
 	SWGTK	
@@ -51,11 +61,14 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RendererBase.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/TTFFont.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Timer.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/LuaGame.hpp
 
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/App.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Input.cpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/src/LuaGame.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Simple2DRenderer.cpp

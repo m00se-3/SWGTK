@@ -1,7 +1,7 @@
 #ifndef SWGTK_TEXTTEST_HPP
 #define SWGTK_TEXTTEST_HPP
 
-#include "swgtk/Simple2DRenderer.hpp"
+#include <swgtk/Simple2DRenderer.hpp>
 #include <swgtk/Scene.hpp>
 
 namespace swgtk {
@@ -12,7 +12,7 @@ namespace swgtk {
         double angle = 0.0;
     };
 
-    class TextTest : public swgtk::Scene::Node {
+    class TextTest final : public swgtk::Scene::Node {
     public:
         bool Create(Scene& scene) override;
         bool Update(Scene& s, float dt) override;

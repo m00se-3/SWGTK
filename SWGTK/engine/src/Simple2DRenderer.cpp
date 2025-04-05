@@ -27,7 +27,7 @@ namespace swgtk
 
 	void Simple2DRenderer::BufferClear(const SDL_FColor& color) {
 		const auto tmpColor = GetDrawColor();
-		
+
 		SetDrawColor(color);
 		SDL_RenderClear(_render);
 		SetDrawColor(tmpColor);
@@ -40,13 +40,14 @@ namespace swgtk
 	
 	Texture Simple2DRenderer::LoadTextureImg(const std::filesystem::path& img, const SDL_BlendMode blendMode) const {
 	    if(std::filesystem::exists(img)) {
+	    	const auto imgStr = img.string();
 
-			if(auto* texture = IMG_LoadTexture(_render, img.string().c_str()); texture != nullptr) {
+			if(auto* texture = IMG_LoadTexture(_render, imgStr.c_str()); texture != nullptr) {
 				SDL_SetTextureBlendMode(texture, blendMode);
 				return Texture{ texture };
 			}
 
-			DEBUG_PRINT2("Failed to load image {}: {}\n", img.string().c_str(), SDL_GetError())
+			DEBUG_PRINT2("Failed to load image {}: {}\n", imgStr.c_str(), SDL_GetError())
 	    }
 
 	    return Texture{};
@@ -76,26 +77,36 @@ namespace swgtk
 		return Texture{};
 	}
 
-	void Simple2DRenderer::DrawTexture(SDL_Texture* texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest) const {
+	void Simple2DRenderer::DrawTexture(Texture texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest) const {
 		const auto* source = src ? &src.value() : nullptr;
 		const auto* destination = dest ? &dest.value() : nullptr;
 		
-		SDL_RenderTexture(_render, texture, source, destination);
+		SDL_RenderTexture(_render, *texture, source, destination);
 	}
 
-	auto Simple2DRenderer::DrawTexture(SDL_Texture *texture, const std::optional<SDL_FRect> &src,
+	auto Simple2DRenderer::DrawTexture(Texture texture, const std::optional<SDL_FRect> &src,
 	                                   const std::optional<SDL_FRect> &dest, const double angle,
 	                                   const std::optional<SDL_FPoint> &center, const SDL_FlipMode flip) const -> void {
 		const auto* source = src ? &src.value() : nullptr;
 		const auto* destination = dest ? &dest.value() : nullptr;
 		const auto* cen = center ? &center.value() : nullptr;
 		
-		SDL_RenderTextureRotated(_render, texture, source, destination, angle, cen, flip);
+		SDL_RenderTextureRotated(_render, *texture, source, destination, angle, cen, flip);
 	}
 
 	void Simple2DRenderer::DrawPlainText(const std::string_view text, const SDL_FRect& pos, const SDL_Color& color) const {
 
 		if(auto* ttf = TTF_RenderText_Solid(_currentFont, text.data(), text.size(), color); ttf != nullptr) {
+			auto* texture = SDL_CreateTextureFromSurface(_render, ttf);
+			SDL_RenderTexture(_render, texture, nullptr, &pos);
+			SDL_DestroySurface(ttf);
+		} else {
+			DEBUG_PRINT("{}", SDL_GetError())
+		}
+	}
+
+	void Simple2DRenderer::DrawPlainWrapText(const std::string_view text, const SDL_FRect& pos, const int wrapLen, const SDL_Color &color) const {
+		if(auto* ttf = TTF_RenderText_Solid_Wrapped(_currentFont, text.data(), text.size(), color, wrapLen); ttf != nullptr) {
 			auto* texture = SDL_CreateTextureFromSurface(_render, ttf);
 			SDL_RenderTexture(_render, texture, nullptr, &pos);
 			SDL_DestroySurface(ttf);
@@ -170,80 +181,142 @@ namespace swgtk
 
 	void Simple2DRenderer::InitLua(sol::state& lua) {
 		
-		// Type definitions
-
-		// SDL_Vertex
-
-		auto vertex = lua.new_usertype<SDL_Vertex>(
+		auto SDL_Vertex_Type = lua.new_usertype<SDL_Vertex>(
 		"Vertex2D", "position", &SDL_Vertex::position, "color", &SDL_Vertex::color, "tex_coord", &SDL_Vertex::tex_coord
 		);
 
-		vertex["new"] = [](const sol::optional<SDL_FPoint> pos, const sol::optional<SDL_FColor> &col, const sol::optional<SDL_FPoint> tex) -> SDL_Vertex {
+		SDL_Vertex_Type["new"] = [](const sol::optional<SDL_FPoint> pos, const sol::optional<SDL_FColor> &col, const sol::optional<SDL_FPoint> tex) -> SDL_Vertex {
 				return SDL_Vertex{ 
 					.position=pos.value_or(SDL_FPoint{}), 
 					.color=col.value_or(SDL_FColor{}), 
 					.tex_coord=tex.value_or(SDL_FPoint{}) };
 			};
 
-		// swgtk::Texture
+		auto SDL_Color_Type = lua.new_usertype<SDL_Color>(
+			"Colori", "r", &SDL_Color::r, "g", &SDL_Color::g, "b", &SDL_Color::b, "a", &SDL_Color::a
+			);
 
-		auto texture = lua.new_usertype<Texture>("Texture", sol::constructors<Texture(), Texture(SDL_Texture*)>());
+		SDL_Color_Type["new"] = [] (const uint8_t r, const uint8_t g, const uint8_t b, const sol::optional<uint8_t> a) -> SDL_Color {
+			static constexpr auto fullAplha = 255u;
+			return SDL_Color{ .r=r, .g=g, .b=b, .a=a.value_or(fullAplha) };
+		};
 
-		texture["get"] = [](Texture& self) -> SDL_Texture* { return *self; };
+		auto SDL_FColor_Type = lua.new_usertype<SDL_FColor>(
+			"Colorf", "r", &SDL_FColor::r, "g", &SDL_FColor::g, "b", &SDL_FColor::b, "a", &SDL_FColor::a
+			);
 
-		texture["SetBlendMode"] = &Texture::SetBlendMode;
+		SDL_FColor_Type["new"] = [] (const float r, const float g, const float b, const sol::optional<float> a) -> SDL_FColor {
+			return SDL_FColor{ .r=r, .g=g, .b=b, .a=a.value_or(1.0f) };
+		};
 
-		texture["SetTint"] = [](Texture& self, const float r, const float g, const float b, const sol::optional<float> a) {
+		lua.new_enum<SDL_BlendMode>("BlendMode",
+			{
+				std::make_pair("None", SDL_BLENDMODE_NONE),
+				std::make_pair("Add", SDL_BLENDMODE_ADD),
+				std::make_pair("Blend", SDL_BLENDMODE_BLEND),
+				std::make_pair("PreBlend", SDL_BLENDMODE_BLEND_PREMULTIPLIED),
+				std::make_pair("PreAdd", SDL_BLENDMODE_ADD_PREMULTIPLIED),
+				std::make_pair("Mod", SDL_BLENDMODE_MOD),
+				std::make_pair("Mul",	SDL_BLENDMODE_MUL),
+				std::make_pair("Invalid", SDL_BLENDMODE_INVALID),
+			});
+
+		lua.new_enum<SDL_PixelFormat>("PixelFormat",
+			{
+				std::make_pair("RGBA32", SDL_PIXELFORMAT_RGBA32),
+				std::make_pair("ARGB32", SDL_PIXELFORMAT_ARGB32),
+				std::make_pair("BGRA32", SDL_PIXELFORMAT_BGRA32),
+				std::make_pair("ABGR32", SDL_PIXELFORMAT_ABGR32),
+				std::make_pair("RGBX32", SDL_PIXELFORMAT_RGBX32),
+				std::make_pair("XRGB32", SDL_PIXELFORMAT_XRGB32),
+				std::make_pair("BGRX32", SDL_PIXELFORMAT_BGRX32),
+				std::make_pair("XBGR32", SDL_PIXELFORMAT_XBGR32),
+			});
+
+		auto Texture_Type = lua.new_usertype<Texture>("Texture", sol::constructors<Texture(), Texture(SDL_Texture*), Texture(const Texture&)>());
+
+		Texture_Type["SetBlendMode"] = &Texture::SetBlendMode;
+
+		Texture_Type["SetTint"] = [](const Texture& self, const float r, const float g, const float b, const sol::optional<float> a) {
 				self.SetTint(r, g, b, a.value_or(1.0f));
 			};
 
-		texture["SetScaleMode"] = &Texture::SetScaleMode;
+		Texture_Type["SetScaleMode"] = &Texture::SetScaleMode;
 
-		texture["GetBlendMode"] = &Texture::GetBlendMode;
+		Texture_Type["GetBlendMode"] = &Texture::GetBlendMode;
 
-		texture["GetTint"] = &Texture::GetTint;
+		Texture_Type["GetTint"] = &Texture::GetTint;
 
-		texture["GetScaleMode"] = &Texture::GetScaleMode;
+		Texture_Type["GetScaleMode"] = &Texture::GetScaleMode;
 
-		texture["GetSize"] = &Texture::GetSize;
+		Texture_Type["GetSize"] = &Texture::GetSize;
 
-		auto ctx = lua.new_usertype<Simple2DRenderer>("RenderingContext", sol::no_constructor);
+		auto Simple2DRenderer_Type = lua.new_usertype<Simple2DRenderer>("RenderingContext", sol::no_constructor);
 		lua["Render"] = shared_from_this();
 
-		// Renderer function definitions
 
-		ctx["SetDrawColor"] = [](std::shared_ptr<Simple2DRenderer>& ctx, const sol::optional<float> r, const sol::optional<float> g,
+		Simple2DRenderer_Type["BufferClear"] = &Simple2DRenderer::BufferClear;
+
+		Simple2DRenderer_Type["BufferPresent"] = &Simple2DRenderer::BufferPresent;
+
+		Simple2DRenderer_Type["SetDrawColor"] = [](const std::shared_ptr<Simple2DRenderer>& context, const sol::optional<float> r, const sol::optional<float> g,
 		                             const sol::optional<float> b, const sol::optional<float> a) {
-				ctx->SetDrawColor(
-					r.value_or(RendererBase::defaultAlphaFloat), 
-					g.value_or(RendererBase::defaultAlphaFloat), 
-					b.value_or(RendererBase::defaultAlphaFloat), 
-					a.value_or(RendererBase::defaultAlphaFloat)
+				context->SetDrawColor(
+					r.value_or(defaultAlphaFloat),
+					g.value_or(defaultAlphaFloat),
+					b.value_or(defaultAlphaFloat),
+					a.value_or(defaultAlphaFloat)
 					);
 			};
 
-		ctx["SetDrawTarget"] = &Simple2DRenderer::SetDrawTarget;
+		Simple2DRenderer_Type["SetDrawTarget"] = &Simple2DRenderer::SetDrawTarget;
 
-		ctx["DrawTexture"] = [](std::shared_ptr<Simple2DRenderer>& ctx, SDL_Texture *texture, const sol::optional<SDL_FRect> &src,
+		Simple2DRenderer_Type["DrawTexture"] = [](const std::shared_ptr<Simple2DRenderer>& context, const Texture& tex, const sol::optional<SDL_FRect> &src,
 		                            const sol::optional<SDL_FRect> &dest) {
-			ctx->DrawTexture(texture, std::optional<SDL_FRect>{std::in_place_t{}, *src}, std::optional<SDL_FRect>{std::in_place_t{}, *dest});
+			context->DrawTexture(tex,
+				(src) ? std::optional<SDL_FRect>{std::in_place_t{}, *src} : std::nullopt,
+				(dest) ? std::optional<SDL_FRect>{std::in_place_t{}, *dest} : std::nullopt);
 		};
 
-		ctx["DrawTextureRotated"] = [](std::shared_ptr<Simple2DRenderer>& ctx, SDL_Texture *texture, sol::optional<SDL_FRect> src, sol::optional<SDL_FRect> dest,
+		Simple2DRenderer_Type["DrawTextureRotated"] = [](const std::shared_ptr<Simple2DRenderer>& context, const Texture& tex, const sol::optional<SDL_FRect>& src, const sol::optional<SDL_FRect>& dest,
 		                            const sol::optional<double> angle, sol::optional<SDL_FPoint> center,
 		                            const sol::optional<SDL_FlipMode> flip) {
-				ctx->DrawTexture(texture, std::optional<SDL_FRect>{std::in_place_t{}, *src}, std::optional<SDL_FRect>{std::in_place_t{}, *dest},
-					angle.value_or(0.0), std::optional<SDL_FPoint>{std::in_place_t{}, *center}, flip.value_or(SDL_FLIP_NONE));
+				context->DrawTexture(tex,
+					(src) ? std::optional<SDL_FRect>{std::in_place_t{}, *src} : std::nullopt,
+					(dest) ? std::optional<SDL_FRect>{std::in_place_t{}, *dest} : std::nullopt,
+					angle.value_or(0.0),
+					(center) ? std::optional<SDL_FPoint>{std::in_place_t{}, *center} : std::nullopt,
+					flip.value_or(SDL_FLIP_NONE));
 			};
 
-		ctx["LoadTextureImg"] = &Simple2DRenderer::LoadTextureImg;
+		Simple2DRenderer_Type["LoadTextureImg"] = &Simple2DRenderer::LoadTextureImg;
 
-		ctx["CreateRenderableTexture"] = &Simple2DRenderer::CreateRenderableTexture;
+		Simple2DRenderer_Type["CreateRenderableTexture"] = &Simple2DRenderer::CreateRenderableTexture;
 
-		ctx["CreateTextureFromSurface"] = &Simple2DRenderer::CreateTextureFromSurface;
+		Simple2DRenderer_Type["CreateTextureFromSurface"] = &Simple2DRenderer::CreateTextureFromSurface;
 
-		ctx["GetDrawColor"] = &Simple2DRenderer::GetDrawColor;
+		Simple2DRenderer_Type["GetDrawColor"] = &Simple2DRenderer::GetDrawColor;
 
-		ctx["DrawGeometry"] = &Simple2DRenderer::DrawGeometry;
+		Simple2DRenderer_Type["DrawGeometry"] = &Simple2DRenderer::DrawGeometry;
+
+		Simple2DRenderer_Type["DrawPlainText"] = &Simple2DRenderer::DrawPlainText;
+
+		Simple2DRenderer_Type["DrawPlainWrapText"] = &Simple2DRenderer::DrawPlainWrapText;
+
+		Simple2DRenderer_Type["LoadPlainText"] = &Simple2DRenderer::LoadPlainText;
+
+		Simple2DRenderer_Type["LoadBlendedText"] = &Simple2DRenderer::LoadBlendedText;
+
+		Simple2DRenderer_Type["LoadShadedText"] = &Simple2DRenderer::LoadShadedText;
+
+		Simple2DRenderer_Type["LoadLCDText"] = &Simple2DRenderer::LoadLCDText;
+
+		Simple2DRenderer_Type["LoadPlainWrapText"] = &Simple2DRenderer::LoadPlainWrapText;
+
+		Simple2DRenderer_Type["LoadBlendedWrapText"] = &Simple2DRenderer::LoadBlendedWrapText;
+
+		Simple2DRenderer_Type["LoadShadedWrapText"] = &Simple2DRenderer::LoadShadedWrapText;
+
+		Simple2DRenderer_Type["LoadLCDWrapText"] = &Simple2DRenderer::LoadLCDWrapText;
 	}
 }
