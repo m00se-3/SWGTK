@@ -1,5 +1,17 @@
-#ifndef SWGTK_SCENE_HPP
-#define SWGTK_SCENE_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_SCENE_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_SCENE_HPP_
 
 #include <swgtk/RendererBase.hpp>
 
@@ -8,7 +20,6 @@
 #include <sol/sol.hpp>
 #include <gsl/gsl-lite.hpp>
 #include <memory>
-#include <filesystem>
 
 namespace swgtk
 {
@@ -54,9 +65,9 @@ namespace swgtk
 		public:
 			constexpr Node() = default;
 			constexpr Node(const Node&) = default;
-			constexpr Node(Node&&) = delete;
+			constexpr Node(Node&&) noexcept = default;
 			constexpr Node& operator=(const Node&) = default;
-			constexpr Node& operator=(Node&&) = delete;
+			constexpr Node& operator=(Node&&) noexcept = default;
 
 			explicit Node(const std::shared_ptr<Node>& parent) : _parent(parent) {}
 
@@ -70,7 +81,7 @@ namespace swgtk
 			std::shared_ptr<Node> _parent;
 		};
 
-		Scene(const gsl::not_null<App*>& parent, std::shared_ptr<Node>&& node);
+		Scene(const gsl::not_null<App*>& parent, std::shared_ptr<Node>&& node) noexcept;
 
 		[[nodiscard]] bool Create();
 		[[nodiscard]] bool Update(float dt);
@@ -88,6 +99,6 @@ namespace swgtk
 
 	};
 
-}
+} // namespace swgtk
 
-#endif // !SWGTK_SCENE_HPP
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_SCENE_HPP_

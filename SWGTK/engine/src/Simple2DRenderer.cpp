@@ -1,3 +1,15 @@
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
 #include "swgtk/Simple2DRenderer.hpp"
 
 #include "SDL3_image/SDL_image.h"
@@ -13,8 +25,7 @@
 #include <sol/optional_implementation.hpp>
 #include <string_view>
 
-namespace swgtk
-{
+namespace swgtk {
 	bool Simple2DRenderer::PrepareDevice(SDL_Window* window) {
 		_render = SDL_CreateRenderer(window, nullptr);
 
@@ -196,6 +207,8 @@ namespace swgtk
 			"Colori", "r", &SDL_Color::r, "g", &SDL_Color::g, "b", &SDL_Color::b, "a", &SDL_Color::a
 			);
 
+		// NOLINTBEGIN(bugprone-easily-swappable-parameters)
+
 		SDL_Color_Type["new"] = [] (const uint8_t r, const uint8_t g, const uint8_t b, const sol::optional<uint8_t> a) -> SDL_Color {
 			static constexpr auto fullAplha = 255u;
 			return SDL_Color{ .r=r, .g=g, .b=b, .a=a.value_or(fullAplha) };
@@ -237,8 +250,8 @@ namespace swgtk
 
 		Texture_Type["SetBlendMode"] = &Texture::SetBlendMode;
 
-		Texture_Type["SetTint"] = [](const Texture& self, const float r, const float g, const float b, const sol::optional<float> a) {
-				self.SetTint(r, g, b, a.value_or(1.0f));
+		Texture_Type["SetTint"] = [](const Texture& self, const sol::optional<SDL_FColor> color) {
+				self.SetTint(color.value_or(SDL_FColor{ .r=1.0, .g=1.0f, .b=1.0f, .a=1.0f }));
 			};
 
 		Texture_Type["SetScaleMode"] = &Texture::SetScaleMode;
@@ -289,6 +302,8 @@ namespace swgtk
 					flip.value_or(SDL_FLIP_NONE));
 			};
 
+		// NOLINTEND(bugprone-easily-swappable-parameters)
+
 		Simple2DRenderer_Type["LoadTextureImg"] = &Simple2DRenderer::LoadTextureImg;
 
 		Simple2DRenderer_Type["CreateRenderableTexture"] = &Simple2DRenderer::CreateRenderableTexture;
@@ -319,4 +334,4 @@ namespace swgtk
 
 		Simple2DRenderer_Type["LoadLCDWrapText"] = &Simple2DRenderer::LoadLCDWrapText;
 	}
-}
+} // namespace swgtk

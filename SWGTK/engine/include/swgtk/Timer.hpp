@@ -1,5 +1,17 @@
-#ifndef SWGTK_TIMER_HPP
-#define SWGTK_TIMER_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_TIMER_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_TIMER_HPP_
 
 #include <chrono>
 
@@ -7,7 +19,7 @@ namespace swgtk {
 
     class Timer {
       public:
-        constexpr void UpdateTime() {
+        void UpdateTime() {
             _currentFrameTime = std::chrono::steady_clock::now();
 
             _timeDifference = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
@@ -25,6 +37,6 @@ namespace swgtk {
         std::chrono::microseconds _timeDifference{};
     };
 
-}
+} // namespace swgtk
 
-#endif //SWGTK_TIMER_HPP
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_TIMER_HPP_

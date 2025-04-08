@@ -1,3 +1,15 @@
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
 #include <swgtk/App.hpp>
 #include <swgtk/Utility.hpp>
 
@@ -11,12 +23,10 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include <gsl/gsl-lite.hpp>
 
-#include <chrono>
 #include <memory>
 
 
-namespace swgtk
-{
+namespace swgtk {
 	App::~App() {
 		_fonts.ClearFonts();
 
@@ -153,6 +163,7 @@ namespace swgtk
 #endif
 
 	void App::InitLua(sol::state& lua, const bool acceptUserInput) {
+		
 		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
 		// Define useful enums and types.
@@ -339,6 +350,20 @@ namespace swgtk
 		lua.set_function("degreesToRadians", [] (const double degrees) { return math::radiansToDegrees(degrees); });
 		mathTable["degreesToRadians"] = lua["degreesToRadians"];
 
+		auto Surface_Type = lua.new_usertype<Surface>("Surface",
+			sol::constructors<Surface(), Surface(SDL_Surface*), Surface(const Surface&),
+			Surface(const int, const int, const SDL_PixelFormat),
+			Surface(const int, const int, const SDL_PixelFormat, void*, const int)>());
+
+		Surface_Type["Clear"] = &Surface::Clear;
+
+		Surface_Type["ReadPixel"] = &Surface::ReadPixel;
+
+		Surface_Type["DrawPixel"] = &Surface::DrawPixel;
+
+		Surface_Type["FillRect"] = &Surface::FillRect;
+
+		Surface_Type["FillRects"] = &Surface::FillRects;
 	}
 
-}
+} // namespace swgtk

@@ -23,6 +23,12 @@ if(CLANG_TIDY_PROGRAM)
 
 endif()
 
+if(CPPCHECK_PROGRAM)
+
+	set_target_properties(Test_TextSampleLua PROPERTIES CXX_CPPCHECK ${CPPCHECK_PROGRAM})
+
+endif()
+
 target_include_directories(
 		Test_TextSampleLua
 

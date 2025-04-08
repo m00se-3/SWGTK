@@ -1,5 +1,17 @@
-#ifndef SWGTK_UTILITY_HPP
-#define SWGTK_UTILITY_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_UTILITY_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_UTILITY_HPP_
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_surface.h>
@@ -22,7 +34,7 @@ namespace swgtk {
         @brief A reference-counted RAII wrapper for the SDL_Surface type.
      */
     class Surface {
-        static void DestroySurface(SDL_Surface* surface) { SDL_DestroySurface(surface); };
+        static void DestroySurface(SDL_Surface* surface) { SDL_DestroySurface(surface); }
         static constexpr uint8_t whiteColorValue = 255u;
     public:
         constexpr Surface() = default;
@@ -94,7 +106,7 @@ namespace swgtk {
 
             return (degrees / oneEighty) * std::numbers::pi_v<float>;
         }
-    }
-}
+    } // namespace math
+} // namespace swgtk
 
-#endif
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_UTILITY_HPP_

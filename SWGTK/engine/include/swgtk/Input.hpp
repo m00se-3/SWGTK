@@ -1,14 +1,26 @@
-#ifndef SWGTK_INPUT_HPP
-#define SWGTK_INPUT_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_INPUT_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_INPUT_HPP_
 
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_keyboard.h>
 #include <span>
 #include <array>
+#include <utility>
 
-namespace swgtk
-{
+namespace swgtk {
 	/*
 		The following are wrapper values for the corresponding keyboard and mouse button SDL values. These values are based on the
 		following webpages:
@@ -90,6 +102,6 @@ namespace swgtk
 		std::pair<LayoutCode, bool> keyEvent = std::make_pair(LayoutCode::Unknown, false);
 		SDL_FPoint scroll{};
 	};
-}
+} //namespace swgtk
 
-#endif // !SWGTK_INPUT_HPP
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_INPUT_HPP_

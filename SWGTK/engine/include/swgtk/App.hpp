@@ -1,14 +1,28 @@
-#ifndef SWGTK_APP_HPP
-#define SWGTK_APP_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_APP_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_APP_HPP_
 
 #include "swgtk/Input.hpp"
 #include "swgtk/RendererBase.hpp"
 #include <swgtk/Timer.hpp>
 #include <SDL3/SDL_video.h>
 #include <memory>
+#include <string>
+#include <utility>
 
 #ifdef __EMSCRIPTEN__
-#include "emscripten.h"
+#include <emscripten.h>
 #endif
 
 #include "swgtk/TTFFont.hpp"
@@ -30,13 +44,13 @@ namespace swgtk {
 	public:
 		App() = default;
 		App(const App&) = delete;
-		App(App&&) = delete;
+		App(App&&) noexcept = delete;
 		App& operator=(const App&) = delete;
-		App& operator=(App&&) = delete;
+		App& operator=(App&&) noexcept = delete;
 		~App();
 
 		template<std::derived_from<Scene::Node> T, typename... Args>
-		constexpr void RunGame(Args&&... args) {
+		constexpr void RunGame(Args&&... args) noexcept {
 			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<T>(std::forward<Args>(args)...));
 
 			if(InitializeGame()) {
@@ -63,7 +77,7 @@ namespace swgtk {
 
 		[[nodiscard]] Font GetDefaultFont() const { return _fonts.GetDefaultFont(); }
 		void AddFont(const std::filesystem::path& path) { _fonts.AddFont(path); }
-		[[nodiscard]] constexpr Font GetFont(const std::string& path) const { return _fonts.GetFont(path); }
+		[[nodiscard]] Font GetFont(const std::string& path) const { return _fonts.GetFont(path); }
 		static void SetFontStyle(const Font font, const FontStyle style) { FontGroup::SetFontStyle(font, style); }
 		[[nodiscard]] static FontStyle GetFontStyle(const Font font) { return FontGroup::GetFontStyle(font); }
 
@@ -157,5 +171,5 @@ namespace swgtk {
 
 		bool _running = true;
 	};
-}
-#endif // SWGTK_APP_HPP
+} // namespace swgtk
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_APP_HPP_

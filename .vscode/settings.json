@@ -1,22 +1,15 @@
 {
     "Lua.diagnostics.globals": [
-        "Ctx",
-        "new_rect",
-        "new_recti",
-        "new_vec2",
-        "new_vec2i",
-        "rgba",
-        "rgba_f",
-        "PanelFlag",
-        "TextAlign",
-        "Layout",
-        "FontStyle",
-        "ColorFmt",
-        "Symbol",
-        "Popup",
-        "Host"
+        
     ],
     "Lua.completion.showWord": "Enable",
     "Lua.completion.workspaceWord": true,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cpp-checker.cppcheck.--std_c++=": "c++20",
+    "cpp-checker.cppcheck.--suppress=": [
+        "unknownMacro",
+        "unmatchedSuppression",
+        "missingIncludeSystem"
+    ],
+    "cpp-checker.cpplint.--filter=": "-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-runtime/references"
 }

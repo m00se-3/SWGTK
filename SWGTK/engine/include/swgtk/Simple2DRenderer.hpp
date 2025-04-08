@@ -1,5 +1,17 @@
-#ifndef SWGTK_SIMPLERENDERER_HPP
-#define SWGTK_SIMPLERENDERER_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_SIMPLE2DRENDERER_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_SIMPLE2DRENDERER_HPP_
 
 #include "swgtk/Texture.hpp"
 
@@ -18,16 +30,15 @@
 #include <span>
 #include <optional>
 
-namespace swgtk
-{
+namespace swgtk {
     class Simple2DRenderer : public RendererBase, public std::enable_shared_from_this<Simple2DRenderer>{
 	public:
 
 		constexpr Simple2DRenderer() = default;
 		Simple2DRenderer(const Simple2DRenderer &) = delete;
-		Simple2DRenderer(Simple2DRenderer &&) = delete;
+		Simple2DRenderer(Simple2DRenderer &&) noexcept = delete;
 		Simple2DRenderer &operator=(const Simple2DRenderer &) = delete;
-		Simple2DRenderer &operator=(Simple2DRenderer &&) = delete;
+		Simple2DRenderer &operator=(Simple2DRenderer &&) noexcept = delete;
 		~Simple2DRenderer() override { Simple2DRenderer::DestroyDevice(); }
 
 		void BufferClear(const SDL_FColor& color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) override;
@@ -134,7 +145,7 @@ namespace swgtk
 
 		bool SetDrawTarget(SDL_Texture* ptr = nullptr) const { return SDL_SetRenderTarget(_render, ptr); }
 
-		[[nodiscard]] static auto Create() { return std::make_shared<Simple2DRenderer>(); }
+		[[nodiscard]] static auto Create() noexcept { return std::make_shared<Simple2DRenderer>(); }
 
 		void InitLua(sol::state& lua);
 
@@ -142,6 +153,6 @@ namespace swgtk
 		SDL_Renderer* _render = nullptr;
 		TTF_Font* _currentFont = nullptr;
     };
-}
+} // namespace swgtk
 
-#endif
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_SIMPLE2DRENDERER_HPP_  

@@ -1,3 +1,15 @@
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
 #include <swgtk/Utility.hpp>
 #include <TextTest.hpp>
 #include <swgtk/App.hpp>
@@ -22,7 +34,7 @@ namespace swgtk {
 		// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers) - Reason: It's pointless to create constants for this test.
 
 		_mouse.pos = _app->GetMousePos();
-		_mouse.angle += dt * 2.0;
+		_mouse.angle += static_cast<double>(dt) * 2.0;
 
 		if(_mouse.angle > math::pi2) { _mouse.angle -= (math::pi2); }
 
@@ -49,10 +61,10 @@ namespace swgtk {
 		return true;
 	}
 
-}
+} // namespace swgtk
 
 
-int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
+int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) { // NOLINT
 	constexpr auto w = 800;
 	constexpr auto h = 600;
 

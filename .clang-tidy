@@ -1,7 +1,6 @@
-Checks: -*, cppcoreguidelines-*,clang-analyzer-*, 
+Checks: -*, cppcoreguidelines-*, clang-analyzer-*, 
   modernize-*, -modernize-use-trailing-return-type, 
-  bugprone-*, -bugprone-easily-swappable-parameters, 
-  cert-*, misc-*, -misc-include-cleaner, -misc-non-private-member-variables-in-classes, 
+  bugprone-*, cert-*, misc-*, -misc-include-cleaner, -misc-non-private-member-variables-in-classes, 
   performance-*, readability-*,-readability-uppercase-literal-suffix, 
-  -readability-identifier-length, -readability-isolate-declaration, -readability-magic-numbers,
-  -performance-unnecessary-value-param, -misc-use-anonymous-namespace, -performance-enum-size
+  -readability-identifier-length, -readability-isolate-declaration, -readability-magic-numbers, -performance-enum-size
+WarningsAsErrors: "*"

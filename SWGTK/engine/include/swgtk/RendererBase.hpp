@@ -1,5 +1,17 @@
-#ifndef SWGTK_RENDERERBASE_HPP
-#define SWGTK_RENDERERBASE_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_RENDERERBASE_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_RENDERERBASE_HPP_
 
 #include <memory>
 #include <concepts>
@@ -25,9 +37,9 @@ namespace swgtk {
     public:
         RendererBase() = default;
         RendererBase(const RendererBase &) = default;
-        RendererBase(RendererBase &&) = delete;
+        RendererBase(RendererBase &&)noexcept = delete;
         RendererBase &operator=(const RendererBase &) = default;
-        RendererBase &operator=(RendererBase &&) = delete;
+        RendererBase &operator=(RendererBase &&) noexcept = delete;
         virtual ~RendererBase() = default;
 
         /**
@@ -78,6 +90,6 @@ namespace swgtk {
      */
     template<std::derived_from<RendererBase> T>
     [[nodiscard]] constexpr T* RenderImpl(const std::shared_ptr<RendererBase>& ptr) { return dynamic_cast<T*>(ptr.get()); }
-}
+} // namespace swgtk
 
-#endif
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_RENDERERBASE_HPP_

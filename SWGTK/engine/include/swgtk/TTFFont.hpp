@@ -1,17 +1,29 @@
-#ifndef SWGTK_TTF_FONT_HPP
-#define SWGTK_TTF_FONT_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_TTFFONT_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_TTFFONT_HPP_
 
 #include <filesystem>
 #include <map>
 #include <cstdint>
 #include <utility>
 #include <ranges>
+#include <string>
 #include <sol/state.hpp>
 
 #include "SDL3_ttf/SDL_ttf.h"
 
-namespace swgtk
-{
+namespace swgtk {
     // Wrapper for TTF_STYLE_* enum.
     enum class FontStyle : uint32_t {
         None = 32u,
@@ -76,9 +88,9 @@ namespace swgtk
             }
          }
 
-        constexpr void SetDefaultFontSize(const float size) { _defaultFontSize = size; };
+        constexpr void SetDefaultFontSize(const float size) { _defaultFontSize = size; }
 
-        [[nodiscard]] constexpr Font GetFont(const std::string& name) const {
+        [[nodiscard]] Font GetFont(const std::string& name) const {
             if (_ttfFonts.contains(name)) {
                 return _ttfFonts.at(name);
             }
@@ -90,6 +102,6 @@ namespace swgtk
         std::map<std::string, Font> _ttfFonts;
         float _defaultFontSize = defaultFontSize;
     };
-}
+} // namespace swgtk
 
-#endif // !SWGTK_TTF_FONT_HPP
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_TTFFONT_HPP_

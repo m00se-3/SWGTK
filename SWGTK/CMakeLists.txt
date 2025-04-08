@@ -34,6 +34,13 @@ if(CPPCHECK_PROGRAM)
 
 endif()
 
+if(CPPLINT_PROGRAM)
+
+	message("--- Enabling cpplint.\n")
+	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM} --filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-runtime/references")
+
+endif()
+
 target_include_directories(SWGTK PUBLIC ${SWGTK_ENGINE_INTERNALS})
 
 target_sources(
@@ -67,7 +74,6 @@ target_sources(
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/App.cpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/Input.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/LuaGame.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp

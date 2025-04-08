@@ -1,12 +1,24 @@
-#ifndef SWGTK_TEXTURE_HPP
-#define SWGTK_TEXTURE_HPP
+/*
+    MIT License
+    Copyright (c) 2023 Samuel Bridgham
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_TEXTURE_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_TEXTURE_HPP_
 
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_surface.h>
 #include <memory>
+#include <utility>
 
-namespace swgtk
-{
+namespace swgtk {
 	/**
 	*	@brief A simple, reference-counted, RAII container class for SDL_Texture. This will delete the underlying SDL_Texture upon calling
 	*	the destructor.
@@ -15,7 +27,7 @@ namespace swgtk
 	*	the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
 	*/
 	class Texture {
-		static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); };
+		static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); }
 
 	public:
 		Texture() = default;
@@ -29,11 +41,6 @@ namespace swgtk
 		void SetTint(const SDL_FColor& color) const {
 			SDL_SetTextureColorModFloat(_texture.get(), color.r, color.g, color.b);
 			SDL_SetTextureAlphaModFloat(_texture.get(), color.a);
-		}
-
-		void SetTint(const float r, const float g, const float b, const float a) const {
-			SDL_SetTextureColorModFloat(_texture.get(), r, g, b);
-			SDL_SetTextureAlphaModFloat(_texture.get(), a);
 		}
 
 		void SetScaleMode(const SDL_ScaleMode mode) const { SDL_SetTextureScaleMode(_texture.get(), mode); }
@@ -74,5 +81,5 @@ namespace swgtk
 	private:
 		std::shared_ptr<SDL_Texture> _texture;
 	};
-}
-#endif // !SWGTK_TEXTURE_HPP
+} // namespace swgtk
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_TEXTURE_HPP_
