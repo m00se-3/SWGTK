@@ -37,14 +37,6 @@ target_link_libraries(
 	PRIVATE 
 
 	SWGTK
-	SDL3::SDL3
-	SDL3_image::SDL3_image
-	SDL3_mixer::SDL3_mixer
-	SDL3_ttf::SDL3_ttf
-	lua
-	sol2
-	fmt::fmt
-	gsl::gsl-lite-v1
 )
 
 target_sources(

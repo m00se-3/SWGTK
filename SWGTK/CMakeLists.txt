@@ -37,7 +37,7 @@ endif()
 if(CPPLINT_PROGRAM)
 
 	message("--- Enabling cpplint.\n")
-	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM} --filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-runtime/references")
+	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-runtime/references")
 
 endif()
 
@@ -84,7 +84,7 @@ target_sources(
 target_link_libraries(
 	SWGTK	
 
-	PRIVATE 
+	PUBLIC
 
 	SDL3::SDL3
 	SDL3_image::SDL3_image
