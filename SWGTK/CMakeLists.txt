@@ -30,7 +30,7 @@ endif()
 if(CPPCHECK_PROGRAM)
 
 	message("--- Enabling cppcheck.\n")
-	set_target_properties(SWGTK PROPERTIES CXX_CPPCHECK ${CPPCHECK_PROGRAM})
+	set_target_properties(SWGTK PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
 
 endif()
 
@@ -69,12 +69,10 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/TTFFont.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Timer.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/LuaGame.hpp
 
 	PRIVATE 
 
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/App.cpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/LuaGame.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/TTFFont.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Simple2DRenderer.cpp
@@ -97,3 +95,4 @@ target_link_libraries(
 )
 
 add_subdirectory("tests")
+add_subdirectory("lua_runner")

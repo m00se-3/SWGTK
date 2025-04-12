@@ -49,16 +49,21 @@ namespace swgtk {
 		App& operator=(App&&) noexcept = delete;
 		~App();
 
+		bool InitializeGame();
+
 		template<std::derived_from<Scene::Node> T, typename... Args>
 		constexpr void RunGame(Args&&... args) noexcept {
-			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<T>(std::forward<Args>(args)...));
+			MakeScene<T>(std::forward<Args>(args)...);
 
 			if(InitializeGame()) {
 				Run();
 			}
 		}
 
-		void RunLuaGame(const std::filesystem::path& path, sol::state& lua);
+		template<std::derived_from<Scene::Node> T, typename... Args>
+		constexpr void MakeScene(Args&&... args) {
+			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<T>(std::forward<Args>(args)...));
+		}
 
 		void EventsAndTimeStep();
 		[[nodiscard]] bool GameTick() const {
@@ -158,7 +163,6 @@ namespace swgtk {
 #endif // __EMSCRIPTEN__
 
 	private:
-		bool InitializeGame();
 		void Run();
 
 		SDL_Window* _window = nullptr;

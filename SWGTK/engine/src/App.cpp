@@ -14,8 +14,6 @@
 #include <swgtk/Utility.hpp>
 
 #include <swgtk/Simple2DRenderer.hpp>
-#include <swgtk/LuaGame.hpp>
-
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -105,14 +103,6 @@ namespace swgtk {
 		}
 
 		_gameTimer.UpdateTime();
-	}
-
-	void App::RunLuaGame(const std::filesystem::path& path, sol::state& lua) {
-		_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<LuaGame>(path, lua));
-
-		if(InitializeGame()) {
-
-		}
 	}
 
 	bool App::InitializeGame() {

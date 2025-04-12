@@ -1,2 +1,2 @@
 add_subdirectory("text_cpp")
-add_subdirectory("text_lua")
+add_subdirectory("test_lua")

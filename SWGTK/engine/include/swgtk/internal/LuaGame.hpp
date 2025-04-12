@@ -20,9 +20,6 @@
 namespace swgtk {
     /**
         @brief This is a specialized class for games whose *primary* coding language is Lua.
-
-        Eventually, this class will not be exposed to library users. This class will be used to run games
-        in a similar fashion to Love2D.
      */
     class LuaGame final : public Scene::Node {
     public:
