@@ -52,6 +52,14 @@ namespace swgtk {
 		[[nodiscard]] bool PrepareDevice(SDL_Window* window) override;
 		void DestroyDevice() override;
 
+		void SetVSync(VSync value) override { SDL_SetRenderVSync(_render, std::to_underlying(value)); }
+
+		[[nodiscard]] VSync GetVSync() const override { 
+			int ret{};
+			SDL_GetRenderVSync(_render, &ret);
+			return VSync{ret};
+		}
+
 		[[nodiscard]] std::shared_ptr<RendererBase> GetRef() override { return shared_from_this(); }
 
 		void SetDrawColor(const float r, const float g, const float b, const float a = defaultAlphaFloat) const { SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
@@ -147,7 +155,7 @@ namespace swgtk {
 
 		[[nodiscard]] static auto Create() noexcept { return std::make_shared<Simple2DRenderer>(); }
 
-		void InitLua(sol::state& lua);
+		void InitLua(sol::state* lua) override;
 
 	private:
 		SDL_Renderer* _render = nullptr;

@@ -12,9 +12,10 @@
 */
 #include "swgtk/Scene.hpp"
 
-#include <utility>
 #include <swgtk/Utility.hpp>
 #include <swgtk/App.hpp>
+#include <utility>
+#include <memory>
 
 namespace swgtk {
 	Scene::Scene(const gsl::not_null<App*>& parent, std::shared_ptr<Node>&& node) noexcept

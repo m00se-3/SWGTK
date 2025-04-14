@@ -12,6 +12,8 @@
 */
 #include "swgtk/TTFFont.hpp"
 #include <swgtk/Utility.hpp>
+#include <utility>
+#include <string>
 
 namespace swgtk {    
     static constexpr auto DefaultFontRootDir = std::string_view{ SWGTK_DEFAULT_FONT_DIR };
@@ -50,6 +52,8 @@ namespace swgtk {
     }
 
     void FontGroup::InitLua(sol::state& lua) {
+        auto SWGTK = lua["swgtk"];
+
         lua.new_enum<FontStyle>("FontStyle",
             {
                 std::make_pair("Normal", FontStyle::Normal),
@@ -63,10 +67,12 @@ namespace swgtk {
             }
         );
 
-        auto FontGroup_Type = lua.new_usertype<FontGroup>("FontGroup", sol::constructors<FontGroup()>());
-        lua["Fonts"] = this;
+        SWGTK["FontStyle"] = lua["FontStyle"];
 
-        auto Font_Type = lua.new_usertype<Font>("FontHandle", sol::no_constructor);
+        auto FontGroup_Type = lua.new_usertype<FontGroup>("FontGroup", sol::constructors<FontGroup()>());
+        SWGTK["Fonts"] = this;
+
+        auto Font_Type = lua.new_usertype<Font>("FontHandle");
 
         FontGroup_Type["GetDefaultFont"] = [] (const FontGroup& self) { return self.GetDefaultFont(); };
 

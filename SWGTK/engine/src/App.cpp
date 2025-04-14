@@ -10,6 +10,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
+#include "swgtk/ErrCodes.hpp"
 #include <swgtk/App.hpp>
 #include <swgtk/Utility.hpp>
 
@@ -22,6 +23,7 @@
 #include <gsl/gsl-lite.hpp>
 
 #include <memory>
+#include <utility>
 
 
 namespace swgtk {
@@ -111,7 +113,7 @@ namespace swgtk {
 			return false;
 		}
 
-		SDL_ShowWindow(_window);
+		ShowWindow();
 		_fonts.LoadDefaultFont();
 		_renderer->SetFont(_fonts.GetDefaultFont().ptr);
 
@@ -152,45 +154,61 @@ namespace swgtk {
 	}
 #endif
 
-	void App::InitLua(sol::state& lua, const bool acceptUserInput) {
+	void App::InitLua(sol::state& lua, const LuaPrivledges priv) {
 		
 		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
 
+		auto SWGTK = lua["swgtk"];
+
 		// Define useful enums and types.
 
-		auto SDL_Point_Type = lua.new_usertype<SDL_Point>(
+		SWGTK["Vec2i"] = lua.new_usertype<SDL_Point>(
 		"Vec2i", "x", &SDL_Point::x, "y", &SDL_Point::y
 		);
 
-		SDL_Point_Type["new"] = [](const sol::optional<int> nx, const sol::optional<int> ny) -> SDL_Point {
+		SWGTK["Vec2i"]["new"] = [](const sol::optional<int> nx, const sol::optional<int> ny) -> SDL_Point {
 				return SDL_Point{ nx.value_or(0), ny.value_or(0) };
 			};
 
-		auto SDL_FPoint_Type = lua.new_usertype<SDL_FPoint>(
+		SWGTK["Vec2f"] = lua.new_usertype<SDL_FPoint>(
 		"Vec2f", "x", &SDL_FPoint::x, "y", &SDL_FPoint::y
 		);
 
-		SDL_FPoint_Type["new"] = [](const sol::optional<float> nx, const sol::optional<float> ny) -> SDL_FPoint {
+		SWGTK["Vec2f"]["new"] = [](const sol::optional<float> nx, const sol::optional<float> ny) -> SDL_FPoint {
 			return SDL_FPoint{ nx.value_or(0.0f), ny.value_or(0.0f) };
 		};
 
-		auto SDL_Rect_Type = lua.new_usertype<SDL_Rect>(
+		SWGTK["Recti"] = lua.new_usertype<SDL_Rect>(
 		"Recti",	"x", &SDL_Rect::x, "y", &SDL_Rect::y, "w", &SDL_Rect::w, "h", &SDL_Rect::h
 		);
 
-		SDL_Rect_Type["new"] = [](const sol::optional<int> nx, const sol::optional<int> ny, const sol::optional<int> nw, const sol::optional<int> nh) -> SDL_Rect {
+		SWGTK["Recti"]["new"] = [](const sol::optional<int> nx, const sol::optional<int> ny, const sol::optional<int> nw, const sol::optional<int> nh) -> SDL_Rect {
 				return SDL_Rect{ nx.value_or(0), ny.value_or(0), nw.value_or(0), nh.value_or(0) };
 			};
 
-		auto SDL_FRect_Type = lua.new_usertype<SDL_FRect>(
+		SWGTK["Rectf"] = lua.new_usertype<SDL_FRect>(
 		"Rectf", "x", &SDL_FRect::x, "y", &SDL_FRect::y, "w", &SDL_FRect::w, "h", &SDL_FRect::h
 		);
 
-		SDL_FRect_Type["new"] = [](const sol::optional<float> nx, const sol::optional<float> ny, const sol::optional<float> nw, const sol::optional<float> nh) -> SDL_FRect {
+		SWGTK["Rectf"]["new"] = [](const sol::optional<float> nx, const sol::optional<float> ny, const sol::optional<float> nw, const sol::optional<float> nh) -> SDL_FRect {
 				return SDL_FRect{ nx.value_or(0.0f), ny.value_or(0.0f), nw.value_or(0.0f), nh.value_or(0.0f) };
 			};
+		
+		SWGTK["GameTimer"] = lua.new_usertype<Timer>("GameTimer", sol::constructors<Timer()>());
+		SWGTK["GameTimer"]["GetSeconds"] = &Timer::GetSeconds;
 
-		if(acceptUserInput) {
+		auto App_Type = lua.new_usertype<App>("Host", "DeltaTime", &App::_gameTimer);
+		SWGTK["App"] = this;
+
+		if((priv & LuaPrivledges::Fonts) == LuaPrivledges::Fonts) {
+			_fonts.InitLua(lua);
+		}
+
+		if((priv & LuaPrivledges::DrawCalls) == LuaPrivledges::DrawCalls) {
+			_renderer->InitLua(&lua);
+		}
+
+		if((priv & LuaPrivledges::UserInput) == LuaPrivledges::UserInput) {
 			lua.new_enum<MButton>("MButton",
 				{
 					std::make_pair("None", MButton::None),
@@ -201,6 +219,7 @@ namespace swgtk {
 					std::make_pair("Ex2", MButton::Ex2),
 				}
 			);
+			SWGTK["MButton"] = lua["MButton"];
 
 			lua.new_enum<KeyMod>("KeyMod",
 				{
@@ -218,6 +237,7 @@ namespace swgtk {
 					std::make_pair("Alt", KeyMod::Alt),
 				}
 			);
+			SWGTK["KeyMod"] = lua["KeyMod"];
 
 			lua.new_enum<KeyCode>("KeyValue",
 				{
@@ -241,8 +261,9 @@ namespace swgtk {
 					std::make_pair("Delete", KeyCode::Delete),
 				}
 			);
+			SWGTK["KeyValue"] = lua["KeyValue"];
 
-			lua.new_enum<LayoutCode>("KeyLCode",
+			lua.new_enum<LayoutCode>("KeyCode",
 				{
 					std::make_pair("Unknown", LayoutCode::Unknown), std::make_pair("A", LayoutCode::A), std::make_pair("B", LayoutCode::B),
 					std::make_pair("C", LayoutCode::C), std::make_pair("D", LayoutCode::D), std::make_pair("E", LayoutCode::E),
@@ -280,26 +301,8 @@ namespace swgtk {
 					std::make_pair("RShift", LayoutCode::RShift), std::make_pair("RAlt", LayoutCode::RAlt),
 				}
 			);
-		}
+			SWGTK["KeyCode"] = lua["KeyCode"];
 
-		auto App_Type = lua.new_usertype<App>("Host", "Timer", &App::_gameTimer);
-
-		auto Timer_Type = lua.new_usertype<Timer>("GameTimer", sol::constructors<Timer()>());
-		lua["App"] = this;
-
-		// Define functions for the application.
-
-		Timer_Type["GetSeconds"] = &Timer::GetSeconds;
-
-		App_Type["IsAppRunning"] = [this] () -> bool { return _running; };
-
-		App_Type["EventsAndTimeStep"] = &App::EventsAndTimeStep;
-
-		App_Type["CloseApp"] = &App::CloseApp;
-
-		App_Type["GetWindowSize"] = &App::GetWindowSize;
-
-		if(acceptUserInput) {
 			App_Type["GetScrollX"] = &App::GetScrollX;
 
 			App_Type["GetScrollY"] = &App::GetScrollY;
@@ -327,9 +330,41 @@ namespace swgtk {
 			App_Type["GetMousePos"] = &App::GetMousePos;
 		}
 
+		if((priv & LuaPrivledges::WindowControl) == LuaPrivledges::WindowControl) {
+			App_Type["SetWindowSize"] = &App::SetWindowSize;
+
+			App_Type["SetTitle"] = &App::SetTitle;
+
+			App_Type["SetFullscreen"] = &App::SetFullscreen;
+
+			App_Type["ShowWindow"] = &App::ShowWindow;
+
+			App_Type["HideWindow"] = &App::HideWindow;
+
+			App_Type["RaiseWindow"] = &App::RaiseWindow;
+
+			App_Type["RestoreWindow"] = &App::RestoreWindow;
+
+			App_Type["MaximizeWindow"] = &App::MaximizeWindow;
+
+			App_Type["MinimizeWindow"] = &App::MinimizeWindow;
+
+			App_Type["IsFullscreenBorderless"] = &App::IsFullscreenBorderless;
+		}
+
+		// Define functions for the application.
+
+		App_Type["IsAppRunning"] = [this] () -> bool { return _running; };
+
+		App_Type["EventsAndTimeStep"] = &App::EventsAndTimeStep;
+
+		App_Type["CloseApp"] = &App::CloseApp;
+
+		App_Type["GetWindowSize"] = &App::GetWindowSize;
+
 		// We don't need float variations of these values and functions, because Lua uses the same number type for both.
 
-		auto mathTable = lua.create_table("Math");
+		auto mathTable = SWGTK["math"];
 
 		mathTable["pi"] = std::numbers::pi;
 		mathTable["pi2"] = math::pi2;
@@ -340,20 +375,20 @@ namespace swgtk {
 		lua.set_function("degreesToRadians", [] (const double degrees) { return math::radiansToDegrees(degrees); });
 		mathTable["degreesToRadians"] = lua["degreesToRadians"];
 
-		auto Surface_Type = lua.new_usertype<Surface>("Surface",
+		SWGTK["Surface"] = lua.new_usertype<Surface>("Surface",
 			sol::constructors<Surface(), Surface(SDL_Surface*), Surface(const Surface&),
 			Surface(const int, const int, const SDL_PixelFormat),
 			Surface(const int, const int, const SDL_PixelFormat, void*, const int)>());
 
-		Surface_Type["Clear"] = &Surface::Clear;
+		SWGTK["Surface"]["Clear"] = &Surface::Clear;
 
-		Surface_Type["ReadPixel"] = &Surface::ReadPixel;
+		SWGTK["Surface"]["ReadPixel"] = &Surface::ReadPixel;
 
-		Surface_Type["DrawPixel"] = &Surface::DrawPixel;
+		SWGTK["Surface"]["DrawPixel"] = &Surface::DrawPixel;
 
-		Surface_Type["FillRect"] = &Surface::FillRect;
+		SWGTK["Surface"]["FillRect"] = &Surface::FillRect;
 
-		Surface_Type["FillRects"] = &Surface::FillRects;
+		SWGTK["Surface"]["FillRects"] = &Surface::FillRects;
 	}
 
 } // namespace swgtk

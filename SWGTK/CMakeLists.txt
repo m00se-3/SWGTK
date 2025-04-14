@@ -14,6 +14,7 @@ target_compile_definitions(
 	
 	SWGTK_DEFAULT_FONT_DIR="${CMAKE_CURRENT_LIST_DIR}/default_font"
 	SWGTK_ENGINE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/engine.lua"
+	SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
@@ -37,7 +38,7 @@ endif()
 if(CPPLINT_PROGRAM)
 
 	message("--- Enabling cpplint.\n")
-	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-runtime/references")
+	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-build/c++17,-runtime/references,-readability/nolint")
 
 endif()
 

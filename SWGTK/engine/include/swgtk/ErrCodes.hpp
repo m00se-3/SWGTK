@@ -22,6 +22,16 @@ namespace swgtk {
 		ParsingFailed,
 		BadResult,
 	};
+
+    enum class LuaPrivledges {
+        None = 0,
+        UserInput = 1,
+        DrawCalls = 2,
+        WindowControl = 4,
+        Fonts = 8,
+        All = 15,
+    };
+
 } // namespace swgtk
 
 #endif // SWGTK_ENGINE_INCLUDE_SWGTK_ERRCODES_HPP_

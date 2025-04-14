@@ -1,10 +1,10 @@
 -- We are running the main loop from within Lua itself.
 function main()
     if OnCreate() then
-        while App:IsAppRunning() do
-            App:EventsAndTimeStep()
-            if not OnUpdate(App.Timer:GetSeconds()) then App:CloseApp() end
-            Render:BufferPresent()
+        while swgtk.App:IsAppRunning() do
+            swgtk.App:EventsAndTimeStep()
+            if not OnUpdate(swgtk.App.DeltaTime:GetSeconds()) then swgtk.App:CloseApp() end
+            swgtk.Render:BufferPresent()
         end
     end
 end

@@ -1,5 +1,5 @@
 /*
-MIT License
+    MIT License
     Copyright (c) 2023 Samuel Bridgham
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -11,10 +11,12 @@ MIT License
     SOFTWARE.
 */
 
+#include <stdexcept>
 #include <swgtk/App.hpp>
 #include <LuaGame.hpp>
 #include <swgtk/Simple2DRenderer.hpp>
 #include <ranges>
+#include <string>
 #include <unordered_map>
 
 static constexpr auto def_w = 800;
@@ -27,6 +29,10 @@ static constexpr auto argumentPatterns = std::array {
 };
 
 namespace {
+    inline void swlPanic(const sol::optional<std::string>& msg) {
+        fmt::print(stderr, "Exception occurred: {}\n", msg.value_or("Unknown error."));
+    }
+
     void processArguments(const auto& arguments, std::unordered_map<std::string, std::string>& options, std::string& startupFile) {
         std::string currentArg;
 
@@ -61,18 +67,25 @@ int main (const int argc, const char** argv) {
             const auto& h = (options.contains("--height")) ? std::stoi(options.at("--height")) : def_h;
 
             if(auto swl = swgtk::App{}; swl.InitGraphics(title.c_str(), w, h, swgtk::Simple2DRenderer::Create())) {
-                sol::state lua;
-                auto* render = swgtk::RenderImpl<swgtk::Simple2DRenderer>(swl.Renderer());
+                sol::state lua{sol::c_call<decltype(&swlPanic), &swlPanic>};
 
-                swl.InitLua(lua, true);
-                swl.GetFontHandle().InitLua(lua);
-                render->InitLua(lua);
+                if(const auto mfile = lua.safe_script_file(SWGTK_TABLE_LUA_FILE); !mfile.valid()) {
+                    throw std::runtime_error("Swgtk could not initialize correctly.");
+                }
+
+                swl.InitLua(lua, swgtk::LuaPrivledges::All);
 
                 if(startupFile.empty() || !startupFile.ends_with(".lua")) { throw std::runtime_error("No startup file provided."); }
 
                 swl.MakeScene<swgtk::LuaGame>(startupFile, lua);
 
-                if(swl.InitializeGame()){}
+                if(const auto mfile = lua.safe_script_file(SWGTK_ENGINE_LUA_FILE); !mfile.valid()) {
+                    throw std::runtime_error("Swl could not initialize correctly.");
+                }
+
+                if(!swl.InitializeGame()) {
+                    throw std::runtime_error("main() failed to execute successfully.");
+                }
             }
         } else {
             throw std::runtime_error("No startup file provided.");

@@ -18,6 +18,7 @@
 #include <memory>
 #include <span>
 #include <numbers>
+#include <type_traits>
 
 #ifdef _DEBUG
 #include <fmt/format.h>
@@ -77,6 +78,22 @@ namespace swgtk {
     private:
         std::shared_ptr<SDL_Surface> _surface;
     };
+
+    // Enum class operators.
+
+    template <typename T>
+    concept ScopedEnum = std::is_scoped_enum_v<T>;
+
+    template <ScopedEnum Enum>
+    [[nodiscard]] constexpr Enum operator&(const Enum rhs, const Enum lhs) {
+        return Enum{std::to_underlying(rhs) & std::to_underlying(lhs)};
+    }
+
+    template <ScopedEnum Enum>
+    [[nodiscard]] constexpr Enum operator|(const Enum rhs, const Enum lhs) {
+        return Enum{std::to_underlying(rhs) | std::to_underlying(lhs)};
+    }
+
 
     // A collection of math functions and pre-calculated values.
     namespace math {

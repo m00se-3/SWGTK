@@ -22,8 +22,11 @@
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
 #include <filesystem>
-#include <sol/optional_implementation.hpp>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <sol/optional_implementation.hpp>
+#include <memory>
 
 namespace swgtk {
 	bool Simple2DRenderer::PrepareDevice(SDL_Window* window) {
@@ -190,35 +193,39 @@ namespace swgtk {
 		return Texture{texture};
 	}
 
-	void Simple2DRenderer::InitLua(sol::state& lua) {
+	void Simple2DRenderer::InitLua(sol::state* lua_) {
+
+		auto& lua = *lua_;
+		auto SWGTK = lua["swgtk"];
+
+		// NOLINTBEGIN(*-easily-swappable-parameters)
 		
-		auto SDL_Vertex_Type = lua.new_usertype<SDL_Vertex>(
+		SWGTK["Vertex2D"] = lua.new_usertype<SDL_Vertex>(
 		"Vertex2D", "position", &SDL_Vertex::position, "color", &SDL_Vertex::color, "tex_coord", &SDL_Vertex::tex_coord
 		);
 
-		SDL_Vertex_Type["new"] = [](const sol::optional<SDL_FPoint> pos, const sol::optional<SDL_FColor> &col, const sol::optional<SDL_FPoint> tex) -> SDL_Vertex {
+		SWGTK["Vertex2D"]["new"] = [](const sol::optional<SDL_FPoint> pos, const sol::optional<SDL_FColor> &col, const sol::optional<SDL_FPoint> tex) -> SDL_Vertex {
 				return SDL_Vertex{ 
 					.position=pos.value_or(SDL_FPoint{}), 
 					.color=col.value_or(SDL_FColor{}), 
 					.tex_coord=tex.value_or(SDL_FPoint{}) };
 			};
 
-		auto SDL_Color_Type = lua.new_usertype<SDL_Color>(
+		SWGTK["Colori"] = lua.new_usertype<SDL_Color>(
 			"Colori", "r", &SDL_Color::r, "g", &SDL_Color::g, "b", &SDL_Color::b, "a", &SDL_Color::a
 			);
 
-		// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 
-		SDL_Color_Type["new"] = [] (const uint8_t r, const uint8_t g, const uint8_t b, const sol::optional<uint8_t> a) -> SDL_Color {
+		SWGTK["Colori"]["new"] = [] (const uint8_t r, const uint8_t g, const uint8_t b, const sol::optional<uint8_t> a) -> SDL_Color {
 			static constexpr auto fullAplha = 255u;
 			return SDL_Color{ .r=r, .g=g, .b=b, .a=a.value_or(fullAplha) };
 		};
 
-		auto SDL_FColor_Type = lua.new_usertype<SDL_FColor>(
+		SWGTK["Colorf"] = lua.new_usertype<SDL_FColor>(
 			"Colorf", "r", &SDL_FColor::r, "g", &SDL_FColor::g, "b", &SDL_FColor::b, "a", &SDL_FColor::a
 			);
 
-		SDL_FColor_Type["new"] = [] (const float r, const float g, const float b, const sol::optional<float> a) -> SDL_FColor {
+		SWGTK["Colorf"]["new"] = [] (const float r, const float g, const float b, const sol::optional<float> a) -> SDL_FColor {
 			return SDL_FColor{ .r=r, .g=g, .b=b, .a=a.value_or(1.0f) };
 		};
 
@@ -233,6 +240,7 @@ namespace swgtk {
 				std::make_pair("Mul",	SDL_BLENDMODE_MUL),
 				std::make_pair("Invalid", SDL_BLENDMODE_INVALID),
 			});
+		SWGTK["BlendMode"] = lua["BlendMode"];
 
 		lua.new_enum<SDL_PixelFormat>("PixelFormat",
 			{
@@ -245,27 +253,28 @@ namespace swgtk {
 				std::make_pair("BGRX32", SDL_PIXELFORMAT_BGRX32),
 				std::make_pair("XBGR32", SDL_PIXELFORMAT_XBGR32),
 			});
+		SWGTK["PixelFormat"] = lua["PixelFormat"];
 
-		auto Texture_Type = lua.new_usertype<Texture>("Texture", sol::constructors<Texture(), Texture(SDL_Texture*), Texture(const Texture&)>());
+		SWGTK["Texture"] = lua.new_usertype<Texture>("Texture", sol::constructors<Texture(), Texture(SDL_Texture*), Texture(const Texture&)>());
 
-		Texture_Type["SetBlendMode"] = &Texture::SetBlendMode;
+		SWGTK["Texture"]["SetBlendMode"] = &Texture::SetBlendMode;
 
-		Texture_Type["SetTint"] = [](const Texture& self, const sol::optional<SDL_FColor> color) {
+		SWGTK["Texture"]["SetTint"] = [](const Texture& self, const sol::optional<SDL_FColor> color) {
 				self.SetTint(color.value_or(SDL_FColor{ .r=1.0, .g=1.0f, .b=1.0f, .a=1.0f }));
 			};
 
-		Texture_Type["SetScaleMode"] = &Texture::SetScaleMode;
+		SWGTK["Texture"]["SetScaleMode"] = &Texture::SetScaleMode;
 
-		Texture_Type["GetBlendMode"] = &Texture::GetBlendMode;
+		SWGTK["Texture"]["GetBlendMode"] = &Texture::GetBlendMode;
 
-		Texture_Type["GetTint"] = &Texture::GetTint;
+		SWGTK["Texture"]["GetTint"] = &Texture::GetTint;
 
-		Texture_Type["GetScaleMode"] = &Texture::GetScaleMode;
+		SWGTK["Texture"]["GetScaleMode"] = &Texture::GetScaleMode;
 
-		Texture_Type["GetSize"] = &Texture::GetSize;
+		SWGTK["Texture"]["GetSize"] = &Texture::GetSize;
 
 		auto Simple2DRenderer_Type = lua.new_usertype<Simple2DRenderer>("RenderingContext", sol::no_constructor);
-		lua["Render"] = shared_from_this();
+		SWGTK["Render"] = shared_from_this();
 
 
 		Simple2DRenderer_Type["BufferClear"] = &Simple2DRenderer::BufferClear;
@@ -302,7 +311,11 @@ namespace swgtk {
 					flip.value_or(SDL_FLIP_NONE));
 			};
 
-		// NOLINTEND(bugprone-easily-swappable-parameters)
+		// NOLINTEND(*-easily-swappable-parameters)
+
+		Simple2DRenderer_Type["SetVSync"] = &Simple2DRenderer::SetVSync;
+
+		Simple2DRenderer_Type["GetVSync"] = &Simple2DRenderer::GetVSync;
 
 		Simple2DRenderer_Type["LoadTextureImg"] = &Simple2DRenderer::LoadTextureImg;
 

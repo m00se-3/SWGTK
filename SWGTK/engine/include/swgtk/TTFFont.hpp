@@ -64,7 +64,9 @@ namespace swgtk {
         // Used internally, do not call.
         void ClearFonts() const;
 
-        [[nodiscard]] Font GetDefaultFont() const { return _ttfFonts.at("Natural Mono-Regular"); }
+        [[nodiscard]] Font GetDefaultFont() const { 
+            return _ttfFonts.at("Natural Mono-Regular"); 
+        }
 
         void InitLua(sol::state& lua);
 

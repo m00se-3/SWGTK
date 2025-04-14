@@ -1,6 +1,7 @@
 {
     "Lua.diagnostics.globals": [
-        
+        "swgtk",
+        "FontStyle"
     ],
     "Lua.completion.showWord": "Enable",
     "Lua.completion.workspaceWord": true,
@@ -11,5 +12,5 @@
         "unmatchedSuppression",
         "missingIncludeSystem"
     ],
-    "cpp-checker.cpplint.--filter=": "-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-runtime/references"
+    "cpp-checker.cpplint.--filter=": "-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-build/c++17,-runtime/references,-readability/nolint"
 }

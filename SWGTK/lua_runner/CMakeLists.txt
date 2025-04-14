@@ -24,7 +24,7 @@ endif()
 if(CPPLINT_PROGRAM)
 
     message("--- Enabling cpplint.\n")
-    set_target_properties(swl PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-runtime/references")
+    set_target_properties(swl PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-build/c++17,-runtime/references,-readability/nolint")
 
 endif()
 

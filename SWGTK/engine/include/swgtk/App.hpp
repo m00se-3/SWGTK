@@ -16,6 +16,7 @@
 #include "swgtk/Input.hpp"
 #include "swgtk/RendererBase.hpp"
 #include <swgtk/Timer.hpp>
+#include <swgtk/ErrCodes.hpp>
 #include <SDL3/SDL_video.h>
 #include <memory>
 #include <string>
@@ -78,8 +79,18 @@ namespace swgtk {
 		void CloseApp();
 		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, const std::shared_ptr<RendererBase>& renderPtr);
 
-		void InitLua(sol::state& lua, bool acceptUserInput = false);
+		void InitLua(sol::state& lua, LuaPrivledges priv = LuaPrivledges::None);
 
+		void SetWindowSize(int w, int h) { SDL_SetWindowSize(_window, w, h); }
+		void SetTitle(const std::string& value) { SDL_SetWindowTitle(_window, value.c_str()); }
+		void SetFullscreen(bool value) { SDL_SetWindowFullscreen(_window, value); }
+		void ShowWindow() { SDL_ShowWindow(_window); }
+		void HideWindow() { SDL_HideWindow(_window); }
+		void RaiseWindow() { SDL_RaiseWindow(_window); }
+		void RestoreWindow() { SDL_RestoreWindow(_window); }
+		void MaximizeWindow() { SDL_MaximizeWindow(_window); }
+		void MinimizeWindow() { SDL_MinimizeWindow(_window); }
+		
 		[[nodiscard]] Font GetDefaultFont() const { return _fonts.GetDefaultFont(); }
 		void AddFont(const std::filesystem::path& path) { _fonts.AddFont(path); }
 		[[nodiscard]] Font GetFont(const std::string& path) const { return _fonts.GetFont(path); }
@@ -97,6 +108,8 @@ namespace swgtk {
 
 			return std::make_pair(width, height);
 		}
+
+		[[nodiscard]] bool IsFullscreenBorderless() const { return SDL_GetWindowFullscreenMode(_window) == nullptr; }
 
 		/*
 			Input state and event polling for the client's logic.

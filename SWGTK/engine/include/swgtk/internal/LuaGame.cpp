@@ -11,6 +11,7 @@
     SOFTWARE.
 */
 #include <LuaGame.hpp>
+#include <string>
 #include <fmt/format.h>
 
 namespace swgtk {
@@ -28,11 +29,6 @@ namespace swgtk {
                 if(const sol::optional up = (*_lua)["OnUpdate"]; !up) {
                     throw std::runtime_error("OnUpdate function could not be found.");
                 }
-
-                if(const auto mfile = _lua->safe_script_file(SWGTK_ENGINE_LUA_FILE); !mfile.valid()) {
-                    throw std::runtime_error(fmt::format("Could not load lua script: {}", SWGTK_ENGINE_LUA_FILE));
-                }
-
 
             }
         } else {

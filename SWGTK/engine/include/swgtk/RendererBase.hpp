@@ -22,10 +22,22 @@ extern "C" {
     struct TTF_Font;
 }
 
+namespace sol {
+    class state;
+}
+
 namespace swgtk {
 
     static constexpr auto defaultAlphaFloat = 1.0f;
     static constexpr auto defaultAlphaInt = 255u;
+
+    // SDL VSync
+    enum class VSync {
+        Adaptive = -1,
+        Disable = 0,
+        Enable = 1,
+        EnableEveryOther = 2,
+    };
 
     /**
      * @brief class RendererBase
@@ -78,6 +90,12 @@ namespace swgtk {
          * 
          */
         virtual void DestroyDevice() = 0;
+
+        virtual void SetVSync(VSync value) = 0;
+
+        [[nodiscard]] virtual VSync GetVSync() const = 0;
+
+        virtual void InitLua(sol::state*) = 0;
 
         constexpr virtual std::shared_ptr<RendererBase> GetRef() = 0;
     };
