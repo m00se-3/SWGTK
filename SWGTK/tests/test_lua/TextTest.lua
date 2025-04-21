@@ -1,11 +1,11 @@
 local mouse = {}
 local background = {}
 
-function OnCreate()
+local full = false
+
+function swgtk.OnCreate()
     mouse.texture = swgtk.Render:LoadBlendedWrapText("Hello\nLua!", 0, swgtk.Colori.new(255, 0, 0))
     mouse.angle = 0.0
-
-    swgtk.App:SetFullscreen(true)
 
     swgtk.Fonts.SetFontStyle(swgtk.Fonts:GetDefaultFont(), swgtk.FontStyle.Italic)
 
@@ -14,7 +14,7 @@ function OnCreate()
     return true
 end
 
-function OnUpdate(dt)
+function swgtk.OnUpdate(dt)
     mouse.pos = swgtk.App:GetMousePos()
     mouse.angle = mouse.angle + (swgtk.math.pi * dt)
 
@@ -23,7 +23,8 @@ function OnUpdate(dt)
     end
 
     if swgtk.App:IsKeyReleased(swgtk.KeyCode.Space) then
-        swgtk.App:SetFullscreen(false)
+        full = not full
+        swgtk.App:SetFullscreen(full)
     end
 
     local width, height = mouse.texture:GetSize()
@@ -38,7 +39,7 @@ function OnUpdate(dt)
     swgtk.Render:BufferClear(swgtk.Colorf.new(0.0, 0.0, 0.0))
 
     swgtk.Render:DrawTexture(background)
-    swgtk.Render:DrawTextureRotated(mouse.texture, nil, rect, swgtk.math.radiansToDegrees(mouse.angle))
+    swgtk.Render:DrawTextureRotated(mouse.texture, nil, rect, swgtk.math.RadiansToDegrees(mouse.angle))
 
     return true
 end

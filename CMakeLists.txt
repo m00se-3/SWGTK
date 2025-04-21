@@ -2,7 +2,7 @@
 
 project(
 	"SWGTK"
-	DESCRIPTION "SDL powered, Web enabled, Game Tool Kit" 
+	DESCRIPTION "Software and Games Tool Kit" 
 	HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
 )
 
@@ -56,7 +56,8 @@ endif()
 
 CPMAddPackage("gh:ThePhD/sol2@3.5.0")
 
-# SDL and external dependencies
+# SDL and external SDL dependencies
+# If any more external dependencies for SDL become necessary in the future, they should be added before any SDL.(For consistency)
 
 if($ENV{SWGTK_INSTALL_FREETYPE})
   CPMAddPackage("gh:libsdl-org/freetype#VER-2-13-2")
@@ -76,8 +77,6 @@ CPMAddPackage(
   "SDLIMAGE_VENDORED false"
 )
 
-# If any more external dependencies become necessary in the future, they should be added before any SDL.(For consistency)
-
 CPMAddPackage(
   NAME "SDL3_ttf"
   GITHUB_REPOSITORY "libsdl-org/SDL_ttf"
@@ -87,17 +86,11 @@ CPMAddPackage(
   "FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}"
 )
 
-CPMAddPackage(
-    NAME "SDL3_mixer"
-    GITHUB_REPOSITORY "libsdl-org/SDL_mixer"
-    GIT_TAG "main"
-    OPTIONS 
-    "SDL3MIXER_OPUS false"
-    "SDL3MIXER_MOD false"
-)
-
 CPMAddPackage("gh:fmtlib/fmt#11.1.2")
 CPMAddPackage("gh:gsl-lite/gsl-lite@0.42.0")
+
+# Filters to set for each CPPLINT property.
+set(SWGTK_CPPLINT_FILTERS "--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-build/c++17,-runtime/references,-readability/nolint")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")

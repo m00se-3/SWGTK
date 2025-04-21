@@ -53,7 +53,7 @@ namespace swgtk {
 		_render->DrawTexture(_background);
 
 		// Rotating in SDL3 is in degrees...
-		_render->DrawTexture(_mouse.texture, std::nullopt, rect, math::radiansToDegrees(_mouse.angle));
+		_render->DrawTexture(_mouse.texture, std::nullopt, rect, math::RadiansToDegrees(_mouse.angle));
 
 
 		// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)

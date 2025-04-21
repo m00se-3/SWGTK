@@ -100,25 +100,25 @@ namespace swgtk {
         inline constexpr double pi2 = std::numbers::pi * 2.0;
         inline constexpr float pi2f = std::numbers::pi_v<float> * 2.0f;
 
-        [[nodiscard]] constexpr double radiansToDegrees(const double radians) {
+        [[nodiscard]] constexpr double RadiansToDegrees(const double radians) {
             static constexpr auto oneEighty = 180.0;
             
             return  (radians / std::numbers::pi) * oneEighty;
         }
 
-        [[nodiscard]] constexpr float radiansToDegrees(const float radians) {
+        [[nodiscard]] constexpr float RadiansToDegrees(const float radians) {
             static constexpr auto oneEighty = 180.0f;
             
             return  (radians / std::numbers::pi_v<float>) * oneEighty;
         }
 
-        [[nodiscard]] constexpr double degreesToRadians(const double degrees) {
+        [[nodiscard]] constexpr double DegreesToRadians(const double degrees) {
             static constexpr auto oneEighty = 180.0;
 
             return (degrees / oneEighty) * std::numbers::pi;
         }
 
-        [[nodiscard]] constexpr float degreesToRadians(const float degrees) {
+        [[nodiscard]] constexpr float DegreesToRadians(const float degrees) {
             static constexpr auto oneEighty = 180.0f;
 
             return (degrees / oneEighty) * std::numbers::pi_v<float>;

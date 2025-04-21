@@ -19,7 +19,6 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
-#include <SDL3_mixer/SDL_mixer.h>
 #include <gsl/gsl-lite.hpp>
 
 #include <memory>
@@ -32,16 +31,14 @@ namespace swgtk {
 
 		SDL_DestroyWindow(_window);
 
-		Mix_Quit();
 		TTF_Quit();
 		SDL_Quit();
 	}
 
 	bool App::InitGraphics(const char* appName, const int width, const int height, const std::shared_ptr<RendererBase> &renderPtr) {
 		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
-		constexpr int MixFlags = 0;
 
-		if (SDL_Init(InitFlags) && TTF_Init() && Mix_Init(MixFlags) == MixFlags) {
+		if (SDL_Init(InitFlags) && TTF_Init()) {
 
 			if (_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN); _window != nullptr)	{
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -369,11 +366,11 @@ namespace swgtk {
 		mathTable["pi"] = std::numbers::pi;
 		mathTable["pi2"] = math::pi2;
 
-		lua.set_function("radiansToDegrees", [] (const double radians) { return math::radiansToDegrees(radians); });
-		mathTable["radiansToDegrees"] = lua["radiansToDegrees"];
+		lua.set_function("RadiansToDegrees", [] (const double radians) { return math::RadiansToDegrees(radians); });
+		mathTable["RadiansToDegrees"] = lua["RadiansToDegrees"];
 
-		lua.set_function("degreesToRadians", [] (const double degrees) { return math::radiansToDegrees(degrees); });
-		mathTable["degreesToRadians"] = lua["degreesToRadians"];
+		lua.set_function("DegreesToRadians", [] (const double degrees) { return math::DegreesToRadians(degrees); });
+		mathTable["DegreesToRadians"] = lua["DegreesToRadians"];
 
 		SWGTK["Surface"] = lua.new_usertype<Surface>("Surface",
 			sol::constructors<Surface(), Surface(SDL_Surface*), Surface(const Surface&),

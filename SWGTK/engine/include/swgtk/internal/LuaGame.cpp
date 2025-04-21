@@ -21,13 +21,14 @@ namespace swgtk {
 
             if(const sol::protected_function_result file = lua.safe_script_file(path.string()); file.valid())
             {
+                auto swl = (*_lua)["swgtk"];
 
-                if(const sol::optional cr = (*_lua)["OnCreate"]; !cr) {
-                    throw std::runtime_error("OnCreate function could not be found.");
+                if(const auto cr = swl["OnCreate"]; !cr.valid()) {
+                    throw std::runtime_error("No OnCreate function found in the swgtk namespace.");
                 }
 
-                if(const sol::optional up = (*_lua)["OnUpdate"]; !up) {
-                    throw std::runtime_error("OnUpdate function could not be found.");
+                if(const auto up = swl["OnUpdate"]; !up.valid()) {
+                    throw std::runtime_error("No OnUpdate function could be found in the swgtk namespace.");
                 }
 
             }

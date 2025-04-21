@@ -1,6 +1,7 @@
 ﻿add_library(SWGTK STATIC)
 
 set(SWGTK_ENGINE_INTERNALS ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
+set(SWGTK_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 target_compile_options(SWGTK PRIVATE ${CompilerFlags})
 target_link_options(SWGTK PRIVATE ${LinkerFlags})
@@ -38,10 +39,12 @@ endif()
 if(CPPLINT_PROGRAM)
 
 	message("--- Enabling cpplint.\n")
-	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-build/c++17,-runtime/references,-readability/nolint")
+	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};${SWGTK_CPPLINT_FILTERS}")
 
 endif()
 
+# This extra directory allows for SDL to #include <strings.h>.
+# strings.h is not available on all platforms, so we implemented our own.
 target_include_directories(SWGTK PUBLIC ${SWGTK_ENGINE_INTERNALS})
 
 target_sources(
@@ -87,7 +90,6 @@ target_link_libraries(
 
 	SDL3::SDL3
 	SDL3_image::SDL3_image
-	SDL3_mixer::SDL3_mixer
 	SDL3_ttf::SDL3_ttf
 	lua
 	sol2

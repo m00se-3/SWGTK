@@ -21,12 +21,16 @@ if(CPPCHECK_PROGRAM)
 
 endif()
 
+if(CPPLINT_PROGRAM)
+	set_target_properties(Test_TextSample PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};${SWGTK_CPPLINT_FILTERS}")
+endif()
+
 target_include_directories(
 	Test_TextSample
 
 	PUBLIC 
 
-	${CMAKE_CURRENT_LIST_DIR}/../../../engine/include
+	${SWGTK_ROOT_DIRECTORY}/engine/include
 	${CMAKE_CURRENT_LIST_DIR}
 	${lua_SOURCE_DIR}
 )
