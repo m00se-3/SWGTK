@@ -22,7 +22,7 @@ if(CPPCHECK_PROGRAM)
 endif()
 
 if(CPPLINT_PROGRAM)
-	set_target_properties(Test_TextSample PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};${SWGTK_CPPLINT_FILTERS}")
+	set_target_properties(Test_TextSample PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
 endif()
 
 target_include_directories(

@@ -25,16 +25,13 @@ namespace swgtk {
     }
 
     LuaGame::LuaGame(const std::filesystem::path& path, App* app) : _lua(sol::c_call<decltype(&panic), &panic>) {
-        if(const auto mfile = _lua.safe_script_file(SWGTK_TABLE_LUA_FILE); !mfile.valid()) {
-            throw std::runtime_error("Swgtk could not initialize correctly.");
-        }
-
         app->InitLua(_lua, LuaPrivledges::All);
 
         if(std::filesystem::exists(path) && path.extension() == ".lua") {
 
-            if(const sol::protected_function_result file = _lua.safe_script_file(path.string()); file.valid())
-            {
+            // false positive
+            // cppcheck-suppress syntaxError
+            if(const auto file = _lua.safe_script_file(path.string()); file.valid()) {
                 auto swl = _lua["swgtk"];
 
                 if(const auto cr = swl["OnCreate"]; !cr.valid()) {

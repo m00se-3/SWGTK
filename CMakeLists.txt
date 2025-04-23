@@ -90,8 +90,5 @@ CPMAddPackage(
 CPMAddPackage("gh:fmtlib/fmt#11.1.2")
 CPMAddPackage("gh:gsl-lite/gsl-lite@0.42.0")
 
-# Filters to set for each CPPLINT property.
-set(SWGTK_CPPLINT_FILTERS "--filter=-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-build/c++17,-runtime/references,-readability/nolint")
-
 # Include sub-projects.
 add_subdirectory ("SWGTK")

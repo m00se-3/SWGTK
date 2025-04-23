@@ -40,7 +40,9 @@ namespace swgtk {
 
 		if (SDL_Init(InitFlags) && TTF_Init()) {
 
-			if (_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN); _window != nullptr)	{
+			// false positive
+			// cppcheck-suppress syntaxError
+			if(_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN); _window != nullptr) {
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 				_renderer = std::move(renderPtr);
 				return true;
@@ -154,6 +156,8 @@ namespace swgtk {
 	void App::InitLua(sol::state& lua, const LuaPrivledges priv) {
 		
 		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
+
+		lua.safe_script_file(SWGTK_TABLE_LUA_FILE);
 
 		auto SWGTK = lua["swgtk"];
 

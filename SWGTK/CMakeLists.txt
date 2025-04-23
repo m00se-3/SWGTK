@@ -39,7 +39,7 @@ endif()
 if(CPPLINT_PROGRAM)
 
 	message("--- Enabling cpplint.\n")
-	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT "${CPPLINT_PROGRAM};${SWGTK_CPPLINT_FILTERS}")
+	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
 
 endif()
 
