@@ -19,6 +19,7 @@
 #include <span>
 #include <numbers>
 #include <type_traits>
+#include <utility>
 
 #ifdef _DEBUG
 #include <fmt/format.h>

@@ -77,19 +77,19 @@ namespace swgtk {
 		}
 
 		void CloseApp();
-		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, const std::shared_ptr<RendererBase>& renderPtr);
+		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, std::shared_ptr<RendererBase>&& renderPtr);
 
 		void InitLua(sol::state& lua, LuaPrivledges priv = LuaPrivledges::None);
 
-		void SetWindowSize(int w, int h) { SDL_SetWindowSize(_window, w, h); }
-		void SetTitle(const std::string& value) { SDL_SetWindowTitle(_window, value.c_str()); }
-		void SetFullscreen(bool value) { SDL_SetWindowFullscreen(_window, value); }
-		void ShowWindow() { SDL_ShowWindow(_window); }
-		void HideWindow() { SDL_HideWindow(_window); }
-		void RaiseWindow() { SDL_RaiseWindow(_window); }
-		void RestoreWindow() { SDL_RestoreWindow(_window); }
-		void MaximizeWindow() { SDL_MaximizeWindow(_window); }
-		void MinimizeWindow() { SDL_MinimizeWindow(_window); }
+		void SetWindowSize(const int w, const int h) const { SDL_SetWindowSize(_window, w, h); }
+		void SetTitle(const std::string& value) const { SDL_SetWindowTitle(_window, value.c_str()); }
+		void SetFullscreen(const bool value) const { SDL_SetWindowFullscreen(_window, value); }
+		void ShowWindow() const { SDL_ShowWindow(_window); }
+		void HideWindow() const { SDL_HideWindow(_window); }
+		void RaiseWindow() const { SDL_RaiseWindow(_window); }
+		void RestoreWindow() const { SDL_RestoreWindow(_window); }
+		void MaximizeWindow() const { SDL_MaximizeWindow(_window); }
+		void MinimizeWindow() const { SDL_MinimizeWindow(_window); }
 		
 		[[nodiscard]] Font GetDefaultFont() const { return _fonts.GetDefaultFont(); }
 		void AddFont(const std::filesystem::path& path) { _fonts.AddFont(path); }

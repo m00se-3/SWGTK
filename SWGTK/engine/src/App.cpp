@@ -35,14 +35,14 @@ namespace swgtk {
 		SDL_Quit();
 	}
 
-	bool App::InitGraphics(const char* appName, const int width, const int height, const std::shared_ptr<RendererBase> &renderPtr) {
-		constexpr int InitFlags = SDL_INIT_VIDEO | SDL_INIT_AUDIO;
+	bool App::InitGraphics(const char* appName, const int width, const int height, std::shared_ptr<RendererBase>&& renderPtr) {
+		constexpr auto InitFlags = SDL_INIT_VIDEO;
 
 		if (SDL_Init(InitFlags) && TTF_Init()) {
 
 			if (_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN); _window != nullptr)	{
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-				_renderer = renderPtr;
+				_renderer = std::move(renderPtr);
 				return true;
 			}
 		} 

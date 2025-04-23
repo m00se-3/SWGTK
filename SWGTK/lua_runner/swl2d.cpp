@@ -31,21 +31,8 @@ int main (const int argc, const char** argv) {
             const auto& h = (options.contains("--height")) ? std::stoi(options.at("--height")) : swl::def_h;
 
             if(auto swl2d = swgtk::App{}; swl2d.InitGraphics(title.c_str(), w, h, swgtk::Simple2DRenderer::Create())) {
-                sol::state lua{sol::c_call<decltype(&swl::panic), &swl::panic>};
 
-                if(const auto mfile = lua.safe_script_file(SWGTK_TABLE_LUA_FILE); !mfile.valid()) {
-                    throw std::runtime_error("Swgtk could not initialize correctly.");
-                }
-
-                swl2d.InitLua(lua, swgtk::LuaPrivledges::All);
-
-                if(startupFile.empty() || !startupFile.ends_with(".lua")) { throw std::runtime_error("No startup file provided."); }
-
-                swl2d.MakeScene<swgtk::LuaGame>(startupFile, lua);
-
-                if(const auto mfile = lua.safe_script_file(SWGTK_ENGINE_LUA_FILE); !mfile.valid()) {
-                    throw std::runtime_error("Swl could not initialize correctly.");
-                }
+                swl2d.MakeScene<swgtk::LuaGame>(startupFile, &swl2d);
 
                 if(!swl2d.InitializeGame()) {
                     throw std::runtime_error("main() failed to execute successfully.");

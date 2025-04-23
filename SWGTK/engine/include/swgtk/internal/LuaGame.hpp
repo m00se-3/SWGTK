@@ -15,7 +15,7 @@
 
 #include <swgtk/Scene.hpp>
 #include <filesystem>
-#include <gsl/gsl-lite.hpp>
+#include <sol/sol.hpp>
 
 namespace swgtk {
     /**
@@ -23,13 +23,13 @@ namespace swgtk {
      */
     class LuaGame final : public Scene::Node {
     public:
-        LuaGame(const std::filesystem::path& path, sol::state& lua);
+        LuaGame(const std::filesystem::path& path, App* app);
 
         [[nodiscard]] bool Create([[maybe_unused]]Scene& scene) override;
         [[nodiscard]] bool Update([[maybe_unused]]Scene& scene, [[maybe_unused]]float dt) override { return true; }
 
     private:
-        gsl::not_null<sol::state*> _lua;
+        sol::state _lua;
     };
 
 } // namespace swgtk

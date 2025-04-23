@@ -32,10 +32,6 @@ namespace swl {
     static constexpr auto def_w = 800;
     static constexpr auto def_h = 600;
 
-    inline void panic(const sol::optional<std::string>& msg) {
-        fmt::print(stderr, "Exception occurred: {}\n", msg.value_or("Unknown error."));
-    }
-
     inline void processArguments(const auto& arguments, std::unordered_map<std::string, std::string>& options, std::string& startupFile) {
         std::string currentArg;
 

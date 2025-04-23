@@ -68,7 +68,8 @@ if($ENV{SWGTK_INSTALL_FREETYPE})
   endif()
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.8")
+CPMAddPackage("gh:libsdl-org/SDL#release-3.2.10")
+
 CPMAddPackage(
   NAME "SDL_image"
   GITHUB_REPOSITORY "libsdl-org/SDL_image"

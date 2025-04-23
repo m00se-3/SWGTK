@@ -14,14 +14,28 @@
 #include <string>
 #include <fmt/format.h>
 
+#include "swgtk/App.hpp"
+
 namespace swgtk {
 
-    LuaGame::LuaGame(const std::filesystem::path& path, sol::state& lua) : _lua(gsl::make_not_null<sol::state*>(&lua)) {
-        if(std::filesystem::exists(path)) {
+    namespace {
+        inline void panic(const sol::optional<std::string>& msg) {
+            fmt::print(stderr, "Exception occurred: {}\n", msg.value_or("Unknown error."));
+        }
+    }
 
-            if(const sol::protected_function_result file = lua.safe_script_file(path.string()); file.valid())
+    LuaGame::LuaGame(const std::filesystem::path& path, App* app) : _lua(sol::c_call<decltype(&panic), &panic>) {
+        if(const auto mfile = _lua.safe_script_file(SWGTK_TABLE_LUA_FILE); !mfile.valid()) {
+            throw std::runtime_error("Swgtk could not initialize correctly.");
+        }
+
+        app->InitLua(_lua, LuaPrivledges::All);
+
+        if(std::filesystem::exists(path) && path.extension() == ".lua") {
+
+            if(const sol::protected_function_result file = _lua.safe_script_file(path.string()); file.valid())
             {
-                auto swl = (*_lua)["swgtk"];
+                auto swl = _lua["swgtk"];
 
                 if(const auto cr = swl["OnCreate"]; !cr.valid()) {
                     throw std::runtime_error("No OnCreate function found in the swgtk namespace.");
@@ -32,14 +46,19 @@ namespace swgtk {
                 }
 
             }
+
+            if(const auto mfile = _lua.safe_script_file(SWGTK_ENGINE_LUA_FILE); !mfile.valid()) {
+                throw std::runtime_error("Swl could not initialize correctly.");
+            }
+
         } else {
-            throw std::runtime_error(fmt::format("Could not load lua script: {}", path.string()));
+            throw std::runtime_error(fmt::format("No startup file provided: {}", path.string()));
         }
     }
 
     bool LuaGame::Create([[maybe_unused]]Scene& scene) {
-        if(const sol::optional<sol::protected_function> func = (*_lua)["main"]; func) {
-            const sol::protected_function_result result = (*func)();
+        if(const sol::protected_function func = _lua["main"]; func.valid()) {
+            const sol::protected_function_result result = func();
             return result.valid();
         }
 
