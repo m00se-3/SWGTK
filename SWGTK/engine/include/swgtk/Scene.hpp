@@ -29,17 +29,8 @@ namespace swgtk
 	/**
 		@brief Describes the game simulation.
 
-		A game scene has the following lifetime:
-
-		- Create(Scene&) is called once when the scene is initialized. This allows the program
-			to initialize the simulation and allocate any needed resources.
-
-		- Update(Scene&, float) is called once each frame. This is where all the simulation logic is
-			kept, including input handling.
-		
-		- Destroy(Scene&) is called once at the end of the scene's lifetime. This function is *optional*.
-			You only need to use it if you are using non-RAII structures for your allocated
-			resources. (This is not recommended!)
+		This intermediary class may be a needless middles man right now. However, I am looking into incorporating
+		trees of swgtk::Scene::Nodes as part of the library for complex applications.
 
 		Users should inject their code into the engine by inheriting from swgtk::Scene::Node.
 	*/

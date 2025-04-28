@@ -64,7 +64,7 @@ namespace swgtk {
 } // namespace swgtk
 
 
-int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) { // NOLINT
+int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
 	constexpr auto w = 800;
 	constexpr auto h = 600;
 

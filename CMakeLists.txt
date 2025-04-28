@@ -4,6 +4,7 @@ project(
 	"SWGTK"
 	DESCRIPTION "Software and Games Tool Kit" 
 	HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
+  VERSION 0.1
 )
 
 include("CPM.cmake")

@@ -31,6 +31,12 @@
 #include <optional>
 
 namespace swgtk {
+
+	/**
+	 * @brief This is currently the class you want to use for basic hardware 2D rendering.
+	   This is based on SDL3's hardware accelerated 2D rendering backend. It does not support shaders.
+	 * 
+	 */
     class Simple2DRenderer : public RendererBase, public std::enable_shared_from_this<Simple2DRenderer>{
 	public:
 
@@ -132,11 +138,9 @@ namespace swgtk {
 
 		/**
 			Used to draw arbitrary shapes from a list of vertices. This is helpful when drawing things like particles.
-
-			It's okay to allow for nullptr in 'texture' because SDL handles it for us.
 		*/ 
-		void DrawGeometry(SDL_Texture* texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
-			SDL_RenderGeometry(_render, texture, vertices.data(), static_cast<int>(std::ssize(vertices)),
+		void DrawGeometry(Texture texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
+			SDL_RenderGeometry(_render, *texture, vertices.data(), static_cast<int>(std::ssize(vertices)),
 									indices.data(), static_cast<int>(std::ssize(indices)));
 		}
 
@@ -151,7 +155,7 @@ namespace swgtk {
 			return res;
 		}
 
-		bool SetDrawTarget(SDL_Texture* ptr = nullptr) const { return SDL_SetRenderTarget(_render, ptr); }
+		bool SetDrawTarget(Texture texture) const { return SDL_SetRenderTarget(_render, *texture); }
 
 		[[nodiscard]] static auto Create() noexcept { return std::make_shared<Simple2DRenderer>(); }
 

@@ -45,7 +45,7 @@ namespace swgtk {
     }
 
     void FontGroup::ClearFonts() const {
-        for (const auto&[style, font] : _ttfFonts)
+        for (const auto& font : _ttfFonts | std::views::values)
         {
             TTF_CloseFont(font.ptr);
         }

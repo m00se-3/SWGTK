@@ -1,15 +1,15 @@
-﻿add_library(SWGTK STATIC)
+﻿add_library(swgtk STATIC)
 
 set(SWGTK_ENGINE_INTERNALS ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
 set(SWGTK_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
-target_compile_options(SWGTK PRIVATE ${CompilerFlags})
-target_link_options(SWGTK PRIVATE ${LinkerFlags})
+target_compile_options(swgtk PRIVATE ${CompilerFlags})
+target_link_options(swgtk PRIVATE ${LinkerFlags})
 
-target_compile_features(SWGTK PRIVATE cxx_std_23)
+target_compile_features(swgtk PRIVATE cxx_std_23)
 
 target_compile_definitions(
-	SWGTK 
+	swgtk 
 	
 	PUBLIC 
 	
@@ -19,36 +19,36 @@ target_compile_definitions(
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-	target_compile_definitions(SWGTK PRIVATE _DEBUG)
+	target_compile_definitions(swgtk PRIVATE _DEBUG)
 endif()
 
 if(CLANG_TIDY_PROGRAM)
   
   message("-- Enabling clang-tidy.\n")
-  set_target_properties(SWGTK PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+  set_target_properties(swgtk PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
 
 endif()
 
 if(CPPCHECK_PROGRAM)
 
 	message("--- Enabling cppcheck.\n")
-	set_target_properties(SWGTK PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
+	set_target_properties(swgtk PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
 
 endif()
 
 if(CPPLINT_PROGRAM)
 
 	message("--- Enabling cpplint.\n")
-	set_target_properties(SWGTK PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
+	set_target_properties(swgtk PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
 
 endif()
 
 # This extra directory allows for SDL to #include <strings.h>.
 # strings.h is not available on all platforms, so we implemented our own.
-target_include_directories(SWGTK PUBLIC ${SWGTK_ENGINE_INTERNALS})
+target_include_directories(swgtk PUBLIC ${SWGTK_ENGINE_INTERNALS})
 
 target_sources(
-	SWGTK	
+	swgtk	
 
 	PUBLIC 
 
@@ -84,7 +84,7 @@ target_sources(
 )
 
 target_link_libraries(
-	SWGTK	
+	swgtk	
 
 	PUBLIC
 

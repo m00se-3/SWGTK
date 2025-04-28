@@ -44,8 +44,13 @@ namespace swgtk {
     constexpr inline float defaultFontSize = 16.0f;
 
     /**
-        @brief A light wrapper for TTF_Font pointers. Made, primarily, for the Lua bindings,
-        but is also used in C++ code.
+        @brief A light wrapper for TTF_Font pointers. 
+
+        Because of the ambiguous nature of the TTF_Font type, sol3 is unable
+        to determine, at compile-time, what the full definition is. As a result,
+        binding TTF_Font pointers directly to Lua does not work. 
+
+        Having this light wrapper satisfies sol3's requirement for complete types.
      */
     struct Font {
         TTF_Font* ptr = nullptr;

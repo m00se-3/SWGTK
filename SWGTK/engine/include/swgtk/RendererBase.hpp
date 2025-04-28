@@ -31,7 +31,7 @@ namespace swgtk {
     static constexpr auto defaultAlphaFloat = 1.0f;
     static constexpr auto defaultAlphaInt = 255u;
 
-    // SDL VSync
+    // SDL supports a number of interesting values for vsync support.
     enum class VSync {
         Adaptive = -1,
         Disable = 0,

@@ -40,7 +40,7 @@ target_link_libraries(
 
 	PRIVATE 
 
-	SWGTK
+	swgtk
 )
 
 target_sources(

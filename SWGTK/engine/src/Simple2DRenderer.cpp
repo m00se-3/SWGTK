@@ -32,7 +32,7 @@ namespace swgtk {
 	bool Simple2DRenderer::PrepareDevice(SDL_Window* window) {
 		_render = SDL_CreateRenderer(window, nullptr);
 
-		return _render != nullptr;
+		return IsDeviceInitialized();
 	}
 
 	void Simple2DRenderer::DestroyDevice() {

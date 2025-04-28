@@ -17,6 +17,12 @@
 
 namespace swgtk {
 
+    /**
+     * @brief This class is used for tracking time elapsed between time points.
+     * 
+     * It was created, primarily, for counting time between successive application frames.
+     * However, it can be easily used for other things. (Open to change suggestions.)
+     */
     class Timer {
       public:
         void UpdateTime() {
@@ -26,7 +32,13 @@ namespace swgtk {
             _lastFrameTime = _currentFrameTime;
         }
 
+        // Get a floating-point representation of time between the last updates in seconds.
         [[nodiscard]] constexpr auto GetSeconds() const { return std::chrono::duration<float, std::ratio<1,1>>(_timeDifference).count(); }
+        
+        // Get a floating-point representation of time between the last updates in milliseconds.
+        [[nodiscard]] constexpr auto GetMilliseconds() const { return std::chrono::duration<double, std::milli>(_timeDifference).count(); }
+
+        // Get a microsecond accurate representation of the time between the last updates.
         [[nodiscard]] constexpr auto GetMicroseconds() const { return _timeDifference.count(); }
 
       private:

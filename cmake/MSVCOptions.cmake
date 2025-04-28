@@ -13,7 +13,7 @@ list(
 	"/Wall"
 	"/W4"
 	"/permissive-"
-  "/sdl"    
+  	"/sdl"    
 	"/GS"
 	"/analyze"
 	"/we4165"

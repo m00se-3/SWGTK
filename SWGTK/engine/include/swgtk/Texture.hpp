@@ -20,11 +20,10 @@
 
 namespace swgtk {
 	/**
-	*	@brief A simple, reference-counted, RAII container class for SDL_Texture. This will delete the underlying SDL_Texture upon calling
-	*	the destructor.
-	*
-	*	When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,
-	*	the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
+		@brief A simple, reference-counted, RAII container class for SDL_Texture.
+	
+		When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,
+		the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
 	*/
 	class Texture {
 		static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); }
