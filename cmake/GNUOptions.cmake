@@ -24,7 +24,7 @@ else()
 endif()
 
 # Enable special flags when using GCC
-if(${CMAKE_CXX_COMPILIER_ID} MATCHES GNU)
+if(${CMAKE_CXX_COMPILIER_ID} MATCHES "GNU")
     list(
         APPEND CompilerFlags 
 
@@ -67,19 +67,15 @@ list(
 	"-Werror=int-conversion"
 	"-Werror=conversion"
 	"-Werror=sign-conversion"
-	"-Werror=return-stack-address"
-	"-Werror=division-by-zero"
+	"-Werror=div-by-zero"
 	"-Werror=alloca"
-	"-Wreturn-stack-address"
+	"-Wreturn-local-addr"
+	"-Werror=return-local-addr"
 	"-Wpedantic" 
-	"-Wno-newline-eof" 
-	"-Wno-c++98-compat" 
-	"-Wno-c++98-compat-pedantic"
 	"-Wdouble-promotion"
 	"-Wconversion"
 	"-Wsign-conversion"
 	"-Wsuggest-override"
-	"-Wsuggest-destructor-override"
 
 	"-fvisibility=hidden"
 	"-fstrict-flex-arrays=3"

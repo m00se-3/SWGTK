@@ -54,15 +54,15 @@ namespace swgtk
 		 */
 		class Node {
 		public:
-			constexpr Node(const Node&) = default;
-			constexpr Node(Node&&) noexcept = default;
-			constexpr Node& operator=(const Node&) = default;
-			constexpr Node& operator=(Node&&) noexcept = default;
+			Node(const Node&) = default;
+			Node(Node&&) noexcept = default;
+			Node& operator=(const Node&) = default;
+			Node& operator=(Node&&) noexcept = default;
 
 			explicit Node(const gsl::not_null<Scene*>& scene) : _scene(scene) {}
 			explicit Node(const std::shared_ptr<Node>& parent) : _scene(parent->GetScene()), _parent(parent) {}
 
-			virtual constexpr ~Node() = default;
+			virtual ~Node() = default;
 
 			[[nodiscard]] virtual constexpr bool Create() = 0;
 			[[nodiscard]] virtual constexpr bool Update(float dt) = 0;

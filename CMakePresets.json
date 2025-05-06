@@ -16,13 +16,13 @@
         "SWGTK_INSTALL_FREETYPE": "ON"
       }
     },
-		{
-			"name": "msvc",
-			"inherits": "base",
-			"cacheVariables": {
-				"CMAKE_C_COMPILER": "cl",
-				"CMAKE_CXX_COMPILER": "cl"
-			},
+    {
+      "name": "msvc",
+      "inherits": "base",
+      "cacheVariables": {
+          "CMAKE_C_COMPILER": "cl",
+          "CMAKE_CXX_COMPILER": "cl"
+      },
       "environment": {
         "SWGTK_INSTALL_FREETYPE": null,
         "MSVC_IDE": "ON"
