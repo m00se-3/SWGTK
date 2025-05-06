@@ -30,15 +30,15 @@
 */
 
 #include <cstring>
-inline int bcmp(const void *s1, const void *s2, const size_t n) {
+inline int bcmp(const void *s1, const void *s2, size_t n) {
     return std::memcmp(s1, s2, n);
 }
 
-inline void bcopy(const void *src, void *dest, const size_t n) {
+inline void bcopy(const void *src, void *dest, size_t n) {
     std::memcpy(dest, src, n);
 }
 
-inline void bzero(void* s, const size_t n) {
+inline void bzero(void* s, size_t n) {
     std::memset(s, 0, n);
 }
 
