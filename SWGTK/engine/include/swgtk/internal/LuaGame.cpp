@@ -10,7 +10,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-#include <LuaGame.hpp>
+#include <swgtk/internal/LuaGame.hpp>
 #include <string>
 #include <fmt/format.h>
 
@@ -24,7 +24,8 @@ namespace swgtk {
         }
     }
 
-    LuaGame::LuaGame(const std::filesystem::path& path, App* app) : _lua(sol::c_call<decltype(&panic), &panic>) {
+    LuaGame::LuaGame(const gsl::not_null<Scene*>& scene, const std::filesystem::path& path, App* app)
+    : Node(scene), _lua(sol::c_call<decltype(&panic), &panic>) {
         app->InitLua(_lua, LuaPrivledges::All);
 
         if(std::filesystem::exists(path) && path.extension() == ".lua") {
@@ -53,7 +54,7 @@ namespace swgtk {
         }
     }
 
-    bool LuaGame::Create([[maybe_unused]]Scene& scene) {
+    bool LuaGame::Create() {
         if(const sol::protected_function func = _lua["main"]; func.valid()) {
             const sol::protected_function_result result = func();
             return result.valid();

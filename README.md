@@ -1,12 +1,12 @@
 # SWGTK (SoftWare & Games ToolKit)
 
-SWGTK is a toolkit for creating games and applications. It's primary coding languages are C++ and Lua.
+SWGTK is a toolkit for creating games and applications. It comes with built-in Lua bindings.
 SWGTK is written in C++, is relatively unopinionated, and is a great starting place for creating larger engines.
 Having SDL3 at the backend, SWGTK should be portable to anything that SDL3 can support.
 
 ## Design
 
-SWGTK is designed to be flexible, able to fully cooperate with the user's vision. It's focus is, primarily, on getting a window on the screen and hooking up the user with an easy-to-use rendering pipeling. The rendering system itself is very extensible. Our plans are to eventually have a rendering pipeline for every backend SDL3 supports, which should cover the vast majority of use cases.
+SWGTK is designed to be flexible, able to fully cooperate with the user's vision. Its focus is, primarily, on getting a window on the screen and hooking up the user with an easy-to-use rendering pipeling. The rendering system itself is very extensible. Our plans are to eventually have a rendering pipeline for every backend SDL3 supports, which should cover the vast majority of use cases.
 
 A rendering backend is selected by the user and is injected into the application during initialization. The class hierarchy is intended not only as a means to support more renderers, but also allows users to customize existing ones to fit their exact needs.
 
@@ -21,27 +21,31 @@ This library was made possible by the following tools and libraries.(Thanks to t
 - Language Standards
   - C++ 23
   - Lua 5.4
+  - CMake 3.25 or above
 - 3rd Party Libraries
   - [SDL3](https://github.com/libsdl-org/SDL)
   - SDL3_image
   - SDL3_ttf
-  - [sol3](https://github.com/ThePhD/sol2)
+  - [sol3](https://github.com/ThePhD/sol2) - For the Lua bindings.
   - [fmt](https://github.com/fmtlib/fmt)
-  - [gsl-lite](https://github.com/gsl-lite/gsl-lite)
+  - [gsl-lite](https://github.com/gsl-lite/gsl-lite) - A support library for the C++ Core Guidelines
 - Development Tools
   - Visual Studio
   - CLion
   - VS Code
-  - [CPM](https://github.com/cpm-cmake/CPM.cmake)
+  - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake
   - clang-tidy
   - cppcheck
   - cpplint
   
-**Note to advanced users:** This library was built with a strict set of compiler options and analyzer warnings. Warnings are treated as errors. The code is also frequently tested with both AddressSanitizer and UndefinedBehaviorSanitizer.
+**Note to curious users:** This library is built with a strict set of compiler options and analyzer warnings. Warnings 
+are treated as errors. The code is also frequently tested with both AddressSanitizer and UndefinedBehaviorSanitizer. 
+This project takes safe software and best practices very seriously.
 
 ## Features
 
-**This project is still in early development.** Here is a short list of working features and features planned for future releases:
+**This project is still in early development.** Here is a short list of working features and features planned for future
+releases:
 
 - [x] Single window applications.
 - [ ] Multi-window applications.
@@ -63,6 +67,10 @@ This library was made possible by the following tools and libraries.(Thanks to t
 
 ## Getting Started
 
+### Requirements
+
+Your compiler **must** support C++ 23 and you must be using CMake 3.25 or later.
+
 ### C++ with CMake
 
 SWGTK uses CMake as the building system. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
@@ -81,8 +89,10 @@ After this you can create your application using something like this:
 #include <swgtk/Simple2DRenderer.hpp>
 
 class MyAppClass : public swgtk::Scene::Node{
-    bool Create(swgtk::Scene&) override;        // Called after object is created.
-    bool Update(swgtk::Scene&, float) override; // Called every frame.
+    public:
+    explicit MyAppClass(const gsl::not_null<swgtk::Scene*>& scene) : swgtk::Scene::Node(scene) {}
+    bool Create() override;        // Called after object is created.
+    bool Update(float) override; // Called every frame.
 };
 
 int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
@@ -97,7 +107,7 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
 
 ### Lua with swl2d
 
-The build includes an executable that can run Lua scripts without needing to setup a C++ program. To use it, simply type the following command:
+The build includes an executable that can run Lua scripts without needing to set up a C++ program. To use it, simply type the following command:
 
 ```bash
 swl2d path/to/your/root/lua/file.lua [options...]
@@ -117,7 +127,7 @@ end
 
 Please see the example programs for more information.
 
-*If, at anytime, you discover a bug or a memory leak from within the framework, please post an issue with details.*
+*If, at any time, you discover a bug or a memory leak from within the framework, please post an issue with details.*
 
 ## MIT License
 

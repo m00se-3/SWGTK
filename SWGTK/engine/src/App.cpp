@@ -35,10 +35,9 @@ namespace swgtk {
 		SDL_Quit();
 	}
 
-	bool App::InitGraphics(const char* appName, const int width, const int height, std::shared_ptr<RendererBase>&& renderPtr) {
-		constexpr auto InitFlags = SDL_INIT_VIDEO;
+	bool App::InitGraphics(const char* appName, const int width, const int height, std::shared_ptr<RendererBase>&& renderPtr, const SystemInit flags) {
 
-		if (SDL_Init(InitFlags) && TTF_Init()) {
+		if (SDL_Init(std::to_underlying(flags)) && TTF_Init()) {
 
 			// false positive
 			// cppcheck-suppress syntaxError
@@ -155,7 +154,7 @@ namespace swgtk {
 
 	void App::InitLua(sol::state& lua, const LuaPrivledges priv) {
 		
-		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math);
+		lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math, sol::lib::package);
 
 		lua.safe_script_file(SWGTK_TABLE_LUA_FILE);
 

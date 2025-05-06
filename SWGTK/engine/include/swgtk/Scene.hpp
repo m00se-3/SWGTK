@@ -43,42 +43,51 @@ namespace swgtk
 
 			Users will publicly inherit from this class and override the following functions:
 
-			- Create(Scene&) is called once when the scene is initialized. This allows the program
+			- Create() is called once when the scene is initialized. This allows the program
 				to initialize the simulation and allocate any needed resources.
 
-			- Update(Scene&, float) is called once each frame. This is where all the simulation logic is
+			- Update(float) is called once each frame. This is where all the simulation logic is
 				kept, including input handling.
 
-			- *optional* Destroy(Scene&) is called once at the end of the scene's lifetime. You only need this if you are
+			- *optional* Destroy() is called once at the end of the scene's lifetime. You only need this if you are
 				using non-RAII structures for your allocated resources. (This is not recommended!)
 		 */
 		class Node {
 		public:
-			constexpr Node() = default;
 			constexpr Node(const Node&) = default;
 			constexpr Node(Node&&) noexcept = default;
 			constexpr Node& operator=(const Node&) = default;
 			constexpr Node& operator=(Node&&) noexcept = default;
 
-			explicit Node(const std::shared_ptr<Node>& parent) : _parent(parent) {}
+			explicit Node(const gsl::not_null<Scene*>& scene) : _scene(scene) {}
+			explicit Node(const std::shared_ptr<Node>& parent) : _scene(parent->GetScene()), _parent(parent) {}
 
 			virtual constexpr ~Node() = default;
 
-			[[nodiscard]] virtual constexpr bool Create(Scene& scene) = 0;
-			[[nodiscard]] virtual constexpr bool Update(Scene& scene, float dt) = 0;
-			virtual constexpr void Destroy([[maybe_unused]]Scene& scene) {}
+			[[nodiscard]] virtual constexpr bool Create() = 0;
+			[[nodiscard]] virtual constexpr bool Update(float dt) = 0;
+			virtual constexpr void Destroy() {}
 
-		private:
+			[[nodiscard]] constexpr gsl::not_null<Scene*> GetScene() const { return _scene; }
+
+		protected:
+			gsl::not_null<Scene*> _scene;
 			std::shared_ptr<Node> _parent;
 		};
 
-		Scene(const gsl::not_null<App*>& parent, std::shared_ptr<Node>&& node) noexcept;
+		explicit Scene(const gsl::not_null<App*>& parent);
 
-		[[nodiscard]] bool Create();
-		[[nodiscard]] bool Update(float dt);
-		void Destroy();
+		template<std::derived_from<Node> T, typename... Args>
+		void AddRootNode(Args&&... args) {
+			_root = std::make_shared<T>(GetScene(), std::forward<Args>(args)...);
+		}
+
+		[[nodiscard]] bool Create() const;
+		[[nodiscard]] bool Update(float dt) const;
+		void Destroy() const;
 
 		[[nodiscard]] constexpr App* AppRoot(this auto&& self) { return self._parent; }
+		[[nodiscard]] constexpr gsl::not_null<Scene*> GetScene() { return gsl::make_not_null<Scene*>(this); }
 
 		template<std::derived_from<RendererBase> T>	
 		[[nodiscard]] constexpr auto AppRenderer(this auto&& self) { return RenderImpl<T>(self._renderer); }

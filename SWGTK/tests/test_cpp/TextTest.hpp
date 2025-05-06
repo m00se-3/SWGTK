@@ -24,10 +24,12 @@ namespace swgtk {
         double angle = 0.0;
     };
 
-    class TextTest final : public swgtk::Scene::Node {
+    class TextTest final : public Scene::Node {
     public:
-        bool Create(Scene& scene) override;
-        bool Update(Scene& s, float dt) override;
+        explicit TextTest(const gsl::not_null<Scene*>& scene) : Node(scene) {}
+
+        bool Create() override;
+        bool Update(float dt) override;
 
     private:
         MouseCursor _mouse{};

@@ -35,6 +35,19 @@ extern "C" {
 }
 
 namespace swgtk {
+
+	enum class SystemInit : uint32_t {
+		None = 0u,
+		Audio = SDL_INIT_AUDIO,
+		Video = SDL_INIT_VIDEO,
+		Joystick = SDL_INIT_JOYSTICK,
+		Haptic = SDL_INIT_HAPTIC,
+		Gamepad = SDL_INIT_GAMEPAD,
+		Events = SDL_INIT_EVENTS,
+		Sensor = SDL_INIT_SENSOR,
+		Camera = SDL_INIT_CAMERA,
+};
+
 	/**
 	  @brief This class is the root manager of the SWGTK framework.
 
@@ -50,6 +63,9 @@ namespace swgtk {
 		App& operator=(App&&) noexcept = delete;
 		~App();
 
+		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height,
+			std::shared_ptr<RendererBase>&& renderPtr, SystemInit flags = SystemInit::Video);
+
 		bool InitializeGame();
 
 		template<std::derived_from<Scene::Node> T, typename... Args>
@@ -63,7 +79,8 @@ namespace swgtk {
 
 		template<std::derived_from<Scene::Node> T, typename... Args>
 		constexpr void MakeScene(Args&&... args) {
-			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this), std::make_shared<T>(std::forward<Args>(args)...));
+			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this));
+			_currentScene->AddRootNode<T>(std::forward<Args>(args)...);
 		}
 
 		void EventsAndTimeStep();
@@ -77,7 +94,6 @@ namespace swgtk {
 		}
 
 		void CloseApp();
-		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height, std::shared_ptr<RendererBase>&& renderPtr);
 
 		void InitLua(sol::state& lua, LuaPrivledges priv = LuaPrivledges::None);
 

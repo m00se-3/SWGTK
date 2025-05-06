@@ -58,7 +58,7 @@ namespace swgtk {
 		[[nodiscard]] bool PrepareDevice(SDL_Window* window) override;
 		void DestroyDevice() override;
 
-		void SetVSync(VSync value) override { SDL_SetRenderVSync(_render, std::to_underlying(value)); }
+		void SetVSync(const VSync value) override { SDL_SetRenderVSync(_render, std::to_underlying(value)); }
 
 		[[nodiscard]] VSync GetVSync() const override { 
 			int ret{};
@@ -159,7 +159,7 @@ namespace swgtk {
 
 		[[nodiscard]] static auto Create() noexcept { return std::make_shared<Simple2DRenderer>(); }
 
-		void InitLua(sol::state* lua) override;
+		void InitLua(sol::state* lua_) override;
 
 	private:
 		SDL_Renderer* _render = nullptr;

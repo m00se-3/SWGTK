@@ -23,7 +23,6 @@ endif()
 
 if(CPPLINT_PROGRAM)
 
-    message("--- Enabling cpplint.\n")
     set_target_properties(swl2d PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
 
 endif()
@@ -43,7 +42,7 @@ target_link_libraries(
 
         PRIVATE
 
-        SWGTK
+        swgtk
 )
 
 target_sources(

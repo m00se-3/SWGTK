@@ -15,11 +15,11 @@
 #include <swgtk/App.hpp>
 
 namespace swgtk {
-	bool TextTest::Create(Scene& scene) {
+	bool TextTest::Create() {
 		constexpr auto colorDefault = 255u;
 
-		_app = scene.AppRoot();
-		_render = scene.AppRenderer<Simple2DRenderer>();
+		_app = _scene->AppRoot();
+		_render = _scene->AppRenderer<Simple2DRenderer>();
 
 		_mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
 
@@ -30,7 +30,7 @@ namespace swgtk {
 		return true;
 	}
 
-	bool TextTest::Update([[maybe_unused]] Scene& s, const float dt) {
+	bool TextTest::Update(const float dt) {
 		// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers) - Reason: It's pointless to create constants for this test.
 
 		_mouse.pos = _app->GetMousePos();

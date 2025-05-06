@@ -15,6 +15,7 @@
 #include <string>
 #include <unordered_map>
 #include <swgtk/Simple2DRenderer.hpp>
+#include <swgtk/internal/LuaGame.hpp>
 
 int main (const int argc, const char** argv) {
 

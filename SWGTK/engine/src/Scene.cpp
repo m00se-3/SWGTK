@@ -18,21 +18,21 @@
 #include <memory>
 
 namespace swgtk {
-	Scene::Scene(const gsl::not_null<App*>& parent, std::shared_ptr<Node>&& node) noexcept
-	: _parent(parent), _renderer(parent->Renderer()), _root(std::move(node))
+	Scene::Scene(const gsl::not_null<App*>& parent)
+	: _parent(parent), _renderer(parent->Renderer())
 	{
 	}
 
-	bool Scene::Create() {
-		return _root->Create(*this);
+	bool Scene::Create() const {
+		return _root->Create();
 	}
 
-	bool Scene::Update(const float dt) {
-		return _root->Update(*this, dt);
+	bool Scene::Update(const float dt) const {
+		return _root->Update(dt);
 	}
 
-	void Scene::Destroy() {
-		_root->Destroy(*this);
+	void Scene::Destroy() const {
+		_root->Destroy();
 	}
 
 } // namespace swgtk
