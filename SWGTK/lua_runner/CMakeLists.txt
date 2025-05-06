@@ -27,6 +27,8 @@ if(CPPLINT_PROGRAM)
 
 endif()
 
+target_include_directories(swl2d PRIVATE ${SWGTK_ENGINE_INTERNALS})
+
 target_include_directories(
         swl2d
 

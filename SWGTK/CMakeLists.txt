@@ -11,11 +11,12 @@ target_compile_features(swgtk PRIVATE cxx_std_23)
 target_compile_definitions(
 	swgtk 
 	
-	PUBLIC 
+	PUBLIC
 	
 	SWGTK_DEFAULT_FONT_DIR="${CMAKE_CURRENT_LIST_DIR}/default_font"
 	SWGTK_ENGINE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/engine.lua"
 	SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
+	HAV_STRINGS_H="0"
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
@@ -42,10 +43,6 @@ if(CPPLINT_PROGRAM)
 	set_target_properties(swgtk PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
 
 endif()
-
-# This extra directory allows for SDL to #include <strings.h>.
-# strings.h is not available on all platforms, so we implemented our own.
-target_include_directories(swgtk PUBLIC ${SWGTK_ENGINE_INTERNALS})
 
 target_sources(
 	swgtk	
