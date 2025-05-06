@@ -94,5 +94,4 @@ target_link_libraries(
 	gsl::gsl-lite-v1
 )
 
-add_subdirectory("tests")
 add_subdirectory("lua_runner")

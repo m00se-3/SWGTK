@@ -1,4 +1,4 @@
-local module = require "MultiTestModule"
+local module = require "MultiModule"
 
 function swgtk.OnCreate()
     module:SetText("I have used an external module within lua.")

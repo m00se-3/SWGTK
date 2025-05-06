@@ -11,7 +11,7 @@
     SOFTWARE.
 */
 #include <swgtk/Utility.hpp>
-#include <TextTest.hpp>
+#include <Text.hpp>
 #include <swgtk/App.hpp>
 
 namespace swgtk {

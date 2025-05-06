@@ -10,8 +10,8 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-#ifndef SWGTK_TESTS_TEST_CPP_TEXTTEST_HPP_
-#define SWGTK_TESTS_TEST_CPP_TEXTTEST_HPP_
+#ifndef SWGTK_TESTS_TEST_CPP_TEXT_HPP_
+#define SWGTK_TESTS_TEST_CPP_TEXT_HPP_
 
 #include <swgtk/Simple2DRenderer.hpp>
 #include <swgtk/Scene.hpp>
@@ -40,4 +40,4 @@ namespace swgtk {
 
 } // namespace swgtk
 
-#endif // SWGTK_TESTS_TEST_CPP_TEXTTEST_HPP_
+#endif // SWGTK_TESTS_TEST_CPP_TEXT_HPP_

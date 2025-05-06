@@ -93,3 +93,4 @@ CPMAddPackage("gh:gsl-lite/gsl-lite@0.42.0")
 
 # Include sub-projects.
 add_subdirectory ("SWGTK")
+add_subdirectory("examples")
