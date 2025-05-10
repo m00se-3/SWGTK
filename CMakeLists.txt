@@ -69,7 +69,7 @@ if($ENV{SWGTK_INSTALL_FREETYPE})
   endif()
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.10")
+CPMAddPackage("gh:libsdl-org/SDL#release-3.2.12")
 
 CPMAddPackage(
   NAME "SDL_image"
@@ -82,7 +82,7 @@ CPMAddPackage(
 CPMAddPackage(
   NAME "SDL3_ttf"
   GITHUB_REPOSITORY "libsdl-org/SDL_ttf"
-  GIT_TAG "release-3.2.0"
+  GIT_TAG "release-3.2.2"
   OPTIONS 
   "FREETYPE_LIBRARY ${freetype_BINARY_DIR}"
   "FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}"

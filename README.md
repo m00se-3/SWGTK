@@ -15,8 +15,7 @@ A rendering backend is selected by the user and is injected into the application
 **Note:** This library, by design choice, does *not* come with any audio features. The intention is to make audio handling a 3rd party user choice if they need it. How exactly is this going to work with the Lua runner? (See below.) I don't know yet.
 
 This library is built with a strict set of compiler options and analyzer warnings. Warnings
-are treated as errors. The code is also frequently tested with both AddressSanitizer and UndefinedBehaviorSanitizer.
-This project takes safe software and best practices very seriously.
+are treated as errors. This project takes safe software and best practices very seriously.
 
 Example programs can be found in the 'examples' folder. The examples are kind of a testing playground at the moment, as a proper testing framework is still in the works.
 
