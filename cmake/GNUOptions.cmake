@@ -95,5 +95,4 @@ list(
     "-Wl,--as-needed"
     "-Wl,--no-copy-dt-needed-entries"
     "-pie"
-    "-shared"
 )

@@ -28,6 +28,7 @@
 namespace swgtk {
 	App::~App() {
 		_fonts.ClearFonts();
+		_renderer.reset();
 
 		SDL_DestroyWindow(_window);
 

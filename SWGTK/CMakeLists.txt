@@ -6,6 +6,10 @@ set(SWGTK_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 target_compile_options(swgtk PRIVATE ${CompilerFlags})
 target_link_options(swgtk PRIVATE ${LinkerFlags})
 
+if(DEFINED SWGTK_SANITIZE AND NOT ${SWGTK_SANITIZE} MATCHES "")
+	target_compile_options(swgtk PRIVATE ${SWGTK_SANITIZE})
+endif()
+
 target_compile_features(swgtk PRIVATE cxx_std_23)
 
 target_compile_definitions(

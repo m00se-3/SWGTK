@@ -12,7 +12,7 @@ SWGTK is designed to be flexible, able to fully cooperate with the user's vision
 
 A rendering backend is selected by the user and is injected into the application during initialization. The class hierarchy is intended not only as a means to support more renderers, but also allows users to customize existing ones to fit their exact needs.
 
-**Note:** This library, by design choice, does *not* come with any audio features. The intention is to make audio handling a 3rd party user choice if they need it. How exactly is this going to work with the Lua runner? (See below.) I don't know yet.
+**Note:** SWGTK, at this time, does *not* come with any audio features. I plan to include an example program for integrating a 3rd party library into your code.
 
 This library is built with a strict set of compiler options and analyzer warnings. Warnings
 are treated as errors. This project takes safe software and best practices very seriously.
@@ -78,7 +78,7 @@ Your compiler **must** support C++ 23 and you must be using CMake 3.25 or later.
 
 ### C++ with CMake
 
-SWGTK uses CMake as the building system. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
+SWGTK uses CMake as the build system. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
 ```cmake
 CPMAddPackage("gh:m00se-3/SWGTK#main")
@@ -139,11 +139,11 @@ Currently, your root file should look something like this:
 
 ```lua
 function swgtk.OnCreate() 
-    --- startup code here
+    -- startup code here
 end
 
 function swgtk.OnUpdate(deltaTime)
-    --- called every frame
+    -- called every frame
 end
 ```
 
