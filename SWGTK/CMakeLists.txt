@@ -20,7 +20,7 @@ target_compile_definitions(
 	SWGTK_DEFAULT_FONT_DIR="${CMAKE_CURRENT_LIST_DIR}/default_font"
 	SWGTK_ENGINE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/engine.lua"
 	SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
-	HAV_STRINGS_H="0"
+	HAV_STRINGS_H="0" # Disable non-standard strings.
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
@@ -67,12 +67,14 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/ErrCodes.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/App.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Texture.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Surface.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Input.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Scene.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Simple2DRenderer.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RendererBase.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/TTFFont.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Math.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Timer.hpp
 
 	PRIVATE 

@@ -12,6 +12,7 @@
 */
 #include <Particles.hpp>
 #include <swgtk/App.hpp>
+#include <swgtk/Math.hpp>
 #include <algorithm>
 #include <cmath>
 
@@ -97,7 +98,19 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char** argv) {
     constexpr auto windowWidth = 800;
     constexpr auto windowHeight = 600;
 
-    if(auto app = swgtk::App{}; app.InitGraphics("Particle Test.", windowWidth, windowHeight, swgtk::Simple2DRenderer::Create())) {
-        app.RunGame<swgtk::ParticlesTest>();
-    }
+    /*
+		This try block is to temporarily satisfy a clang-tidy warning that says 'main' could possibly throw
+		an exception.
+
+		I'm pretty sure this is caused by std::filesystem, so I will need to redesign my file handling
+		soon.
+	*/
+
+    try {
+        if(auto app = swgtk::App{}; app.InitGraphics("Particle Test.", windowWidth, windowHeight, swgtk::Simple2DRenderer::Create())) {
+            app.RunGame<swgtk::ParticlesTest>();
+        }
+    } catch (std::exception& except) {
+		DEBUG_PRINT("Esception thrown: {}/n", except.what());
+	}
 }

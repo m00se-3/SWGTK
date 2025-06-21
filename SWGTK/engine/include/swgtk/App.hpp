@@ -16,7 +16,7 @@
 #include "swgtk/Input.hpp"
 #include "swgtk/RendererBase.hpp"
 #include <swgtk/Timer.hpp>
-#include <swgtk/ErrCodes.hpp>
+#include <swgtk/Utility.hpp>
 #include <SDL3/SDL_video.h>
 #include <memory>
 #include <string>

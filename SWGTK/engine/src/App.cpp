@@ -10,11 +10,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-#include "swgtk/ErrCodes.hpp"
 #include <swgtk/App.hpp>
 #include <swgtk/Utility.hpp>
-
-#include <swgtk/Simple2DRenderer.hpp>
+#include <swgtk/Math.hpp>
+#include <swgtk/Surface.hpp>
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>

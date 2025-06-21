@@ -69,7 +69,7 @@ if($ENV{SWGTK_INSTALL_FREETYPE})
   endif()
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.12")
+CPMAddPackage("gh:libsdl-org/SDL#release-3.2.16")
 
 CPMAddPackage(
   NAME "SDL_image"
@@ -91,6 +91,5 @@ CPMAddPackage(
 CPMAddPackage("gh:fmtlib/fmt#11.1.2")
 CPMAddPackage("gh:gsl-lite/gsl-lite@0.42.0")
 
-# Include sub-projects.
 add_subdirectory ("SWGTK")
 add_subdirectory("examples")

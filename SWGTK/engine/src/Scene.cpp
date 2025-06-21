@@ -14,7 +14,6 @@
 
 #include <swgtk/Utility.hpp>
 #include <swgtk/App.hpp>
-#include <utility>
 #include <memory>
 
 namespace swgtk {

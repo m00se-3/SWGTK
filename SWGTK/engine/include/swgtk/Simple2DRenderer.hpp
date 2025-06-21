@@ -22,6 +22,7 @@
 #include <SDL3/SDL_rect.h>
 #include <swgtk/RendererBase.hpp>
 #include <swgtk/Utility.hpp>
+#include <swgtk/Surface.hpp>
 #include <sol/sol.hpp>
 
 #include <memory>
