@@ -1,4 +1,5 @@
 -- We are running the main loop from within Lua itself.
+---@diagnostic disable-next-line: lowercase-global
 function main()
     if swgtk.OnCreate() then
         while swgtk.App:IsAppRunning() do

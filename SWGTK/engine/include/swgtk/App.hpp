@@ -68,22 +68,23 @@ namespace swgtk {
 
 		bool InitializeGame();
 
-		template<std::derived_from<Scene::Node> T, typename... Args>
-		constexpr void RunGame(Args&&... args) noexcept {
-			MakeScene<T>(std::forward<Args>(args)...);
+		template<std::derived_from<Scene::Node> T>
+		constexpr void RunGame(auto&&... args) noexcept {
+			MakeScene<T>(std::forward<decltype(args)>(args)...);
 
 			if(InitializeGame()) {
 				Run();
 			}
 		}
 
-		template<std::derived_from<Scene::Node> T, typename... Args>
-		constexpr void MakeScene(Args&&... args) {
+		template<std::derived_from<Scene::Node> T>
+		constexpr void MakeScene(auto&&... args) {
 			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this));
-			_currentScene->AddRootNode<T>(std::forward<Args>(args)...);
+			_currentScene->AddRootNode<T>(std::forward<decltype(args)>(args)...);
 		}
 
 		void EventsAndTimeStep();
+
 		[[nodiscard]] bool GameTick() const {
 
 			const bool result = _currentScene->Update(_gameTimer.GetSeconds());

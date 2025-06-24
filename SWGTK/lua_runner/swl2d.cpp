@@ -14,6 +14,7 @@
 #include <common.hpp>
 #include <string>
 #include <unordered_map>
+#include <ranges>
 #include <swgtk/Simple2DRenderer.hpp>
 #include <swgtk/internal/LuaGame.hpp>
 

@@ -77,9 +77,9 @@ namespace swgtk
 
 		explicit Scene(const gsl::not_null<App*>& parent);
 
-		template<std::derived_from<Node> T, typename... Args>
-		void AddRootNode(Args&&... args) {
-			_root = std::make_shared<T>(GetScene(), std::forward<Args>(args)...);
+		template<std::derived_from<Node> T>
+		void AddRootNode(auto&&... args) {
+			_root = std::make_shared<T>(GetScene(), std::forward<decltype(args)>(args)...);
 		}
 
 		[[nodiscard]] bool Create() const;
