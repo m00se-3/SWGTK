@@ -21,10 +21,6 @@ if(CPPCHECK_PROGRAM)
 
 endif()
 
-if(CPPLINT_PROGRAM)
-    set_target_properties(ParticlesSample PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
-endif()
-
 target_include_directories(
         ParticlesSample
 

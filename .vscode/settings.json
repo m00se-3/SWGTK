@@ -6,11 +6,14 @@
     "Lua.completion.showWord": "Enable",
     "Lua.completion.workspaceWord": true,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "clangd.arguments": [
+        "--experimental-modules-support"
+    ],
     "cpp-checker.cppcheck.--std_c++=": "c++20",
+    "cpp-checker.cppcheck.--customargs=": "--clang",
     "cpp-checker.cppcheck.--suppress=": [
         "unknownMacro",
         "unmatchedSuppression",
         "missingIncludeSystem"
-    ],
-    "cpp-checker.cpplint.--filter=": "-whitespace,-build/include_order,-runtime/indentation_namespace,-build/c++11,-build/c++17,-runtime/references,-readability/nolint"
+    ]
 }

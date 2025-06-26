@@ -16,12 +16,6 @@ else()
     find_program(CPPCHECK_PROGRAM cppcheck)
 endif()
 
-if(DEFINED SWGTK_USE_CPPLINT)
-    find_program(CPPLINT_PROGRAM ${SWGTK_USE_CPPLINT})
-else()
-    find_program(CPPLINT_PROGRAM cpplint)
-endif()
-
 if($ENV{MSVC_IDE} MATCHES "ON")
 	include(${CMAKE_CURRENT_LIST_DIR}/MSVCOptions.cmake)
 else()

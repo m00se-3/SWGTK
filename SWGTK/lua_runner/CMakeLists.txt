@@ -21,12 +21,6 @@ if(CPPCHECK_PROGRAM)
 
 endif()
 
-if(CPPLINT_PROGRAM)
-
-    set_target_properties(swl2d PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
-
-endif()
-
 target_include_directories(swl2d PRIVATE ${SWGTK_ENGINE_INTERNALS})
 
 target_include_directories(

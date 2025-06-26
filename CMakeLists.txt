@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.25)
+﻿cmake_minimum_required (VERSION 3.28)
 
 project(
 	"SWGTK"
@@ -69,7 +69,13 @@ if($ENV{SWGTK_INSTALL_FREETYPE})
   endif()
 endif()
 
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.16")
+CPMAddPackage(
+  NAME "SDL"
+  GITHUB_REPOSITORY "libsdl-org/SDL"
+  GIT_TAG "release-3.2.16"
+  OPTIONS 
+  "SDL_TEST_LIBRARY false"
+)
 
 CPMAddPackage(
   NAME "SDL_image"

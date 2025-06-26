@@ -41,13 +41,6 @@ if(CPPCHECK_PROGRAM)
 
 endif()
 
-if(CPPLINT_PROGRAM)
-
-	message("--- Enabling cpplint.\n")
-	set_target_properties(swgtk PROPERTIES CXX_CPPLINT ${CPPLINT_PROGRAM})
-
-endif()
-
 target_sources(
 	swgtk	
 

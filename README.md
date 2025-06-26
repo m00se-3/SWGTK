@@ -26,7 +26,7 @@ This library was made possible by the following tools and libraries.(Thanks to t
 - Language Standards
   - C++ 23
   - Lua 5.4
-  - CMake 3.25 or above
+  - CMake 3.28 thru 3.31 (CMake 4.x is currently not supported due to legacy requirements from third-party dependencies.)
 - 3rd Party Libraries
   - [SDL3](https://github.com/libsdl-org/SDL)
   - SDL3_image
@@ -41,7 +41,6 @@ This library was made possible by the following tools and libraries.(Thanks to t
   - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake
   - clang-tidy
   - cppcheck
-  - cpplint
 
 ## Features
 
@@ -70,7 +69,7 @@ releases:
 
 ### Requirements
 
-Your compiler **must** support C++ 23 and you must be using CMake 3.25 or later.
+Your compiler **must** support C++ 23.
 
 - LLVM 19 or newer
 - GCC 14 or newer
@@ -78,7 +77,7 @@ Your compiler **must** support C++ 23 and you must be using CMake 3.25 or later.
 
 ### C++ with CMake
 
-SWGTK uses CMake as the build system. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
+SWGTK uses CMake 3.28+ as the build system. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
 ```cmake
 CPMAddPackage("gh:m00se-3/SWGTK#main")
@@ -97,7 +96,7 @@ class MyAppClass : public swgtk::Scene::Node{
     public:
     explicit MyAppClass(const gsl::not_null<swgtk::Scene*>& scene) : swgtk::Scene::Node(scene) {}
     bool Create() override;        // Called after object is created.
-    bool Update(float) override; // Called every frame.
+    bool Update(float) override;   // Called every frame.
 };
 
 int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
