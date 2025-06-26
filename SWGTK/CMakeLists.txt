@@ -18,7 +18,6 @@ target_compile_definitions(
 	PUBLIC
 	
 	SWGTK_DEFAULT_FONT_DIR="${CMAKE_CURRENT_LIST_DIR}/default_font"
-	SWGTK_ENGINE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/engine.lua"
 	SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
 	HAV_STRINGS_H="0" # Disable non-standard strings.
 )
