@@ -92,5 +92,3 @@ target_link_libraries(
 	fmt::fmt
 	gsl::gsl-lite-v1
 )
-
-add_subdirectory("lua_runner")
