@@ -10,6 +10,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
+#include "SDL3/SDL_init.h"
 #include <swgtk/App.hpp>
 #include <swgtk/Utility.hpp>
 #include <swgtk/Math.hpp>
@@ -18,7 +19,6 @@
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
-#include <gsl/gsl-lite.hpp>
 
 #include <memory>
 #include <utility>
@@ -27,9 +27,10 @@
 namespace swgtk {
 	App::~App() {
 		_fonts.ClearFonts();
-		_renderer.reset();
-
-		SDL_DestroyWindow(_window);
+		if((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == SDL_INIT_VIDEO) {
+			_renderer.reset();
+			SDL_DestroyWindow(_window);
+		}
 
 		TTF_Quit();
 		SDL_Quit();
@@ -44,7 +45,7 @@ namespace swgtk {
 			if(_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN); _window != nullptr) {
 				SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 				_renderer = std::move(renderPtr);
-				return true;
+				return InitializeGame();
 			}
 		} 
 
@@ -106,19 +107,19 @@ namespace swgtk {
 	}
 
 	bool App::InitializeGame() {
-		if(!_renderer->PrepareDevice(_window)) {
-			DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
-			return false;
+		if(_renderer->PrepareDevice(_window) && _fonts.LoadDefaultFont()) {
+			_renderer->SetFont(_fonts.GetDefaultFont().ptr);
+			return true;
 		}
 
-		ShowWindow();
-		_fonts.LoadDefaultFont();
-		_renderer->SetFont(_fonts.GetDefaultFont().ptr);
-
-		return _currentScene->Create();
+		DEBUG_PRINT("Failed to initialize rendering context. - {}\n", SDL_GetError())
+		return false;
 	}
 
 	void App::Run() {
+		if((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == SDL_INIT_VIDEO) {
+			ShowWindow();
+		}
 #ifdef __EMSCRIPTEN__
 		emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);
 
@@ -144,11 +145,10 @@ namespace swgtk {
 	}
 
 #ifdef __EMSCRIPTEN__
-
-	const App::timePoint& App::GetLastFrame() { return _lastFrameTime; }
-
 	void App::EmscriptenUpdate(void* ptr) {
-		dynamic_cast<App*>(ptr)->EventsAndTimeStep();
+		auto* app = static_cast<App*>(ptr);
+		app->EventsAndTimeStep();
+		app->GameTick();
 	}
 #endif
 

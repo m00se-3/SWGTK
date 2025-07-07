@@ -33,7 +33,6 @@ This library was made possible by the following tools and libraries.(Thanks to t
   - SDL3_ttf
   - [sol3](https://github.com/ThePhD/sol2) - For the Lua bindings.
   - [fmt](https://github.com/fmtlib/fmt)
-  - [gsl-lite](https://github.com/gsl-lite/gsl-lite) - A support library for the C++ Core Guidelines
 - Development Tools
   - Visual Studio
   - CLion
@@ -94,7 +93,7 @@ After this you can create your application using something like this:
 
 class MyAppClass : public swgtk::Scene::Node{
     public:
-    explicit MyAppClass(const gsl::not_null<swgtk::Scene*>& scene) : swgtk::Scene::Node(scene) {}
+    explicit MyAppClass(const swgtk::ObjectRef<swgtk::Scene>& scene) : swgtk::Scene::Node(scene) {}
     bool Create() override;        // Called after object is created.
     bool Update(float) override;   // Called every frame.
 };
@@ -116,34 +115,6 @@ Open a command prompt in the root directory and enter this:
 
 ```bash
   cmake . --preset=msvc -G "Visual Studio 17 2022"
-```
-
-This will generate a fresh Visual Studio solution in the 'build/msvc' directory.
-
-### Lua with swl2d
-
-The build includes an executable that can run Lua scripts without needing to set up a C++ program. To use it, simply type the following command:
-
-```bash
- swl2d path/to/your/root/lua/file.lua [options...]
-```
-
-The current options are:
-
-- --title "[your game title]"
-- --width [width of your game window]
-- --height [height of your game window]
-
-Currently, your root file should look something like this:
-
-```lua
-function swgtk.OnCreate() 
-    -- startup code here
-end
-
-function swgtk.OnUpdate(deltaTime)
-    -- called every frame
-end
 ```
 
 Please see the example programs for more information.

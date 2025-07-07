@@ -26,7 +26,7 @@ namespace swgtk {
 
     class TextTest final : public Scene::Node {
     public:
-        explicit TextTest(const gsl::not_null<Scene*>& scene) : Node(scene) {}
+        explicit TextTest(const ObjectRef<Scene>& scene) : Node(scene) {}
 
         bool Create() override;
         bool Update(float dt) override;
@@ -34,8 +34,8 @@ namespace swgtk {
     private:
         MouseCursor _mouse{};
         Texture _background;
-        App* _app = nullptr;
-        Simple2DRenderer* _render = nullptr;
+        ObjectRef<App> _app;
+        ObjectRef<Simple2DRenderer> _render;
     };
 
 } // namespace swgtk

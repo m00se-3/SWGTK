@@ -16,6 +16,7 @@
 #include <memory>
 #include <concepts>
 #include <SDL3/SDL_pixels.h>
+#include <swgtk/Utility.hpp>
 
 extern "C" {
     struct SDL_Window;
@@ -42,7 +43,8 @@ namespace swgtk {
     /**
      * @brief class RendererBase
      * 
-     * A base class for the different renderers SWGTK will support.
+     * A base class for the different renderers SWGTK will support. You can also create your own
+     * custom implementation through this interface.
      * 
      */
     class RendererBase {
@@ -97,17 +99,22 @@ namespace swgtk {
 
         virtual void InitLua(sol::state*) = 0;
 
-        constexpr virtual std::shared_ptr<RendererBase> GetRef() = 0;
+        /**
+         * @brief Get a reference pointer to the rendering context.
+         * 
+         * @return constexpr std::shared_ptr<RendererBase> 
+         */
+        constexpr virtual std::weak_ptr<RendererBase> GetRef() = 0;
     };
 
     /**
      * @brief Used for getting a non-owning reference to the rendering system so you can use it in your code.
      * @tparam T The Rendering system you are currently using, a child of RendererBase.
-     * @param ptr The engines base pointer to the renderer, typically obtained by calling Scene::AppRenderer().
+     * @param ptr A proxy wrapper to the renderer, typically obtained by calling Scene::AppRenderer().
      * @return A non-owning pointer to the exact type of renderer your game is using.
      */
     template<std::derived_from<RendererBase> T>
-    [[nodiscard]] constexpr T* RenderImpl(const std::shared_ptr<RendererBase>& ptr) { return dynamic_cast<T*>(ptr.get()); }
+    [[nodiscard]] constexpr auto RenderImpl(const std::shared_ptr<RendererBase>& ptr) { return ObjectRef<T>{std::static_pointer_cast<T>(ptr).get()}; }
 } // namespace swgtk
 
 #endif // SWGTK_ENGINE_INCLUDE_SWGTK_RENDERERBASE_HPP_

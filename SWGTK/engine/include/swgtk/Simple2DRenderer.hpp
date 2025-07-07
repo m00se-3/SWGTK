@@ -59,6 +59,11 @@ namespace swgtk {
 		[[nodiscard]] bool PrepareDevice(SDL_Window* window) override;
 		void DestroyDevice() override;
 
+		/**
+		 * @brief SDL3 has several vsync options that you can set. This function wraps that functionality.
+		 * 
+		 * @param value 
+		 */
 		void SetVSync(const VSync value) override { SDL_SetRenderVSync(_render, std::to_underlying(value)); }
 
 		[[nodiscard]] VSync GetVSync() const override { 
@@ -67,7 +72,7 @@ namespace swgtk {
 			return VSync{ret};
 		}
 
-		[[nodiscard]] std::shared_ptr<RendererBase> GetRef() override { return shared_from_this(); }
+		[[nodiscard]] std::weak_ptr<RendererBase> GetRef() override { return shared_from_this(); }
 
 		void SetDrawColor(const float r, const float g, const float b, const float a = defaultAlphaFloat) const { SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
         void SetDrawColor(const SDL_FColor& color = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) const {
@@ -91,7 +96,15 @@ namespace swgtk {
 		                   const SDL_Color &color = SDL_Color{
 			                   .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                   }) const;
-
+		
+		/**
+		* @brief Same as DrawPlainText() except it allows you to specify word wrapping support.
+		* 
+		* @param text 
+		* @param pos 
+		* @param wrapLen Length of text before wrapping, in bytes.
+		* @param color 
+		*/
     	void DrawPlainWrapText(std::string_view text, const SDL_FRect& pos, int wrapLen = 0,
 												  const SDL_Color &color = SDL_Color{
 													  .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
@@ -138,8 +151,13 @@ namespace swgtk {
 		 SDL_Color fg = SDL_Color{ .r=defaultAlphaInt, .g=defaultAlphaInt, .b=defaultAlphaInt, .a=defaultAlphaInt }) const;
 
 		/**
-			Used to draw arbitrary shapes from a list of vertices. This is helpful when drawing things like particles.
-		*/ 
+		 * @brief Used to draw arbitrary shapes with raw vertex information. Great for making draw calls from
+		 *			from external sources, like GUI libraries.
+		 * 
+		 * @param texture 
+		 * @param vertices 
+		 * @param indices 
+		 */
 		void DrawGeometry(Texture texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
 			SDL_RenderGeometry(_render, *texture, vertices.data(), static_cast<int>(std::ssize(vertices)),
 									indices.data(), static_cast<int>(std::ssize(indices)));

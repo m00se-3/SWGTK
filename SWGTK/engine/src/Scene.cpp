@@ -17,7 +17,7 @@
 #include <memory>
 
 namespace swgtk {
-	Scene::Scene(const gsl::not_null<App*>& parent)
+	Scene::Scene(const ObjectRef<App>& parent)
 	: _parent(parent), _renderer(parent->Renderer())
 	{
 	}

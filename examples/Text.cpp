@@ -20,7 +20,7 @@ namespace swgtk {
 	bool TextTest::Create() {
 		constexpr auto colorDefault = 255u;
 
-		_app = _scene->AppRoot();
+		_app = _scene->GetApp();
 		_render = _scene->AppRenderer<Simple2DRenderer>();
 
 		_mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});

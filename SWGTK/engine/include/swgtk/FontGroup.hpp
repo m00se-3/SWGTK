@@ -61,16 +61,16 @@ namespace swgtk {
      */
     class FontGroup {
     public:
-        void LoadDefaultFont();
+        bool LoadDefaultFont();
 
         // Load font from a .ttf file.
-        void AddFont(const std::filesystem::path& filename);
+        bool AddFont(const std::filesystem::path& filename);
 
         // Used internally, do not call.
         void ClearFonts() const;
 
         [[nodiscard]] Font GetDefaultFont() const { 
-            return _ttfFonts.at("Natural Mono-Regular"); 
+            return _ttfFonts.at("Natural_Mono-Regular"); 
         }
 
         void InitLua(sol::state& lua);

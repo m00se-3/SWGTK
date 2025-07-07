@@ -79,12 +79,15 @@ list(
 
 	"-fvisibility=hidden"
 	"-fstrict-flex-arrays=3"
-	"-fcf-protection=full"
 	"-fno-strict-overflow"
 	"-fno-strict-aliasing"
 	"-ftrivial-auto-var-init=zero"
 	"-fexceptions"
 )
+
+if(NOT DEFINED EMSCRIPTEN)
+    list(APPEND CompilerFlags "-fcf-protection=full")
+endif()
 
 list(
     APPEND LinkerOptions

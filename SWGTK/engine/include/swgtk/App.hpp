@@ -26,7 +26,7 @@
 #include <emscripten.h>
 #endif
 
-#include "swgtk/TTFFont.hpp"
+#include "swgtk/FontGroup.hpp"
 #include "swgtk/Scene.hpp"
 
 extern "C" {
@@ -63,35 +63,64 @@ namespace swgtk {
 		App& operator=(App&&) noexcept = delete;
 		~App();
 
+		/**
+		 * @brief Initialize an application that requires a window and a rendering context.
+		 * 
+		 * @param appName The text that appears in the title bar.
+		 * @param width Window width
+		 * @param height Window height
+		 * @param renderPtr A shared pointer to a class inherited from RendererBase
+		 * @param flags Specifies which SDL subsystems to initialize
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
 		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height,
 			std::shared_ptr<RendererBase>&& renderPtr, SystemInit flags = SystemInit::Video);
-
+		
+		/**
+		 * @brief Starts up the application's framework. There is no need to call this function yourself
+		 * unless you require an advanced setup.
+		 * 
+		 * @return true on successful initialization
+		 * @return false on failure
+		 */
 		bool InitializeGame();
 
+		/**
+		 * @brief After confirming your app is initialized, call this function to start the main loop.
+		 * 
+		 * @tparam T Your application's startup class
+		 * @param args Arguments your application needs
+		 */
 		template<std::derived_from<Scene::Node> T>
 		constexpr void RunGame(auto&&... args) noexcept {
-			MakeScene<T>(std::forward<decltype(args)>(args)...);
-
-			if(InitializeGame()) {
+			if(MakeScene<T>(std::forward<decltype(args)>(args)...)) {
 				Run();
 			}
 		}
 
 		template<std::derived_from<Scene::Node> T>
-		constexpr void MakeScene(auto&&... args) {
-			_currentScene = std::make_unique<Scene>(gsl::make_not_null<App*>(this));
+		constexpr bool MakeScene(auto&&... args) {
+			_currentScene = std::make_unique<Scene>(ObjectRef<App>{this});
 			_currentScene->AddRootNode<T>(std::forward<decltype(args)>(args)...);
+			return _currentScene->Create();
 		}
 
 		void EventsAndTimeStep();
 
+#ifdef __EMSCRIPTEN__ 
+		void GameTick() const {
+#else
 		[[nodiscard]] bool GameTick() const {
+#endif
 
-			const bool result = _currentScene->Update(_gameTimer.GetSeconds());
+			[[maybe_unused]]const bool result = _currentScene->Update(_gameTimer.GetSeconds());
 
 			_renderer->BufferPresent();
-
+#ifndef __EMSCRIPTEN__ 
 			return result;
+#endif
 		}
 
 		void CloseApp();
@@ -116,22 +145,22 @@ namespace swgtk {
 
 		[[nodiscard]] FontGroup& GetFontHandle() { return _fonts; }
 
-		[[nodiscard]] std::shared_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
+		[[nodiscard]] std::weak_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
 		[[nodiscard]] std::pair<int, int> GetWindowSize() const {
 			int width{}, height{};
 			SDL_GetWindowSize(_window, &width, &height);
-
+			
 			return std::make_pair(width, height);
 		}
-
+		
 		[[nodiscard]] bool IsFullscreenBorderless() const { return SDL_GetWindowFullscreenMode(_window) == nullptr; }
-
+		
 		/*
-			Input state and event polling for the client's logic.
+		Input state and event polling for the client's logic.
 		*/
-
+		
 		[[nodiscard]] constexpr auto GetScrollX() const { return _input.scroll.x; }
 		[[nodiscard]] constexpr auto GetScrollY() const { return _input.scroll.y; }
 		[[nodiscard]] constexpr bool IsKeyPressed(const LayoutCode code) const { return (_input.keyEvent.first == code && _input.keyEvent.second); }
@@ -146,11 +175,12 @@ namespace swgtk {
 		[[nodiscard]] constexpr auto GetMouseX() const { return _input.mouseState.x; }
 		[[nodiscard]] constexpr auto GetMouseY() const { return _input.mouseState.y; }
 		[[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{ _input.mouseState.x, _input.mouseState.y }; }
-
+		
 		/*
-			Input state and event management.
+			Input state and event management. For internal use only.
 		*/
-
+		private:
+		
 		constexpr void SetMouseState(const MouseState& state) { _input.mouseState = state; }
 		constexpr void SetModState(const SDL_Keymod& state) { _input.modifiers = static_cast<KeyMod>(state); }
 		constexpr void ResetScroll() { _input.scroll = { .x=0.f, .y=0.f }; }
@@ -186,13 +216,10 @@ namespace swgtk {
 
 #ifdef __EMSCRIPTEN__
 
-		const timePoint& GetLastFrame();
-
 		static void EmscriptenUpdate(void* ptr);
 
 #endif // __EMSCRIPTEN__
 
-	private:
 		void Run();
 
 		SDL_Window* _window = nullptr;

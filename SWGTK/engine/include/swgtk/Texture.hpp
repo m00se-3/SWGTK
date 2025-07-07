@@ -74,7 +74,7 @@ namespace swgtk {
 			float w{}, y{};
 
 			SDL_GetTextureSize(_texture.get(), &w, &y);
-			return {w,y};
+			return std::make_pair(w,y);
 		}
 
 	private:

@@ -27,6 +27,25 @@
 #endif
 
 namespace swgtk {
+    
+    /**
+     * @brief A proxy class intended to deter users from erroneously deleting
+     * framework pointers. You can access the underlying object with the '->'
+     * operator.
+     * 
+     * @tparam Ptr 
+     */
+    template<typename Ptr>
+    class ObjectRef {
+    public:
+        ObjectRef() = default;
+        explicit ObjectRef(Ptr* ptr) : _ptr(ptr) {}
+        Ptr* operator->() const { return _ptr; }
+        operator bool() const { return _ptr != nullptr; }
+
+    private:
+        Ptr* _ptr = nullptr;
+    };
 
     // Enum class operators.
 

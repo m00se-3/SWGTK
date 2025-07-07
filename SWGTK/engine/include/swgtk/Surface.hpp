@@ -24,6 +24,8 @@ namespace swgtk {
     
     /**
         @brief A reference-counted RAII wrapper for the SDL_Surface type.
+
+        Unlike Texture, Surface provides a number of constructors that cover the majority of use cases.
      */
     class Surface {
         static void DestroySurface(SDL_Surface* surface) { SDL_DestroySurface(surface); }
@@ -31,6 +33,7 @@ namespace swgtk {
     public:
         constexpr Surface() = default;
         explicit Surface(SDL_Surface* surface) : _surface(SDL_DuplicateSurface(surface), Surface::DestroySurface) {}
+        
         Surface(const int width, const int height, const SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32)
         : _surface(SDL_CreateSurface(width, height, format), Surface::DestroySurface) {
             if(!_surface) {

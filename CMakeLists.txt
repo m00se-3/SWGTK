@@ -4,16 +4,27 @@ project(
 	"SWGTK"
 	DESCRIPTION "Software and Games Tool Kit" 
 	HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
-    VERSION 0.1
+    VERSION 0.2
 )
 
 include("CPM.cmake")
+include("cmake/CMakeOptions.cmake")
 include("cmake/Config.cmake")
 include(CTest)
 
+# If building for emscripten
+
+if(EMSCRIPTEN)
+
+  message("-- Emscripten build enabled.\n")
+  set(SWGTK_NO_CCACHE ON)
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+endif()
+
 # Add CCache, if available
 
-if(CCACHE_PROGRAM)
+if(CCACHE_PROGRAM AND NOT SWGTK_NO_CCACHE)
 
   message("-- Enabling ccache.\n")
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
@@ -23,18 +34,6 @@ if(CCACHE_PROGRAM)
     set(CPM_SOURCE_CACHE ${CMAKE_CURRENT_LIST_DIR}/.cache/CPM)
   endif()
   
-endif()
-
-# If building for emscripten
-if(EMSCRIPTEN)
-  message("-- Emscripten build enabled!!!")
-
-  set(CMAKE_EXECUTABLE_SUFFIX ".html")
-
-endif()
-
-if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SWGTK_BINARY_DIR})
 endif()
 
 # Lua and sol2
@@ -54,7 +53,7 @@ if(lua_ADDED)
 
   target_include_directories(
     lua
-    PRIVATE
+    PUBLIC
     ${lua_SOURCE_DIR}
   )
 
@@ -65,7 +64,7 @@ CPMAddPackage("gh:ThePhD/sol2@3.5.0")
 # SDL and external SDL dependencies
 # If any more external dependencies for SDL become necessary in the future, they should be added before any SDL.(For consistency)
 
-if($ENV{SWGTK_INSTALL_FREETYPE})
+if(${SWGTK_INSTALL_FREETYPE})
   CPMAddPackage("gh:libsdl-org/freetype#VER-2-13-2")
 
   # Add a custom target alias for Freetype, since it uses a legacy version of cmake
@@ -100,7 +99,7 @@ CPMAddPackage(
 )
 
 CPMAddPackage("gh:fmtlib/fmt#11.1.2")
-CPMAddPackage("gh:gsl-lite/gsl-lite@0.42.0")
 
 add_subdirectory ("SWGTK")
 add_subdirectory("examples")
+

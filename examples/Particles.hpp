@@ -35,24 +35,43 @@ namespace swgtk {
         float lifetime = 0.f;
     };
 
+    class TimeToFramesScene;
+
     class ParticlesTest final : public Scene::Node {
     public:
-        explicit ParticlesTest(const gsl::not_null<Scene*>& scene)
+        explicit ParticlesTest(const ObjectRef<Scene>& scene)
         : Node(scene), _particles(std::vector<Particle>(particleCount)),
-        _gen(_rd()), _app(gsl::make_not_null<App*>(scene->AppRoot())),
-        _render(gsl::make_not_null<Simple2DRenderer*>(scene->AppRenderer<Simple2DRenderer>())) {}
+        _gen(_rd()), _app(scene->GetApp()),
+        _render(scene->AppRenderer<Simple2DRenderer>()) {}
 
         bool Create() override;
         bool Update(float deltaTime) override;
+
+        [[nodiscard]] auto Draw() { return _render; }
+        [[nodiscard]] auto GetAverageTime() const { return _averageTime; }
 
     private:
         MouseCursor _mouse;
         std::vector<Particle> _particles;
         std::random_device _rd;
         std::mt19937_64 _gen;
-        gsl::not_null<App*> _app;
-        gsl::not_null<Simple2DRenderer*> _render;
+        ObjectRef<App> _app;
+        ObjectRef<Simple2DRenderer> _render;
+        uint32_t _currentFrameCount = 0u;
+        float _runningTime = 0.0f;
+        float _averageTime = 0.0f;
         bool generate = true;
+        bool showTime = false;
+        std::shared_ptr<TimeToFramesScene> _child;
+    };
+
+    class TimeToFramesScene : public Scene::Node {
+    public:
+        TimeToFramesScene(const std::shared_ptr<Node>& parent)
+        : Node(parent) {}
+
+        bool Create() override { return true; };
+        bool Update(float deltaTime) override;
     };
 
 } // namespace swgtk

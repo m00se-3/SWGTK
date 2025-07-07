@@ -10,16 +10,15 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-#include "swgtk/TTFFont.hpp"
+#include "swgtk/FontGroup.hpp"
 #include <swgtk/Utility.hpp>
 #include <utility>
 #include <string>
 
-namespace swgtk {    
-    static constexpr auto DefaultFontRootDir = std::string_view{ SWGTK_DEFAULT_FONT_DIR };
+namespace swgtk {
 
-    void FontGroup::LoadDefaultFont() {
-        if (const auto filePath = std::filesystem::path{ DefaultFontRootDir } / "Natural Mono-Regular.ttf"; std::filesystem::exists(filePath)) {
+    bool FontGroup::LoadDefaultFont() {
+        if (const auto filePath = std::filesystem::path{ SWGTK_DEFAULT_FONT_FILE }; std::filesystem::exists(filePath)) {
             const auto fileString = filePath.string();
             
             if (TTF_Font* ttf = TTF_OpenFont(fileString.c_str(), _defaultFontSize); ttf == nullptr)
@@ -27,11 +26,14 @@ namespace swgtk {
                 DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
             } else {
                 _ttfFonts.insert_or_assign(filePath.stem().string(), Font{ .ptr=ttf });
+                return true;
             }
         }
+        
+        return false;
     }
     
-    void FontGroup::AddFont(const std::filesystem::path& filename) {
+    bool FontGroup::AddFont(const std::filesystem::path& filename) {
         if (const auto fileString = filename.string(); !_ttfFonts.contains(fileString))
         {
             if (TTF_Font* ttf = TTF_OpenFont(fileString.c_str(), _defaultFontSize); ttf == nullptr)
@@ -39,9 +41,11 @@ namespace swgtk {
                 DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
             } else {
                 _ttfFonts.insert_or_assign(filename.stem().string(), Font{ .ptr=ttf });
+                return true;
             }
-
         }
+
+        return false;
     }
 
     void FontGroup::ClearFonts() const {

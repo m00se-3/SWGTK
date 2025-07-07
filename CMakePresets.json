@@ -7,13 +7,11 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "SWGTK_INSTALL_FREETYPE": "ON"
       },
       "environment": {
-        "Assets_Dir": "${sourceDir}/SWGTK/tests/assets",
-        "Config_Dir": "${sourceDir}/SWGTK/tests/config",
-        "CMAKE_BUILD_PARALLEL_LEVEL": "12",
-        "SWGTK_INSTALL_FREETYPE": "ON"
+        "CMAKE_BUILD_PARALLEL_LEVEL": "12"
       }
     },
     {
@@ -35,11 +33,12 @@
       }
 		},
     {
-      "name": "embase",
+      "name": "emscripten",
       "inherits": "base",
-      "hidden": true,
+      "displayName": "Emscripten",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "MinSizeRel"
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
+        "EMSCRIPTEN": true
       }
     },
     {
@@ -71,20 +70,6 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
-    },
-    {
-      "name": "em-win",
-      "displayName": "Emscripten (Win)",
-      "inherits": "embase",
-      "hidden": true,
-      "generator": "MinGW Makefiles"
-    },
-    {
-      "name": "em-unix",
-      "displayName": "Emscripten (Unix)",
-      "inherits": "embase",
-      "hidden": true,
-      "generator": "Unix Makefiles"
     },
     {
       "name": "linux-debug",
