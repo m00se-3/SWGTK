@@ -34,7 +34,7 @@ target_compile_definitions(
 if(NOT EMSCRIPTEN)
 	target_compile_definitions(
 		swgtk PUBLIC 
-		SWGTK_DEFAULT_FONT_FILE="${CMAKE_CURRENT_LIST_DIR}/default_font"
+		SWGTK_DEFAULT_FONT_FILE="${CMAKE_CURRENT_LIST_DIR}/default_font/Natural_Mono-Regular.ttf"
 		SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
 	)
 else()
