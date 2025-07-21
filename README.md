@@ -48,7 +48,7 @@ releases:
 
 - [x] Single window applications.
 - [ ] Multi-window applications.
-- [ ] Web-based applications.(Via [emscripten](https://emscripten.org/))
+- [x] Web-based applications.(Via [emscripten](https://emscripten.org/))
 - [ ] Mobile applications.
 - [x] Default font.
 - [x] Interface for user chosen fonts.
