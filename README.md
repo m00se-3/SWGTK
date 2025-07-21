@@ -57,7 +57,7 @@ releases:
 - [ ] Input from gamepads.
 - [ ] Input from joysticks.
 - [x] External Lua scripts for C++ programs.
-- [x] Dedicated Lua runner. (Inspired by [Love2D](https://github.com/love2d/love))
+- [x] Dedicated 2D Lua runner. ([SWL](https://github.com/m00se-3/SWL))
 - [x] Hardware accelerated 2D rendering system.
 - [ ] 2D software rendering system.
 - [ ] 3D capable GPU rendering systems.
