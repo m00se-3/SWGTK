@@ -79,10 +79,19 @@ Your compiler **must** support C++ 23.
 SWGTK uses CMake 3.28+ as the build system. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
 ```cmake
+# v0.1.0 is somewhat outdated
 CPMAddPackage("gh:m00se-3/SWGTK#main")
+
+# This is the easiest way to make sure all the shared library dependencies are where they need to be.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 target_link_libraries([your_project] PRIVATE swgtk)
 ```
+
+In addition, the following options can be added depending on your needs:
+- SWGTK_BUILD_EXAMPLES: Include the example programs. (Default: ON)
+- SWGTK_NO_CCACHE: Disable ccache support. (Default: OFF)
+- SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: ON)
 
 After this you can create your application using something like this:
 
