@@ -25,7 +25,7 @@ namespace swgtk {
             {
                 DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
             } else {
-                _ttfFonts.insert_or_assign(filePath.stem().string(), Font{ .ptr=ttf });
+                _ttfFonts.insert_or_assign(SWGTK_DEFAULT_FONT_ID, Font{ .ptr=ttf });
                 return true;
             }
         }
@@ -49,50 +49,10 @@ namespace swgtk {
     }
 
     void FontGroup::ClearFonts() const {
-        for (const auto& font : _ttfFonts | std::views::values)
+        for (const auto [ptr] : _ttfFonts | std::views::values)
         {
-            TTF_CloseFont(font.ptr);
+            TTF_CloseFont(ptr);
         }
-    }
-
-    void FontGroup::InitLua(sol::state& lua) {
-        auto SWGTK = lua["swgtk"];
-
-        lua.new_enum<FontStyle>("FontStyle",
-            {
-                std::make_pair("Normal", FontStyle::Normal),
-                std::make_pair("Bold", FontStyle::Bold),
-                std::make_pair("Italic", FontStyle::Italic),
-                std::make_pair("Underlined", FontStyle::Underlined),
-                std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
-                std::make_pair("Bold_Underlined", FontStyle::Bold_Underlined),
-                std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
-                std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)
-            }
-        );
-
-        SWGTK["FontStyle"] = lua["FontStyle"];
-
-        auto FontGroup_Type = lua.new_usertype<FontGroup>("FontGroup", sol::constructors<FontGroup()>());
-        SWGTK["Fonts"] = this;
-
-        auto Font_Type = lua.new_usertype<Font>("FontHandle");
-
-        FontGroup_Type["GetDefaultFont"] = [] (const FontGroup& self) { return self.GetDefaultFont(); };
-
-        FontGroup_Type["SetDefaultFontSize"] = [] (FontGroup& self, const float size) { self.SetDefaultFontSize(size); };
-
-        FontGroup_Type["SetAllFontSizes"] = [] (const FontGroup& self, const float size) { self.SetAllFontSizes(size); };
-
-        FontGroup_Type["AddFont"] = [] (FontGroup& self, const std::filesystem::path& filename) { self.AddFont(filename); };
-
-        FontGroup_Type["GetFont"] = [] (const FontGroup& self, const std::string& name) { return self.GetFont(name); };
-
-        FontGroup_Type["SetFontStyle"] = [] (const Font font, const FontStyle style) { SetFontStyle(font, style); };
-
-        FontGroup_Type["GetFontStyle"] = [] (const Font font) { return GetFontStyle(font); };
-
-        FontGroup_Type["ClearFonts"] = [] (const FontGroup& self) { self.ClearFonts(); };
     }
 
 } // namespace swgtk

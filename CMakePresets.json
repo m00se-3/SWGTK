@@ -7,8 +7,7 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "SWGTK_INSTALL_FREETYPE": "ON"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
       },
       "environment": {
         "CMAKE_BUILD_PARALLEL_LEVEL": "12"
@@ -22,7 +21,7 @@
           "CMAKE_CXX_COMPILER": "cl"
       },
       "environment": {
-        "SWGTK_INSTALL_FREETYPE": null,
+        "SWGTK_INSTALL_FREETYPE": "OFF",
         "MSVC_IDE": "ON"
       },
       "vendor": {

@@ -15,10 +15,7 @@
 
 #include <swgtk/RendererBase.hpp>
 #include <swgtk/Utility.hpp>
-
 #include <concepts>
-
-#include <sol/sol.hpp>
 #include <memory>
 
 namespace swgtk

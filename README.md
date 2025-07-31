@@ -1,7 +1,7 @@
 # SWGTK (SoftWare & Games ToolKit)
 
 SWGTK is a toolkit for creating games and applications. It comes with built-in Lua bindings.
-SWGTK is written in C++, is relatively unopinionated, and is a great starting place for creating larger engines.
+SWGTK is written in C++ 23, is relatively unopinionated, and is a great starting place for creating larger engines.
 Having SDL3 at the backend, SWGTK should be portable to anything that SDL3 can support.
 
 **The project is still in early stages and is only a *thin* wrapper around SDL. This means some SDL types will still be used in your code.**
@@ -23,21 +23,18 @@ Example programs can be found in the 'examples' folder. The examples are kind of
 
 This library was made possible by the following tools and libraries.(Thanks to the efforts of all software developers, open source or otherwise!)
 
-- Language Standards
-  - C++ 23
-  - Lua 5.4
-  - CMake 3.28 thru 3.31 (CMake 4.x is currently not supported due to legacy requirements from third-party dependencies.)
 - 3rd Party Libraries
   - [SDL3](https://github.com/libsdl-org/SDL)
   - SDL3_image
   - SDL3_ttf
   - [sol3](https://github.com/ThePhD/sol2) - For the Lua bindings.
-  - [fmt](https://github.com/fmtlib/fmt)
+  - Lua
 - Development Tools
+  - CMake
   - Visual Studio
   - CLion
   - VS Code
-  - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake
+  - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake.
   - clang-tidy
   - cppcheck
 
@@ -60,9 +57,7 @@ releases:
 - [x] Dedicated 2D Lua runner. ([SWL](https://github.com/m00se-3/SWL))
 - [x] Hardware accelerated 2D rendering system.
 - [ ] 2D software rendering system.
-- [ ] 3D capable GPU rendering systems.
-
-**Note:** Porting SWGTK to consoles are further down the road and will require additional repositories according to each SDK's terms of use.
+- [ ] 3D capable GPU rendering pipelines.
 
 ## Getting Started
 
@@ -76,7 +71,7 @@ Your compiler **must** support C++ 23.
 
 ### C++ with CMake
 
-SWGTK uses CMake 3.28+ as the build system. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
+SWGTK requires CMake 3.28 or newer. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
 ```cmake
 # v0.1.0 is somewhat outdated
@@ -92,6 +87,7 @@ In addition, the following options can be added depending on your needs:
 - SWGTK_BUILD_EXAMPLES: Include the example programs. (Default: ON)
 - SWGTK_NO_CCACHE: Disable ccache support. (Default: OFF)
 - SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: ON)
+- SWGTK_LUA_BINDINGS: Enable Lua scripting support via sol3. (Default: ON)
 
 After this you can create your application using something like this:
 
@@ -116,6 +112,7 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
     }
 }
 ```
+Please see the example programs for more information.
 
 ### For Visual Studio
 
@@ -125,8 +122,6 @@ Open a command prompt in the root directory and enter this:
 ```bash
   cmake . --preset=msvc -G "Visual Studio 17 2022"
 ```
-
-Please see the example programs for more information.
 
 *If, at any time, you discover a bug or a memory leak from within the framework, please post an issue with details.*
 

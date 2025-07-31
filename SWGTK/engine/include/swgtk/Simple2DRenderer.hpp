@@ -152,7 +152,7 @@ namespace swgtk {
 
 		/**
 		 * @brief Used to draw arbitrary shapes with raw vertex information. Great for making draw calls from
-		 *			from external sources, like GUI libraries.
+		 *			external sources, like GUI libraries.
 		 * 
 		 * @param texture 
 		 * @param vertices 
@@ -178,7 +178,9 @@ namespace swgtk {
 
 		[[nodiscard]] static auto Create() noexcept { return std::make_shared<Simple2DRenderer>(); }
 
+#ifdef SWGTK_BUILD_WITH_LUA
 		void InitLua(sol::state* lua_) override;
+#endif
 
 	private:
 		SDL_Renderer* _render = nullptr;

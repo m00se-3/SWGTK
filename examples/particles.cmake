@@ -61,11 +61,7 @@ if(NOT EMSCRIPTEN)
         add_custom_command(
             TARGET ParticlesSample POST_BUILD 
             COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:ParticlesSample>
-            $<TARGET_SONAME_FILE:SDL3::SDL3-shared>
-            $<TARGET_SONAME_FILE:SDL3_image::SDL3_image-shared>
-            $<TARGET_SONAME_FILE:SDL3_ttf::SDL3_ttf-shared>
-            $<TARGET_SONAME_FILE:freetype>
-            $<TARGET_SONAME_FILE:fmt>
+                ${SWGTK_SHARED_LIBARIES}
             COMMAND_EXPAND_LISTS
         )
     endif()

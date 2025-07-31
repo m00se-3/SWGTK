@@ -3,6 +3,10 @@
 set(SWGTK_ENGINE_INTERNALS ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
 set(SWGTK_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
+if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+	include(${SWGTK_SOURCE_DIR}/cmake/LuaBindings.cmake)
+endif()
+
 target_compile_options(swgtk PRIVATE ${CompilerFlags})
 target_link_options(swgtk PRIVATE ${LinkerFlags})
 
@@ -23,6 +27,10 @@ endif()
 
 target_compile_features(swgtk PRIVATE cxx_std_23)
 
+if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+	target_compile_definitions(swgtk PUBLIC SWGTK_BUILD_WITH_LUA="1")
+endif()
+
 target_compile_definitions(
 	swgtk 
 	
@@ -33,16 +41,17 @@ target_compile_definitions(
 
 if(NOT EMSCRIPTEN)
 	target_compile_definitions(
-		swgtk PUBLIC 
-		SWGTK_DEFAULT_FONT_FILE="${CMAKE_CURRENT_LIST_DIR}/default_font/Natural_Mono-Regular.ttf"
-		SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
+			swgtk PUBLIC
+			SWGTK_DEFAULT_FONT_FILE="${CMAKE_CURRENT_LIST_DIR}/default_font/Natural_Mono-Regular.ttf"
+			SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
 	)
 else()
 	target_compile_definitions(
-		swgtk PUBLIC 
+			swgtk PUBLIC
 
-		SWGTK_DEFAULT_FONT_FILE="assets/Natural_Mono-Regular.ttf" 
-		SWGTK_TABLE_LUA_FILE="assets/swgtk.lua")
+			SWGTK_DEFAULT_FONT_FILE="assets/Natural_Mono-Regular.ttf"
+			SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
+	)
 endif()
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
@@ -79,7 +88,6 @@ target_sources(
 
 	PUBLIC
 
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/ErrCodes.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/App.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Texture.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Surface.hpp
@@ -98,7 +106,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/FontGroup.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Simple2DRenderer.cpp
-
 )
 
 target_link_libraries(
@@ -109,12 +116,18 @@ target_link_libraries(
 	SDL3::SDL3
 	SDL3_image::SDL3_image
 	SDL3_ttf::SDL3_ttf
-	lua
-	sol2
-	fmt::fmt
 )
 
-if(${SWGTK_INSTALL_FREETYPE})
+if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+	target_link_libraries(
+			swgtk
+
+			PUBLIC
+			swgtk_lua
+	)
+endif()
+
+if(${SWGTK_INSTALL_FREETYPE} MATCHES ON)
 	target_link_libraries(
 		swgtk 
 

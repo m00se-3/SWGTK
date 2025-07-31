@@ -22,10 +22,11 @@ extern "C" {
     struct SDL_Window;
     struct TTF_Font;
 }
-
+#ifdef SWGTK_BUILD_WITH_LUA
 namespace sol {
     class state;
 }
+#endif
 
 namespace swgtk {
 
@@ -97,7 +98,9 @@ namespace swgtk {
 
         [[nodiscard]] virtual VSync GetVSync() const = 0;
 
+#ifdef SWGTK_BUILD_WITH_LUA
         virtual void InitLua(sol::state*) = 0;
+#endif
 
         /**
          * @brief Get a reference pointer to the rendering context.

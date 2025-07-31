@@ -19,7 +19,6 @@
 #include <utility>
 #include <ranges>
 #include <string>
-#include <sol/state.hpp>
 
 #include "SDL3_ttf/SDL_ttf.h"
 
@@ -70,10 +69,8 @@ namespace swgtk {
         void ClearFonts() const;
 
         [[nodiscard]] Font GetDefaultFont() const { 
-            return _ttfFonts.at("Natural_Mono-Regular"); 
+            return _ttfFonts.at(SWGTK_DEFAULT_FONT_ID);
         }
-
-        void InitLua(sol::state& lua);
 
         static void SetFontStyle(const Font font, const FontStyle style) {
             TTF_SetFontStyle(font.ptr, std::to_underlying(style));
@@ -90,8 +87,8 @@ namespace swgtk {
          }
 
          void SetAllFontSizes(const float size) const {
-            for(const auto& font : _ttfFonts | std::views::values) {
-                TTF_SetFontSize(font.ptr, size);
+            for(const auto [ptr] : _ttfFonts | std::views::values) {
+                TTF_SetFontSize(ptr, size);
             }
          }
 

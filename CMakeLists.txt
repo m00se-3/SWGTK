@@ -4,7 +4,7 @@ project(
 	"SWGTK"
 	DESCRIPTION "Software and Games Tool Kit" 
 	HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
-    VERSION 0.2
+    VERSION 0.2.0
 )
 
 include("CPM.cmake")
@@ -24,13 +24,13 @@ endif()
 
 # Add CCache, if available
 
-if(CCACHE_PROGRAM AND NOT SWGTK_NO_CCACHE)
+if(CCACHE_PROGRAM AND ${SWGTK_NO_CCACHE} MATCHES OFF)
 
   message("-- Enabling ccache.\n")
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
   set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
 
-  if(NOT DEFINED CPM_SOURCE_CACHE)
+  if(NOT CPM_SOURCE_CACHE)
     set(CPM_SOURCE_CACHE ${CMAKE_CURRENT_LIST_DIR}/.cache/CPM)
   endif()
   
@@ -97,8 +97,6 @@ CPMAddPackage(
   "FREETYPE_LIBRARY ${freetype_BINARY_DIR}"
   "FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}"
 )
-
-CPMAddPackage("gh:fmtlib/fmt#11.1.2")
 
 add_subdirectory ("SWGTK")
 add_subdirectory("examples")

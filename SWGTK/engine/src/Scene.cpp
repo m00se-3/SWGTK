@@ -14,7 +14,6 @@
 
 #include <swgtk/Utility.hpp>
 #include <swgtk/App.hpp>
-#include <memory>
 
 namespace swgtk {
 	Scene::Scene(const ObjectRef<App>& parent)

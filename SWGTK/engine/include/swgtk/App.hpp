@@ -124,8 +124,7 @@ namespace swgtk {
 		}
 
 		void CloseApp();
-
-		void InitLua(sol::state& lua, LuaPrivledges priv = LuaPrivledges::None);
+		[[nodiscard]] bool IsRunning() const { return _running; }
 
 		void SetWindowSize(const int w, const int h) const { SDL_SetWindowSize(_window, w, h); }
 		void SetTitle(const std::string& value) const { SDL_SetWindowTitle(_window, value.c_str()); }
@@ -143,7 +142,8 @@ namespace swgtk {
 		static void SetFontStyle(const Font font, const FontStyle style) { FontGroup::SetFontStyle(font, style); }
 		[[nodiscard]] static FontStyle GetFontStyle(const Font font) { return FontGroup::GetFontStyle(font); }
 
-		[[nodiscard]] FontGroup& GetFontHandle() { return _fonts; }
+		[[nodiscard]] FontGroup* GetFontHandle() { return &_fonts; }
+		[[nodiscard]] Timer* GetInternalClock() { return &_gameTimer; }
 
 		[[nodiscard]] std::weak_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
@@ -214,6 +214,7 @@ namespace swgtk {
 			}
 		}
 
+
 #ifdef __EMSCRIPTEN__
 
 		static void EmscriptenUpdate(void* ptr);
@@ -224,9 +225,9 @@ namespace swgtk {
 
 		SDL_Window* _window = nullptr;
 		std::shared_ptr<RendererBase> _renderer;
-		InputSystem _input;
-
 		std::unique_ptr<Scene> _currentScene;
+
+		InputSystem _input;
 		FontGroup _fonts;
 		Timer _gameTimer;
 

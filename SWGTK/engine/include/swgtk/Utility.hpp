@@ -17,9 +17,9 @@
 #include <utility>
 
 #ifdef _DEBUG
-#include <fmt/format.h>
-#define DEBUG_PRINT(Debug_Message, Debug_Error) fmt::println(Debug_Message, Debug_Error);
-#define DEBUG_PRINT2(Debug_Message, Debug_Error_1, Debug_error_2) fmt::println(Debug_Message, Debug_Error_1, Debug_error_2);
+#include <format>
+#define DEBUG_PRINT(Debug_Message, Debug_Error) std::puts(std::format(Debug_Message, Debug_Error).c_str());
+#define DEBUG_PRINT2(Debug_Message, Debug_Error_1, Debug_error_2) std::puts(std::format(Debug_Message, Debug_Error_1, Debug_error_2).c_str());
 
 #else
 #define DEBUG_PRINT(Debug_Message, Debug_Error) 
@@ -41,7 +41,7 @@ namespace swgtk {
         ObjectRef() = default;
         explicit ObjectRef(Ptr* ptr) : _ptr(ptr) {}
         Ptr* operator->() const { return _ptr; }
-        operator bool() const { return _ptr != nullptr; }
+        explicit operator bool() const { return _ptr != nullptr; }
 
     private:
         Ptr* _ptr = nullptr;
@@ -65,9 +65,8 @@ namespace swgtk {
     enum class LuaPrivledges {
         None = 0,
         UserInput = 1,
-        DrawCalls = 2,
-        WindowControl = 4,
-        Fonts = 8,
+        WindowControl = 2,
+        Fonts = 4,
         All = 15,
     };
 

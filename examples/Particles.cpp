@@ -15,7 +15,7 @@
 #include <swgtk/Math.hpp>
 #include <algorithm>
 #include <cmath>
-#include <fmt/format.h>
+#include <format>
 
 static constexpr auto particleSize = 5;
 static constexpr auto particleRed = 0.7f;
@@ -118,7 +118,7 @@ namespace swgtk {
 
     bool TimeToFramesScene::Update([[maybe_unused]]const float deltaTime) {
         auto p = GetParent<ParticlesTest>().lock();
-        p->Draw()->DrawPlainText(fmt::format("Time between frames: {}", p->GetAverageTime()),
+        p->Draw()->DrawPlainText(std::format("Time between frames: {}", p->GetAverageTime()),
          SDL_FRect{ .x=5.f, .y=10.f, .w=400.f, .h=40.f }); // NOLINT
 
         return true;

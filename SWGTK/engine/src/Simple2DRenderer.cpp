@@ -61,7 +61,7 @@ namespace swgtk {
 				return Texture{ texture };
 			}
 
-			DEBUG_PRINT2("Failed to load image {}: {}\n", imgStr.c_str(), SDL_GetError())
+			DEBUG_PRINT2("Failed to load image {}: {}\n", imgStr, SDL_GetError())
 	    }
 
 	    return Texture{};
@@ -193,6 +193,7 @@ namespace swgtk {
 		return Texture{texture};
 	}
 
+#ifdef SWGTK_BUILD_WITH_LUA
 	void Simple2DRenderer::InitLua(sol::state* lua_) {
 
 		auto& lua = *lua_;
@@ -347,4 +348,6 @@ namespace swgtk {
 
 		Simple2DRenderer_Type["LoadLCDWrapText"] = &Simple2DRenderer::LoadLCDWrapText;
 	}
+
+#endif // SWGTK_BUILD_WITH_LUA
 } // namespace swgtk
