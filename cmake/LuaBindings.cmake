@@ -13,12 +13,15 @@ if(NOT EMSCRIPTEN)
     target_compile_definitions(
             swgtk_lua PUBLIC
             SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
+            SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
     )
 else()
     target_compile_definitions(
             swgtk_lua PUBLIC
 
-            SWGTK_TABLE_LUA_FILE="assets/swgtk.lua")
+            SWGTK_TABLE_LUA_FILE="assets/swgtk.lua"
+            SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
+    )
 endif()
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
