@@ -8,7 +8,7 @@ if(${CMAKE_BUILD_TYPE} MATCHES Debug)
 elseif(${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo)
     list(
         APPEND CompilerFlags 
-        "-g"
+		"-g"
         "-O2"
         "-U_FORTIFY_SOURCE"
         "-D_FORTIFY_SOURCE=3"
@@ -21,6 +21,12 @@ else()
         "-U_FORTIFY_SOURCE"
         "-D_FORTIFY_SOURCE=2"
     )
+endif()
+
+if(${SWGTK_EXCEPTIONS} MATCHES ON)
+	list(APPEND CompilerFlags "-fexceptions")
+else()
+	list(APPEND CompilerFlags "-fno-exceptions")
 endif()
 
 # Enable special flags when using GCC
@@ -82,7 +88,6 @@ list(
 	"-fno-strict-overflow"
 	"-fno-strict-aliasing"
 	"-ftrivial-auto-var-init=zero"
-	"-fexceptions"
 )
 
 if(NOT DEFINED EMSCRIPTEN)

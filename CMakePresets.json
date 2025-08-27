@@ -51,9 +51,11 @@
       }
     },
     {
-      "name": "x64-debug",
-      "displayName": "x64 Debug",
+      "name": "win-debug",
+      "displayName": "Win64 Debug",
       "inherits": "desktop-base",
+      "installDir": "${sourceDir}\\install\\${presetName}",
+      "binaryDir": "${sourceDir}\\build\\${presetName}",
       "architecture": {
         "value": "x64",
         "strategy": "external"
@@ -63,9 +65,9 @@
       }
     },
     {
-      "name": "x64-release",
-      "displayName": "x64 Release",
-      "inherits": "x64-debug",
+      "name": "win-release",
+      "displayName": "Win64 Release",
+      "inherits": "win-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }

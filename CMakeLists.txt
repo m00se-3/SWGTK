@@ -10,7 +10,10 @@ project(
 include("CPM.cmake")
 include("cmake/CMakeOptions.cmake")
 include("cmake/Config.cmake")
-include(CTest)
+
+if(${SWGTK_BUILD_TESTS} OR ${SWGTK_BUILD_EXAMPLES})
+  include(CTest)
+endif()
 
 # If building for emscripten
 
@@ -35,37 +38,38 @@ if(CCACHE_PROGRAM AND ${SWGTK_NO_CCACHE} MATCHES OFF)
   endif()
   
 endif()
-
-# Lua and sol2
-CPMAddPackage(
-  NAME lua
-  GITHUB_REPOSITORY lua/lua
-  VERSION 5.4.6
-  DOWNLOAD_ONLY Yes
-)
-
-if(lua_ADDED)
-
-  FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
-  list(REMOVE_ITEM lua_sources ${lua_SOURCE_DIR}/lua.c ${lua_SOURCE_DIR}/luac.c)
-
-  add_library(lua STATIC ${lua_sources})
-
-  target_include_directories(
-    lua
-    PUBLIC
-    ${lua_SOURCE_DIR}
+if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+  # Lua and sol2
+  CPMAddPackage(
+    NAME lua
+    GITHUB_REPOSITORY lua/lua
+    VERSION 5.4.6
+    DOWNLOAD_ONLY Yes
   )
 
-endif()
+  if(lua_ADDED)
 
-CPMAddPackage("gh:ThePhD/sol2@3.5.0")
+    FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
+    list(REMOVE_ITEM lua_sources ${lua_SOURCE_DIR}/lua.c ${lua_SOURCE_DIR}/luac.c)
+
+    add_library(lua STATIC ${lua_sources})
+
+    target_include_directories(
+      lua
+      PUBLIC
+      ${lua_SOURCE_DIR}
+    )
+
+  endif()
+
+  CPMAddPackage("gh:ThePhD/sol2@3.5.0")
+endif()
 
 # SDL and external SDL dependencies
 # If any more external dependencies for SDL become necessary in the future, they should be added before any SDL.(For consistency)
 
 if(${SWGTK_INSTALL_FREETYPE})
-  CPMAddPackage("gh:libsdl-org/freetype#VER-2-13-2")
+  CPMAddPackage("gh:freetype/freetype#master")
 
   # Add a custom target alias for Freetype, since it uses a legacy version of cmake
   if (freetype_ADDED)
@@ -76,7 +80,7 @@ endif()
 CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
-  GIT_TAG "release-3.2.16"
+  GIT_TAG "release-3.2.20"
   OPTIONS 
   "SDL_TEST_LIBRARY false"
 )

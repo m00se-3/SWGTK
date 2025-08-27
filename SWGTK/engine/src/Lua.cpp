@@ -4,7 +4,6 @@
 #include <swgtk/FontGroup.hpp>
 #include <swgtk/Timer.hpp>
 #include <swgtk/App.hpp>
-#include <swgtk/Math.hpp>
 
 namespace {
 	void InitLuaFonts(swgtk::FontGroup* fonts, sol::state& lua);
@@ -217,19 +216,6 @@ namespace swgtk {
 		App_Type["CloseApp"] = &App::CloseApp;
 
 		App_Type["GetWindowSize"] = &App::GetWindowSize;
-
-		// We don't need float variations of these values and functions, because Lua uses the same number type for both.
-
-		auto mathTable = SWGTK["math"];
-
-		mathTable["pi"] = std::numbers::pi;
-		mathTable["pi2"] = math::pi2;
-
-		lua.set_function("RadiansToDegrees", [] (const double radians) { return math::RadiansToDegrees(radians); });
-		mathTable["RadiansToDegrees"] = lua["RadiansToDegrees"];
-
-		lua.set_function("DegreesToRadians", [] (const double degrees) { return math::DegreesToRadians(degrees); });
-		mathTable["DegreesToRadians"] = lua["DegreesToRadians"];
 
 		SWGTK["Surface"] = lua.new_usertype<Surface>("Surface",
 			sol::constructors<Surface(), Surface(SDL_Surface*), Surface(const Surface&),

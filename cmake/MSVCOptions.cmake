@@ -6,6 +6,12 @@ if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
     )
 endif()
 
+if(${SWGTK_EXCEPTIONS} MATCHES ON)
+	list(APPEND CompilerFlags "/EHsc")
+else()
+	list(APPEND CompilerFlags "/EHs-" "/EHc-")
+endif()
+
 # Enable compiler flags for all builds.
 list(
 	APPEND CompilerFlags 
