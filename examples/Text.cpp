@@ -10,7 +10,6 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-#include <SDL3/SDL_error.h>
 #include <swgtk/Utility.hpp>
 #include <swgtk/Math.hpp>
 #include <Text.hpp>
@@ -77,11 +76,7 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
 		I'm pretty sure this is caused by std::filesystem, so I will need to redesign my file handling
 		soon.
 	*/
-	try{
-		if(swgtk::App app; app.InitGraphics("Text Test", w, h, swgtk::Simple2DRenderer::Create())) {
+	if(swgtk::App app; app.InitGraphics("Text Test", w, h, swgtk::Simple2DRenderer::Create())) {
 		app.RunGame<swgtk::TextTest>();
-		}
-	} catch (std::exception& except) {
-		DEBUG_PRINT("Esception thrown: {}/n", except.what());
 	}
 }

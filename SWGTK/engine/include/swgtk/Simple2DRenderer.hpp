@@ -20,7 +20,7 @@
 #include "SDL3/SDL_render.h"
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
-#include <swgtk/RendererBase.hpp>
+#include <swgtk/RenderingDevice.hpp>
 #include <swgtk/Utility.hpp>
 #include <swgtk/Surface.hpp>
 #include <sol/sol.hpp>
@@ -38,7 +38,7 @@ namespace swgtk {
 	   This is based on SDL3's hardware accelerated 2D rendering backend. It does not support shaders.
 	 * 
 	 */
-    class Simple2DRenderer : public RendererBase, public std::enable_shared_from_this<Simple2DRenderer>{
+    class Simple2DRenderer : public RenderingDevice, public std::enable_shared_from_this<Simple2DRenderer>{
 	public:
 
 		constexpr Simple2DRenderer() = default;
@@ -56,7 +56,7 @@ namespace swgtk {
 
 		void SetFont(TTF_Font* font) override { _currentFont = font; }
 
-		[[nodiscard]] bool PrepareDevice(SDL_Window* window) override;
+		[[nodiscard]] bool PrepareDevice(const std::any& window_ptr) override;
 		void DestroyDevice() override;
 
 		/**
@@ -72,7 +72,7 @@ namespace swgtk {
 			return VSync{ret};
 		}
 
-		[[nodiscard]] std::weak_ptr<RendererBase> GetRef() override { return shared_from_this(); }
+		[[nodiscard]] std::weak_ptr<RenderingDevice> GetRef() override { return shared_from_this(); }
 
 		void SetDrawColor(const float r, const float g, const float b, const float a = defaultAlphaFloat) const { SDL_SetRenderDrawColorFloat(_render, r, g, b, a); }
         void SetDrawColor(const SDL_FColor& color = SDL_FColor{.r=0.0f, .g=0.0f, .b=0.0f, .a=defaultAlphaFloat}) const {

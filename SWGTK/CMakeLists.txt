@@ -94,7 +94,7 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Input.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Scene.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Simple2DRenderer.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RendererBase.hpp
+	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RenderingDevice.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/FontGroup.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Math.hpp

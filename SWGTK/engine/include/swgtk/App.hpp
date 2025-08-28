@@ -14,7 +14,7 @@
 #define SWGTK_ENGINE_INCLUDE_SWGTK_APP_HPP_
 
 #include "swgtk/Input.hpp"
-#include "swgtk/RendererBase.hpp"
+#include "swgtk/RenderingDevice.hpp"
 #include <swgtk/Timer.hpp>
 #include <swgtk/Utility.hpp>
 #include <SDL3/SDL_video.h>
@@ -76,7 +76,7 @@ namespace swgtk {
 		 * @return false 
 		 */
 		[[nodiscard]] bool InitGraphics(const char* appName, int width, int height,
-			std::shared_ptr<RendererBase>&& renderPtr, SystemInit flags = SystemInit::Video);
+			std::shared_ptr<RenderingDevice>&& renderPtr, SystemInit flags = SystemInit::Video);
 		
 		/**
 		 * @brief Starts up the application's framework. There is no need to call this function yourself
@@ -145,7 +145,7 @@ namespace swgtk {
 		[[nodiscard]] FontGroup* GetFontHandle() { return &_fonts; }
 		[[nodiscard]] Timer* GetInternalClock() { return &_gameTimer; }
 
-		[[nodiscard]] std::weak_ptr<RendererBase> Renderer(this auto&& self) { return self._renderer; }
+		[[nodiscard]] std::weak_ptr<RenderingDevice> Renderer(this auto&& self) { return self._renderer; }
 		[[nodiscard]] constexpr SDL_Window* Window(this auto&& self) { return self._window; }
 
 		[[nodiscard]] std::pair<int, int> GetWindowSize() const {
@@ -224,7 +224,7 @@ namespace swgtk {
 		void Run();
 
 		SDL_Window* _window = nullptr;
-		std::shared_ptr<RendererBase> _renderer;
+		std::shared_ptr<RenderingDevice> _renderer;
 		std::unique_ptr<Scene> _currentScene;
 
 		InputSystem _input;

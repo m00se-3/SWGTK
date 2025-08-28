@@ -10,16 +10,16 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_RENDERERBASE_HPP_
-#define SWGTK_ENGINE_INCLUDE_SWGTK_RENDERERBASE_HPP_
+#ifndef SWGTK_ENGINE_INCLUDE_SWGTK_RENDERINGDEVICE_HPP_
+#define SWGTK_ENGINE_INCLUDE_SWGTK_RENDERINGDEVICE_HPP_
 
 #include <memory>
 #include <concepts>
+#include <any>
 #include <SDL3/SDL_pixels.h>
 #include <swgtk/Utility.hpp>
 
 extern "C" {
-    struct SDL_Window;
     struct TTF_Font;
 }
 #ifdef SWGTK_BUILD_WITH_LUA
@@ -42,20 +42,20 @@ namespace swgtk {
     };
 
     /**
-     * @brief class RendererBase
+     * @brief class RenderingDevice
      * 
      * A base class for the different renderers SWGTK will support. You can also create your own
      * custom implementation through this interface.
      * 
      */
-    class RendererBase {
+    class RenderingDevice {
     public:
-        RendererBase() = default;
-        RendererBase(const RendererBase &) = default;
-        RendererBase(RendererBase &&)noexcept = delete;
-        RendererBase &operator=(const RendererBase &) = default;
-        RendererBase &operator=(RendererBase &&) noexcept = delete;
-        virtual ~RendererBase() = default;
+        RenderingDevice() = default;
+        RenderingDevice(const RenderingDevice &) = default;
+        RenderingDevice(RenderingDevice &&)noexcept = delete;
+        RenderingDevice &operator=(const RenderingDevice &) = default;
+        RenderingDevice &operator=(RenderingDevice &&) noexcept = delete;
+        virtual ~RenderingDevice() = default;
 
         /**
          * @brief Clears the rendering backend and prepares it for accepting draw calls. Draws to the current
@@ -73,14 +73,13 @@ namespace swgtk {
          */
         virtual void BufferPresent() = 0;
 
-        /**
-         * @brief Binds your SDL_Window object to the rendering backend and prepares the TTF_Text implementation.
-         * 
-         * @param window 
-         * @return true on success
-         * @return false failure
+        /** @brief Finishes initializing the device.
+         *
+         * @param dependency An implementation dependency that is unique to each derived class. If more than one value
+         * is needed, consider passing a struct. **We recommend using pointers to objects if you don't want exceptions.**
+         * @return true if the device could be initialized, false otherwise
          */
-        [[nodiscard]] virtual bool PrepareDevice(SDL_Window* window) = 0;
+        [[nodiscard]] virtual bool PrepareDevice(const std::any& dependency) = 0;
 
         [[nodiscard]] virtual bool IsDeviceInitialized() const = 0;
         virtual void SetBackgroundColor(const SDL_FColor&) = 0;
@@ -107,7 +106,7 @@ namespace swgtk {
          * 
          * @return constexpr std::shared_ptr<RendererBase> 
          */
-        constexpr virtual std::weak_ptr<RendererBase> GetRef() = 0;
+        constexpr virtual std::weak_ptr<RenderingDevice> GetRef() = 0;
     };
 
     /**
@@ -116,8 +115,8 @@ namespace swgtk {
      * @param ptr A proxy wrapper to the renderer, typically obtained by calling Scene::AppRenderer().
      * @return A non-owning pointer to the exact type of renderer your game is using.
      */
-    template<std::derived_from<RendererBase> T>
-    [[nodiscard]] constexpr auto RenderImpl(const std::shared_ptr<RendererBase>& ptr) { return ObjectRef<T>{std::static_pointer_cast<T>(ptr).get()}; }
+    template<std::derived_from<RenderingDevice> T>
+    [[nodiscard]] constexpr auto RenderImpl(const std::shared_ptr<RenderingDevice>& ptr) { return ObjectRef<T>{std::static_pointer_cast<T>(ptr).get()}; }
 } // namespace swgtk
 
-#endif // SWGTK_ENGINE_INCLUDE_SWGTK_RENDERERBASE_HPP_
+#endif // SWGTK_ENGINE_INCLUDE_SWGTK_RENDERINGDEVICE_HPP_

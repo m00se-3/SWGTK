@@ -36,7 +36,7 @@ namespace swgtk {
 		SDL_Quit();
 	}
 
-	bool App::InitGraphics(const char* appName, const int width, const int height, std::shared_ptr<RendererBase>&& renderPtr, const SystemInit flags) {
+	bool App::InitGraphics(const char* appName, const int width, const int height, std::shared_ptr<RenderingDevice>&& renderPtr, const SystemInit flags) {
 
 		if (SDL_Init(std::to_underlying(flags)) && TTF_Init()) {
 

@@ -14,7 +14,7 @@
 
 #include "SDL3_image/SDL_image.h"
 #include "SDL3_ttf/SDL_ttf.h"
-#include "swgtk/RendererBase.hpp"
+#include "swgtk/RenderingDevice.hpp"
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
@@ -29,10 +29,13 @@
 #include <memory>
 
 namespace swgtk {
-	bool Simple2DRenderer::PrepareDevice(SDL_Window* window) {
-		_render = SDL_CreateRenderer(window, nullptr);
+	bool Simple2DRenderer::PrepareDevice(const std::any& window_ptr) {
+		if (auto* window = std::any_cast<SDL_Window*>(window_ptr); window != nullptr) {
+			_render = SDL_CreateRenderer(window, nullptr);
+			return IsDeviceInitialized();
+		}
 
-		return IsDeviceInitialized();
+		return false;
 	}
 
 	void Simple2DRenderer::DestroyDevice() {
@@ -260,7 +263,7 @@ namespace swgtk {
 
 		SWGTK["Texture"]["SetBlendMode"] = &Texture::SetBlendMode;
 
-		SWGTK["Texture"]["SetTint"] = [](const Texture& self, const sol::optional<SDL_FColor> color) {
+		SWGTK["Texture"]["SetTint"] = [](const Texture& self, const sol::optional<SDL_FColor>& color) {
 				self.SetTint(color.value_or(SDL_FColor{ .r=1.0, .g=1.0f, .b=1.0f, .a=1.0f }));
 			};
 

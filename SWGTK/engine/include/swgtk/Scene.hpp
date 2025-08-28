@@ -13,7 +13,7 @@
 #ifndef SWGTK_ENGINE_INCLUDE_SWGTK_SCENE_HPP_
 #define SWGTK_ENGINE_INCLUDE_SWGTK_SCENE_HPP_
 
-#include <swgtk/RendererBase.hpp>
+#include <swgtk/RenderingDevice.hpp>
 #include <swgtk/Utility.hpp>
 #include <concepts>
 #include <memory>
@@ -91,12 +91,12 @@ namespace swgtk
 		[[nodiscard]] constexpr ObjectRef<App> GetApp() { return ObjectRef<App>{_parent}; }
 		[[nodiscard]] constexpr ObjectRef<Scene> GetScene() { return ObjectRef<Scene>{this}; }
 
-		template<std::derived_from<RendererBase> T>	
+		template<std::derived_from<RenderingDevice> T>	
 		[[nodiscard]] constexpr auto AppRenderer() { return RenderImpl<T>(_renderer); }
 
 	private:
 		ObjectRef<App> _parent;
-		std::shared_ptr<RendererBase> _renderer;
+		std::shared_ptr<RenderingDevice> _renderer;
 		std::shared_ptr<Node> _root;
 
 	};
