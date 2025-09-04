@@ -38,15 +38,15 @@ namespace swgtk {
 	   This is based on SDL3's hardware accelerated 2D rendering backend. It does not support shaders.
 	 * 
 	 */
-    class Simple2DRenderer : public RenderingDevice, public std::enable_shared_from_this<Simple2DRenderer>{
+    class SDLHW2D : public RenderingDevice, public std::enable_shared_from_this<SDLHW2D>{
 	public:
 
-		constexpr Simple2DRenderer() = default;
-		Simple2DRenderer(const Simple2DRenderer &) = delete;
-		Simple2DRenderer(Simple2DRenderer &&) noexcept = delete;
-		Simple2DRenderer &operator=(const Simple2DRenderer &) = delete;
-		Simple2DRenderer &operator=(Simple2DRenderer &&) noexcept = delete;
-		~Simple2DRenderer() override { Simple2DRenderer::DestroyDevice(); }
+		constexpr SDLHW2D() = default;
+		SDLHW2D(const SDLHW2D &) = delete;
+		SDLHW2D(SDLHW2D &&) noexcept = delete;
+		SDLHW2D &operator=(const SDLHW2D &) = delete;
+		SDLHW2D &operator=(SDLHW2D &&) noexcept = delete;
+		~SDLHW2D() override { SDLHW2D::DestroyDevice(); }
 
 		void BufferClear(const SDL_FColor& color = SDL_FColor{ .r=0.0f, .g=0.0f, .b=0.0f, .a=1.0f}) override;
 		void BufferPresent() override;
@@ -176,7 +176,7 @@ namespace swgtk {
 
 		bool SetDrawTarget(Texture texture) const { return SDL_SetRenderTarget(_render, *texture); }
 
-		[[nodiscard]] static auto Create() noexcept { return std::make_shared<Simple2DRenderer>(); }
+		[[nodiscard]] static auto Create() noexcept { return std::make_shared<SDLHW2D>(); }
 
 #ifdef SWGTK_BUILD_WITH_LUA
 		void InitLua(sol::state* lua_) override;

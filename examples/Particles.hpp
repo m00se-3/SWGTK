@@ -13,7 +13,7 @@
 #ifndef SWGTK_TESTS_TEST_CPP_PARTICLES_HPP_
 #define SWGTK_TESTS_TEST_CPP_PARTICLES_HPP_
 
-#include <swgtk/Simple2DRenderer.hpp>
+#include <swgtk/SDLHW2D.hpp>
 #include <swgtk/Scene.hpp>
 #include <vector>
 #include <random>
@@ -42,12 +42,12 @@ namespace swgtk {
         explicit ParticlesTest(const ObjectRef<Scene>& scene)
         : Node(scene), _particles(std::vector<Particle>(particleCount)),
         _gen(_rd()), _app(scene->GetApp()),
-        _render(scene->AppRenderer<Simple2DRenderer>()) {}
+        _render(scene->AppRenderer<SDLHW2D>()) {}
 
         bool Create() override;
         bool Update(float deltaTime) override;
 
-        [[nodiscard]] auto Draw() { return _render; }
+        [[nodiscard]] auto Draw() const { return _render; }
         [[nodiscard]] auto GetAverageTime() const { return _averageTime; }
 
     private:
@@ -56,7 +56,7 @@ namespace swgtk {
         std::random_device _rd;
         std::mt19937_64 _gen;
         ObjectRef<App> _app;
-        ObjectRef<Simple2DRenderer> _render;
+        ObjectRef<SDLHW2D> _render;
         uint32_t _currentFrameCount = 0u;
         float _runningTime = 0.0f;
         float _averageTime = 0.0f;

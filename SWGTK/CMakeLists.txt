@@ -1,4 +1,6 @@
-﻿add_library(swgtk STATIC)
+﻿include(${CMAKE_CURRENT_LIST_DIR}/engine/SDL2DRenderer.cmake)
+
+add_library(swgtk STATIC)
 
 set(SWGTK_ENGINE_INTERNALS ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
 set(SWGTK_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
@@ -93,7 +95,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Surface.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Input.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Scene.hpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Simple2DRenderer.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RenderingDevice.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/FontGroup.hpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
@@ -105,7 +106,6 @@ target_sources(
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/App.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
 	${CMAKE_CURRENT_LIST_DIR}/engine/src/FontGroup.cpp
-	${CMAKE_CURRENT_LIST_DIR}/engine/src/Simple2DRenderer.cpp
 )
 
 target_link_libraries(

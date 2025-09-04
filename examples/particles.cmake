@@ -37,6 +37,7 @@ target_link_libraries(
         PRIVATE
 
         swgtk
+       swgtk::SDLHW2D
 )
 
 target_sources(

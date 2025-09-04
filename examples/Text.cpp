@@ -20,7 +20,7 @@ namespace swgtk {
 		constexpr auto colorDefault = 255u;
 
 		_app = _scene->GetApp();
-		_render = _scene->AppRenderer<Simple2DRenderer>();
+		_render = _scene->AppRenderer<SDLHW2D>();
 
 		_mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
 
@@ -76,7 +76,7 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
 		I'm pretty sure this is caused by std::filesystem, so I will need to redesign my file handling
 		soon.
 	*/
-	if(swgtk::App app; app.InitGraphics("Text Test", w, h, swgtk::Simple2DRenderer::Create())) {
+	if(swgtk::App app; app.InitGraphics("Text Test", w, h, swgtk::SDLHW2D::Create())) {
 		app.RunGame<swgtk::TextTest>();
 	}
 }

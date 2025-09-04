@@ -130,7 +130,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char** argv) {
     constexpr auto windowWidth = 800;
     constexpr auto windowHeight = 600;
 
-    if(auto app = swgtk::App{}; app.InitGraphics("Particle Test.", windowWidth, windowHeight, swgtk::Simple2DRenderer::Create())) {
+    if(auto app = swgtk::App{}; app.InitGraphics("Particle Test.", windowWidth, windowHeight, swgtk::SDLHW2D::Create())) {
         app.RunGame<swgtk::ParticlesTest>();
     }
 }

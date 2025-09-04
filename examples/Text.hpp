@@ -13,7 +13,7 @@
 #ifndef SWGTK_TESTS_TEST_CPP_TEXT_HPP_
 #define SWGTK_TESTS_TEST_CPP_TEXT_HPP_
 
-#include <swgtk/Simple2DRenderer.hpp>
+#include <swgtk/SDLHW2D.hpp>
 #include <swgtk/Scene.hpp>
 
 namespace swgtk {
@@ -35,7 +35,7 @@ namespace swgtk {
         MouseCursor _mouse{};
         Texture _background;
         ObjectRef<App> _app;
-        ObjectRef<Simple2DRenderer> _render;
+        ObjectRef<SDLHW2D> _render;
     };
 
 } // namespace swgtk
