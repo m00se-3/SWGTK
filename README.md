@@ -19,25 +19,6 @@ are treated as errors. This project takes safe software and best practices very 
 
 Example programs can be found in the 'examples' folder. The examples are kind of a testing playground at the moment, as a proper testing framework is still in the works.
 
-## Code Standards & Technologies
-
-This library was made possible by the following tools and libraries.(Thanks to the efforts of all software developers, open source or otherwise!)
-
-- 3rd Party Libraries
-  - [SDL3](https://github.com/libsdl-org/SDL)
-  - SDL3_image
-  - SDL3_ttf
-  - [sol3](https://github.com/ThePhD/sol2) - For the Lua bindings.
-  - Lua
-- Development Tools
-  - CMake
-  - Visual Studio
-  - CLion
-  - VS Code
-  - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake.
-  - clang-tidy
-  - cppcheck
-
 ## Features
 
 **This project is still in early development.** Here is a short list of working features and features planned for future
@@ -63,13 +44,24 @@ releases:
 
 ### Requirements
 
-Your compiler **must** support C++ 23.
+- C++ 23 compliant compiler
+  - LLVM 19 or newer
+  - GCC 14 or newer
+  - Visual Studio 2022 or newer
+- 3rd Party Libraries
+  - [SDL3](https://github.com/libsdl-org/SDL)
+  - SDL3_image
+  - SDL3_ttf
+  - [sol3](https://github.com/ThePhD/sol2) - For the Lua bindings.
+  - Lua
+- Development Tools
+  - CMake
+  - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake.
+  - clang-tidy [Optional]
+  - cppcheck [Optional]
+  - ccache [Optional]
 
-- LLVM 19 or newer
-- GCC 14 or newer
-- Visual Studio 2022 or newer
-
-### C++ with CMake
+### Getting started with CMake
 
 SWGTK requires CMake 3.28 or newer. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
@@ -80,21 +72,24 @@ CPMAddPackage("gh:m00se-3/SWGTK#main")
 # This is the easiest way to make sure all the shared library dependencies are where they need to be.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
-target_link_libraries([your_project] PRIVATE swgtk)
+# You will need to link a rendering back-end with the main library.
+target_link_libraries([your_project] PRIVATE swgtk swgtk::SDLHW2D)
 ```
 
 In addition, the following options can be added depending on your needs:
 - SWGTK_BUILD_EXAMPLES: Include the example programs. (Default: ON)
 - SWGTK_NO_CCACHE: Disable ccache support. (Default: OFF)
-- SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: ON)
+- SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: OFF)
 - SWGTK_LUA_BINDINGS: Enable Lua scripting support via sol3. (Default: ON)
+- SWGTK_BUILD_TESTS: Build the unit test suite. (Default: ON)
+- SWGTK_EXCEPTIONS: Build with exceptions enabled. (Default: OFF)
 
 After this you can create your application using something like this:
 
 ```c++
 #include <swgtk/App.hpp>
 #include <swgtk/Scene.hpp>
-#include <swgtk/Simple2DRenderer.hpp>
+#include <swgtk/SDLHW2D.hpp>
 
 class MyAppClass : public swgtk::Scene::Node{
     public:
@@ -107,7 +102,7 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
     constexpr auto windowWidth = 800;
     constexpr auto windowHeight = 600;
 
-    if(swgtk::App app; app.InitGraphics("App Title.", windowWidth, windowHeight, swgtk::Simple2DRenderer::Create())) {
+    if(swgtk::App app; app.InitGraphics("App Title.", windowWidth, windowHeight, swgtk::SDLHW2D::Create())) {
         app.RunGame<MyAppClass>();
     }
 }
