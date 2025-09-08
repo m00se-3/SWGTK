@@ -23,10 +23,6 @@ if(EMSCRIPTEN)
 	)
 endif()
 
-if(DEFINED SWGTK_SANITIZE AND NOT ${SWGTK_SANITIZE} MATCHES "")
-	target_compile_options(swgtk PRIVATE ${SWGTK_SANITIZE})
-endif()
-
 target_compile_features(swgtk PRIVATE cxx_std_23)
 
 if(${SWGTK_LUA_BINDINGS} MATCHES ON)

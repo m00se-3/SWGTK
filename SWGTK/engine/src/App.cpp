@@ -10,12 +10,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 */
-#include "SDL3/SDL_init.h"
 #include <swgtk/App.hpp>
 #include <swgtk/Utility.hpp>
-#include <swgtk/Math.hpp>
-#include <swgtk/Surface.hpp>
 
+#include <SDL3/SDL_init.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_video.h>
@@ -96,12 +94,7 @@ namespace swgtk {
 		SetKeyboardState();
 		SetModState(SDL_GetModState());
 
-		{
-			MouseState mouse{};
-			mouse.buttons = MButton{ SDL_GetMouseState(&mouse.x, &mouse.y) };
-
-			SetMouseState(mouse);
-		}
+		UpdateMouseState();
 
 		_gameTimer.UpdateTime();
 	}
@@ -119,6 +112,7 @@ namespace swgtk {
 	void App::Run() {
 		if((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == SDL_INIT_VIDEO) {
 			ShowWindow();
+			SDL_SyncWindow(_window); // Make sure window is ready before starting the simulation.
 		}
 #ifdef __EMSCRIPTEN__
 		emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);

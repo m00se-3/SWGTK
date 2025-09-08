@@ -3,10 +3,6 @@ target_compile_options(sdl2drender PRIVATE ${CompilerFlags})
 
 target_link_options(sdl2drender PRIVATE ${LinkerFlags})
 
-if(DEFINED SWGTK_SANITIZE AND NOT ${SWGTK_SANITIZE} MATCHES "")
-    target_compile_options(sdl2drender PRIVATE ${SWGTK_SANITIZE})
-endif()
-
 target_compile_features(sdl2drender PRIVATE cxx_std_23)
 
 if(${SWGTK_LUA_BINDINGS} MATCHES ON)
