@@ -18,6 +18,8 @@
 #include <vector>
 #include <random>
 
+#include "swgtk/Math.hpp"
+
 inline constexpr auto particleCount = 100uz;
 
 namespace swgtk {
@@ -30,7 +32,7 @@ namespace swgtk {
     struct Particle {
         SDL_FPoint pos{};
         SDL_FPoint velocity{};
-        double angle = 0.0;
+        Rads angle{};
         float speed = 0.f;
         float lifetime = 0.f;
     };

@@ -50,14 +50,14 @@ namespace swgtk {
         if(generate) {
             std::ranges::generate(_particles, [&gen=ParticlesTest::_gen, mouse=ParticlesTest::_mouse.pos]() {
                 const auto speed = std::generate_canonical<float, canonicalBitSize>(gen) * speedConstant;
-                const auto angle = std::generate_canonical<double, canonicalBitSize>(gen) * math::pi2;
+                const auto angle = std::generate_canonical<double, canonicalBitSize>(gen) * Rads::pi2;
                 const auto angleF = static_cast<float>(angle);
                 const auto life = std::generate_canonical<float, canonicalBitSize>(gen) * maxLifetime;
 
                 return Particle{
                     .pos = SDL_FPoint{ .x=mouse.x, .y=mouse.y },
                     .velocity = SDL_FPoint{ .x=cosf(angleF), .y=sinf(angleF) },
-                    .angle = angle,
+                    .angle = Radians{ angle },
                     .speed = speed,
                     .lifetime = life
                 };
@@ -83,15 +83,14 @@ namespace swgtk {
                 particle.angle += static_cast<double>(speedFrame);
                 particle.lifetime += deltaTime;
 
-                if(particle.angle > math::pi2) { particle.angle -= math::pi2; }
                 if(particle.lifetime > maxLifetime) {
-                    const auto angle = std::generate_canonical<double, canonicalBitSize>(_gen) * math::pi2;
+                    const auto angle = std::generate_canonical<double, canonicalBitSize>(_gen) * Rads::pi2;
                     const auto angleF = static_cast<float>(angle);
 
                     particle.lifetime = 0.0f;
                     particle.pos = SDL_FPoint{ .x=_mouse.pos.x, .y=_mouse.pos.y };
                     particle.speed = std::generate_canonical<float, canonicalBitSize>(_gen) * speedConstant;
-                    particle.angle = angle;
+                    particle.angle = Radians{ angle };
                     particle.velocity.x = cosf(angleF);
                     particle.velocity.y = sinf(angleF);
                 }
@@ -106,7 +105,7 @@ namespace swgtk {
                     .w = particleSize, .h = particleSize,
                 };
 
-                _render->DrawTexture(_mouse.texture, std::nullopt, rect, math::RadiansToDegrees(particle.angle));
+                _render->DrawTexture(_mouse.texture, std::nullopt, rect, RadiansToDegrees(particle.angle).value());
             }
 
             if(showTime) {

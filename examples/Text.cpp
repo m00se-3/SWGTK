@@ -37,8 +37,6 @@ namespace swgtk {
 		_mouse.pos = _app->GetMousePos();
 		_mouse.angle += static_cast<double>(dt) * 2.0;
 
-		if(_mouse.angle > math::pi2) { _mouse.angle -= (math::pi2); }
-
 		auto [width, height] = _mouse.texture.GetSize();
 
 		auto rect = SDL_FRect{};
@@ -54,7 +52,7 @@ namespace swgtk {
 		_render->DrawTexture(_background);
 
 		// Rotating in SDL3 is in degrees...
-		_render->DrawTexture(_mouse.texture, std::nullopt, rect, math::RadiansToDegrees(_mouse.angle));
+		_render->DrawTexture(_mouse.texture, std::nullopt, rect, RadiansToDegrees(_mouse.angle).value());
 
 
 		// NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
