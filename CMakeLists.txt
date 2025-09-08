@@ -11,10 +11,6 @@ include("CPM.cmake")
 include("cmake/CMakeOptions.cmake")
 include("cmake/Config.cmake")
 
-if(${SWGTK_BUILD_TESTS} OR ${SWGTK_BUILD_EXAMPLES})
-  include(CTest)
-endif()
-
 # If building for emscripten
 
 if(EMSCRIPTEN)
@@ -38,6 +34,13 @@ if(CCACHE_PROGRAM AND ${SWGTK_NO_CCACHE} MATCHES OFF)
   endif()
   
 endif()
+
+if(${SWGTK_BUILD_TESTS} MATCHES ON)
+  include(CTest)
+
+  CPMAddPackage("gh:catchorg/Catch2@3.10.0")
+endif()
+
 if(${SWGTK_LUA_BINDINGS} MATCHES ON)
   # Lua and sol2
   CPMAddPackage(
@@ -80,7 +83,7 @@ endif()
 CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
-  GIT_TAG "release-3.2.20"
+  GIT_TAG "release-3.2.22"
   OPTIONS 
   "SDL_TEST_LIBRARY false"
 )
@@ -103,5 +106,12 @@ CPMAddPackage(
 )
 
 add_subdirectory ("SWGTK")
-add_subdirectory("examples")
+
+if(${SWGTK_BUILD_EXAMPLES} MATCHES ON)
+  add_subdirectory("examples")
+endif()
+
+if(${SWGTK_BUILD_TESTS} MATCHES ON)
+  add_subdirectory("tests")
+endif()
 

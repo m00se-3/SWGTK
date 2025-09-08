@@ -48,14 +48,14 @@ namespace swgtk {
         }
 
         if(generate) {
-            std::ranges::generate(_particles, [&gen=ParticlesTest::_gen, &mouse=ParticlesTest::_mouse]() {
+            std::ranges::generate(_particles, [&gen=ParticlesTest::_gen, mouse=ParticlesTest::_mouse.pos]() {
                 const auto speed = std::generate_canonical<float, canonicalBitSize>(gen) * speedConstant;
                 const auto angle = std::generate_canonical<double, canonicalBitSize>(gen) * math::pi2;
                 const auto angleF = static_cast<float>(angle);
                 const auto life = std::generate_canonical<float, canonicalBitSize>(gen) * maxLifetime;
 
                 return Particle{
-                    .pos = SDL_FPoint{ .x=mouse.pos.x, .y=mouse.pos.y },
+                    .pos = SDL_FPoint{ .x=mouse.x, .y=mouse.y },
                     .velocity = SDL_FPoint{ .x=cosf(angleF), .y=sinf(angleF) },
                     .angle = angle,
                     .speed = speed,
@@ -99,7 +99,7 @@ namespace swgtk {
 
             _render->BufferClear();
 
-            for(auto& particle : _particles) {
+            for(const auto& particle : _particles) {
                 const auto rect = SDL_FRect {
                     .x = particle.pos.x - (particleSize / 2.0f),
                     .y = particle.pos.y - (particleSize / 2.0f),
@@ -117,7 +117,7 @@ namespace swgtk {
     }
 
     bool TimeToFramesScene::Update([[maybe_unused]]const float deltaTime) {
-        auto p = GetParent<ParticlesTest>().lock();
+        const auto p = GetParent<ParticlesTest>().lock();
         p->Draw()->DrawPlainText(std::format("Time between frames: {}", p->GetAverageTime()),
          SDL_FRect{ .x=5.f, .y=10.f, .w=400.f, .h=40.f }); // NOLINT
 

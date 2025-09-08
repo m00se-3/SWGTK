@@ -67,7 +67,7 @@ namespace swgtk {
 
     class TimeToFramesScene : public Scene::Node {
     public:
-        TimeToFramesScene(const std::shared_ptr<Node>& parent)
+        explicit TimeToFramesScene(const std::shared_ptr<Node>& parent)
         : Node(parent) {}
 
         bool Create() override { return true; };

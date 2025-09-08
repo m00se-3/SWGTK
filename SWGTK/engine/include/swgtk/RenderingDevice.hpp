@@ -75,7 +75,7 @@ namespace swgtk {
 
         /** @brief Finishes initializing the device.
          *
-         * @param dependency An implementation dependency that is unique to each derived class. If more than one value
+         * @param dependency An implementation dependency may be unique to a derived class. If more than one value
          * is needed, consider passing a struct. **We recommend using pointers to objects if you don't want exceptions.**
          * @return true if the device could be initialized, false otherwise
          */

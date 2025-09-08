@@ -36,7 +36,7 @@ namespace swgtk {
 	/**
 	 * @brief This is currently the class you want to use for basic hardware 2D rendering.
 	   This is based on SDL3's hardware accelerated 2D rendering backend. It does not support shaders.
-	 * 
+	 *
 	 */
     class SDLHW2D : public RenderingDevice, public std::enable_shared_from_this<SDLHW2D>{
 	public:
@@ -61,12 +61,12 @@ namespace swgtk {
 
 		/**
 		 * @brief SDL3 has several vsync options that you can set. This function wraps that functionality.
-		 * 
-		 * @param value 
+		 *
+		 * @param value
 		 */
 		void SetVSync(const VSync value) override { SDL_SetRenderVSync(_render, std::to_underlying(value)); }
 
-		[[nodiscard]] VSync GetVSync() const override { 
+		[[nodiscard]] VSync GetVSync() const override {
 			int ret{};
 			SDL_GetRenderVSync(_render, &ret);
 			return VSync{ret};
@@ -84,11 +84,11 @@ namespace swgtk {
 		                 const std::optional<SDL_FRect> &dest, double angle,
 		                 const std::optional<SDL_FPoint> &center = std::nullopt,
 		                 SDL_FlipMode flip = SDL_FLIP_NONE) const;
-		
+
 		/**
 		 * @brief Draw text at the specified location with the specified font. Uses SDL_ttf's fastest algorithm.
-		 * 
-		 * @param text 
+		 *
+		 * @param text
 		 * @param pos - Destination rectangle
 		 * @param color
 		 */
@@ -96,14 +96,14 @@ namespace swgtk {
 		                   const SDL_Color &color = SDL_Color{
 			                   .r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt
 		                   }) const;
-		
+
 		/**
 		* @brief Same as DrawPlainText() except it allows you to specify word wrapping support.
-		* 
-		* @param text 
-		* @param pos 
+		*
+		* @param text
+		* @param pos
 		* @param wrapLen Length of text before wrapping, in bytes.
-		* @param color 
+		* @param color
 		*/
     	void DrawPlainWrapText(std::string_view text, const SDL_FRect& pos, int wrapLen = 0,
 												  const SDL_Color &color = SDL_Color{
@@ -153,10 +153,10 @@ namespace swgtk {
 		/**
 		 * @brief Used to draw arbitrary shapes with raw vertex information. Great for making draw calls from
 		 *			external sources, like GUI libraries.
-		 * 
-		 * @param texture 
-		 * @param vertices 
-		 * @param indices 
+		 *
+		 * @param texture
+		 * @param vertices
+		 * @param indices
 		 */
 		void DrawGeometry(Texture texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
 			SDL_RenderGeometry(_render, *texture, vertices.data(), static_cast<int>(std::ssize(vertices)),
