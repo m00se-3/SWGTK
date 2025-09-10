@@ -89,7 +89,7 @@ namespace swgtk
 		template<std::derived_from<Node> T>
 		[[nodiscard]] constexpr std::shared_ptr<T> GetRootNode() { return std::static_pointer_cast<T>(_root); }
 		[[nodiscard]] constexpr ObjectRef<App> GetApp() { return ObjectRef<App>{_parent}; }
-		[[nodiscard]] constexpr ObjectRef<Scene> GetScene() { return ObjectRef<Scene>{this}; }
+		[[nodiscard]] ObjectRef<Scene> GetScene() { return ObjectRef<Scene>{this}; }
 
 		template<std::derived_from<RenderingDevice> T>	
 		[[nodiscard]] constexpr auto AppRenderer() { return RenderImpl<T>(_renderer); }

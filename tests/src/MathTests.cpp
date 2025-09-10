@@ -13,10 +13,10 @@ TEST_CASE("Angle Tests") {
   }
 
   SECTION("Test expected cases") {
-    STATIC_REQUIRE(swgtk::DegreesToRadians(swgtk::Degrees{ 90.0f }) == swgtk::Radians{ std::numbers::pi_v<float> * 0.5f });
-    STATIC_REQUIRE(swgtk::DegreesToRadians(swgtk::Degrees{ 180.0 }) == swgtk::Radians{ std::numbers::pi });
-    STATIC_REQUIRE(swgtk::RadiansToDegrees(swgtk::Radians{ std::numbers::pi_v<float> * 0.25f }) == swgtk::Degrees{ 45.0f });
-    STATIC_REQUIRE(swgtk::RadiansToDegrees(swgtk::Radians{ std::numbers::pi * 2.0 }) == swgtk::Degrees{ 360.0 });
+    REQUIRE(swgtk::DegreesToRadians(swgtk::Degrees{ 90.0f }) == swgtk::Radians{ std::numbers::pi_v<float> * 0.5f });
+    REQUIRE(swgtk::DegreesToRadians(swgtk::Degrees{ 180.0 }) == swgtk::Radians{ std::numbers::pi });
+    REQUIRE(swgtk::RadiansToDegrees(swgtk::Radians{ std::numbers::pi_v<float> * 0.25f }) == swgtk::Degrees{ 45.0f });
+    REQUIRE(swgtk::RadiansToDegrees(swgtk::Radians{ std::numbers::pi * 2.0 }) == swgtk::Degrees{ 360.0 });
   }
 
   SECTION("Test out-of-bounds input") {
@@ -28,7 +28,9 @@ TEST_CASE("Angle Tests") {
 
   SECTION("Test arithmetic") {
     STATIC_REQUIRE((swgtk::Rads{ std::numbers::pi } + (std::numbers::pi * 0.5)) == swgtk::Rads{ std::numbers::pi * 1.5 });
-    STATIC_REQUIRE((swgtk::Degs{ 540.0 } - 36) == swgtk::Degs{ 324 });
+    STATIC_REQUIRE((swgtk::Degs{ 540.0 } - 36.0) == swgtk::Degs{ 324 });
+    STATIC_REQUIRE((swgtk::Rads{ std::numbers::pi } + 40000.0) == swgtk::Rads{ std::numbers::pi });
+    STATIC_REQUIRE((swgtk::Degs{ 76.0 } + 9700.0) == swgtk::Degs{ 76.0 });
   }
 
   SECTION("Test comparisons") {

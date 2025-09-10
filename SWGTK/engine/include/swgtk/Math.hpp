@@ -32,7 +32,7 @@ namespace swgtk {
         static constexpr value_type pi2 = static_cast<value_type>(std::numbers::pi_v<Type> + std::numbers::pi_v<Type>);
 
         constexpr Radians() = default;
-        constexpr explicit Radians(Type value) : _value(std::clamp(value, -pi2, pi2)) {}
+        constexpr explicit Radians(Type value) noexcept : _value(std::clamp(value, -pi2, pi2)) {}
 
         [[nodiscard]] constexpr value_type value() const noexcept { return _value; }
         [[nodiscard]] constexpr value_type operator *() const { return _value; }
@@ -57,20 +57,20 @@ namespace swgtk {
         }
 
         [[nodiscard]] constexpr Radians operator +(const value_type other) const {
-            return Radians{ ApplySaturation(_value + other) };
+            return *this + Radians{ other };
         }
 
         [[nodiscard]] constexpr Radians operator -(const value_type other) const {
-            return Radians{ ApplySaturation(_value - other) };
+            return *this - Radians{ other };
         }
 
         constexpr Radians& operator +=(const value_type other) {
-            _value = ApplySaturation(_value + other);
+            *this += Radians{ other };
             return *this;
         }
 
         constexpr Radians& operator -=(const value_type other) {
-            _value = ApplySaturation(_value - other);
+            *this -= Radians{ other };
             return *this;
         }
 
@@ -95,7 +95,7 @@ namespace swgtk {
         static constexpr value_type threeSixty = static_cast<value_type>(360.0f);
 
         constexpr Degrees() = default;
-        explicit constexpr Degrees(Type value) : _value(std::clamp(value, -threeSixty, threeSixty)) {}
+        explicit constexpr Degrees(Type value) noexcept : _value(std::clamp(value, -threeSixty, threeSixty)) {}
 
         [[nodiscard]] constexpr value_type value() const noexcept { return _value; }
         [[nodiscard]] constexpr value_type operator *() const { return _value; }
@@ -120,20 +120,20 @@ namespace swgtk {
         }
 
         [[nodiscard]] constexpr Degrees operator +(const value_type other) const {
-            return Degrees{ ApplySaturation(_value + other) };
+            return *this + Degrees{ other };
         }
 
         [[nodiscard]] constexpr Degrees operator -(const value_type other) const {
-            return Degrees{ ApplySaturation(_value - other) };
+            return *this - Degrees{ other };
         }
 
         constexpr Degrees& operator +=(const value_type other) {
-            _value = ApplySaturation(_value + other);
+			*this += Degrees{ other };
             return *this;
         }
 
         constexpr Degrees& operator -=(const value_type other) {
-            _value = ApplySaturation(_value - other);
+			*this -= Degrees{ other };
             return *this;
         }
     private:

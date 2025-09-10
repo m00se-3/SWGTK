@@ -181,7 +181,7 @@ namespace swgtk {
 		*/
 		private:
 		
-		constexpr void UpdateMouseState() { _input.mouseState.buttons = MButton { SDL_GetMouseState(&_input.mouseState.x, &_input.mouseState.y) }; }
+		void UpdateMouseState() { _input.mouseState.buttons = MButton { SDL_GetMouseState(&_input.mouseState.x, &_input.mouseState.y) }; }
 		constexpr void SetModState(const SDL_Keymod& state) { _input.modifiers = static_cast<KeyMod>(state); }
 		constexpr void ResetScroll() { _input.scroll = { .x=0.f, .y=0.f }; }
 		constexpr void AddScroll(const float amountX, const float amountY) { _input.scroll = { .x=amountX, .y=amountY }; }
