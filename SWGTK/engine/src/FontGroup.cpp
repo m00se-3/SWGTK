@@ -11,48 +11,44 @@
     SOFTWARE.
 */
 #include "swgtk/FontGroup.hpp"
+#include <string>
 #include <swgtk/Utility.hpp>
 #include <utility>
-#include <string>
 
 namespace swgtk {
 
-    bool FontGroup::LoadDefaultFont() {
-        if (const auto filePath = std::filesystem::path{ SWGTK_DEFAULT_FONT_FILE }; std::filesystem::exists(filePath)) {
-            const auto fileString = filePath.string();
-            
-            if (TTF_Font* ttf = TTF_OpenFont(fileString.c_str(), _defaultFontSize); ttf == nullptr)
-            {
-                DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
-            } else {
-                _ttfFonts.insert_or_assign(SWGTK_DEFAULT_FONT_ID, Font{ .ptr=ttf });
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    bool FontGroup::AddFont(const std::filesystem::path& filename) {
-        if (const auto fileString = filename.string(); !_ttfFonts.contains(fileString))
-        {
-            if (TTF_Font* ttf = TTF_OpenFont(fileString.c_str(), _defaultFontSize); ttf == nullptr)
-            {
-                DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
-            } else {
-                _ttfFonts.insert_or_assign(filename.stem().string(), Font{ .ptr=ttf });
-                return true;
-            }
-        }
+  auto FontGroup::LoadDefaultFont() -> bool {
+    if (const auto filePath = std::filesystem::path{SWGTK_DEFAULT_FONT_FILE}; std::filesystem::exists(filePath)) {
+      const auto fileString = filePath.string();
 
-        return false;
+      if (TTF_Font* ttf = TTF_OpenFont(fileString.c_str(), _defaultFontSize); ttf == nullptr) {
+        DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
+      } else {
+        _ttfFonts.insert_or_assign(SWGTK_DEFAULT_FONT_ID, Font{.ptr = ttf});
+        return true;
+      }
     }
 
-    void FontGroup::ClearFonts() const {
-        for (const auto [ptr] : _ttfFonts | std::views::values)
-        {
-            TTF_CloseFont(ptr);
-        }
+    return false;
+  }
+
+  auto FontGroup::AddFont(const std::filesystem::path& filename) -> bool {
+    if (const auto fileString = filename.string(); !_ttfFonts.contains(fileString)) {
+      if (TTF_Font* ttf = TTF_OpenFont(fileString.c_str(), _defaultFontSize); ttf == nullptr) {
+        DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
+      } else {
+        _ttfFonts.insert_or_assign(filename.stem().string(), Font{.ptr = ttf});
+        return true;
+      }
     }
+
+    return false;
+  }
+
+  void FontGroup::ClearFonts() const {
+    for (const auto [ptr]: _ttfFonts | std::views::values) {
+      TTF_CloseFont(ptr);
+    }
+  }
 
 } // namespace swgtk

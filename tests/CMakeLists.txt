@@ -7,11 +7,11 @@ target_link_options(testsuite PRIVATE ${LinkerFlags})
 target_compile_features(testsuite PRIVATE cxx_std_23)
 
 target_compile_definitions(
-    testsuite
+  testsuite
 
-    PUBLIC
+  PUBLIC
 
-    HAV_STRINGS_H="0" # Disable non-standard strings.
+  HAV_STRINGS_H="0" # Disable non-standard strings.
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
@@ -27,26 +27,26 @@ if(CPPCHECK_PROGRAM)
 endif()
 
 target_sources(
-    testsuite
+  testsuite
 
-    PUBLIC
+  PUBLIC
 
-    FILE_SET HEADERS
+  FILE_SET HEADERS
 
-    BASE_DIRS
+  BASE_DIRS
 
-    ${SWGTK_SOURCE_DIR}/SWGTK/engine/include
-    ${CMAKE_CURRENT_LIST_DIR}/include
+  ${SWGTK_SOURCE_DIR}/SWGTK/engine/include
+  ${CMAKE_CURRENT_LIST_DIR}/include
 
-    FILES
+  FILES
 
-    PUBLIC
+  PUBLIC
 
-    ${CMAKE_CURRENT_LIST_DIR}/include/TestRenderer.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/TestRenderer.hpp
 
-    PRIVATE
+  PRIVATE
 
-    ${CMAKE_CURRENT_LIST_DIR}/src/MathTests.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/MathTests.cpp
 )
 
 target_link_libraries(testsuite PRIVATE swgtk swgtk::SDLHW2D Catch2::Catch2WithMain)

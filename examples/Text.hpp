@@ -15,28 +15,30 @@
 
 #include <swgtk/SDLHW2D.hpp>
 #include <swgtk/Scene.hpp>
+#include <swgtk/Math.hpp>
 
 namespace swgtk {
 
-    struct MouseCursor {
-        SDL_FPoint pos{};
-        Texture texture;
-        Rads angle{};
-    };
+  struct MouseCursor {
+    SDL_FPoint pos{};
+    Texture texture;
+    Rads angle{};
+  };
 
-    class TextTest final : public Scene::Node {
-    public:
-        explicit TextTest(const ObjectRef<Scene>& scene) : Node(scene) {}
+  class TextTest final : public Scene::Node {
+  public:
+    explicit TextTest(const ObjectRef<Scene> &scene) :
+        Node(scene) {}
 
-        bool Create() override;
-        bool Update(float dt) override;
+    auto Create() -> bool override;
+    auto Update(float dt) -> bool override;
 
-    private:
-        MouseCursor _mouse{};
-        Texture _background;
-        ObjectRef<App> _app;
-        ObjectRef<SDLHW2D> _render;
-    };
+  private:
+    MouseCursor _mouse{};
+    Texture _background;
+    ObjectRef<App> _app;
+    ObjectRef<SDLHW2D> _render;
+  };
 
 } // namespace swgtk
 

@@ -19,66 +19,65 @@
 #include <utility>
 
 namespace swgtk {
-	/**
-		@brief A simple, reference-counted, RAII container class for SDL_Texture.
-	
-		When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,
-		the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
-	*/
-	class Texture {
-		static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); }
+  /**
+    @brief A simple, reference-counted, RAII container class for SDL_Texture.
 
-	public:
-		Texture() = default;
-		explicit Texture(SDL_Texture* texture) : _texture(std::shared_ptr<SDL_Texture>{texture, Texture::DestroyTexture}) {}
+    When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,
+    the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
+  */
+  class Texture {
+    static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); }
 
-		[[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
-		[[nodiscard]] auto Get(this auto&& self) { return self._texture; }
+  public:
+    Texture() = default;
+    explicit Texture(SDL_Texture* texture) :
+        _texture(std::shared_ptr<SDL_Texture>{texture, Texture::DestroyTexture}) {}
 
-		void SetBlendMode(const SDL_BlendMode mode) const { SDL_SetTextureBlendMode(_texture.get(), mode); }
+    [[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
+    [[nodiscard]] auto Get(this auto&& self) { return self._texture; }
 
-		void SetTint(const SDL_FColor& color) const {
-			SDL_SetTextureColorModFloat(_texture.get(), color.r, color.g, color.b);
-			SDL_SetTextureAlphaModFloat(_texture.get(), color.a);
-		}
+    void SetBlendMode(const SDL_BlendMode mode) const { SDL_SetTextureBlendMode(_texture.get(), mode); }
 
-		void SetScaleMode(const SDL_ScaleMode mode) const { SDL_SetTextureScaleMode(_texture.get(), mode); }
+    void SetTint(const SDL_FColor& color) const {
+      SDL_SetTextureColorModFloat(_texture.get(), color.r, color.g, color.b);
+      SDL_SetTextureAlphaModFloat(_texture.get(), color.a);
+    }
 
-		[[nodiscard]] SDL_BlendMode GetBlendMode() const
-		{
-			SDL_BlendMode blend{};
+    void SetScaleMode(const SDL_ScaleMode mode) const { SDL_SetTextureScaleMode(_texture.get(), mode); }
 
-			SDL_GetTextureBlendMode(_texture.get(), &blend);
-			return blend;
-		}
+    [[nodiscard]] auto GetBlendMode() const -> SDL_BlendMode {
+      SDL_BlendMode blend{};
 
-		[[nodiscard]] SDL_FColor GetTint() const 
-		{
-			SDL_FColor color{};
+      SDL_GetTextureBlendMode(_texture.get(), &blend);
+      return blend;
+    }
 
-			SDL_GetTextureColorModFloat(_texture.get(), &color.r, &color.g, &color.b);
-			SDL_GetTextureAlphaModFloat(_texture.get(), &color.a);
+    [[nodiscard]] auto GetTint() const -> SDL_FColor {
+      SDL_FColor color{};
 
-			return color;
-		}
+      SDL_GetTextureColorModFloat(_texture.get(), &color.r, &color.g, &color.b);
+      SDL_GetTextureAlphaModFloat(_texture.get(), &color.a);
 
-		[[nodiscard]] SDL_ScaleMode GetScaleMode() const {
-			SDL_ScaleMode mode{};
+      return color;
+    }
 
-			SDL_GetTextureScaleMode(_texture.get(), &mode);
+    [[nodiscard]] auto GetScaleMode() const -> SDL_ScaleMode {
+      SDL_ScaleMode mode{};
 
-			return mode;
-		}
+      SDL_GetTextureScaleMode(_texture.get(), &mode);
 
-		[[nodiscard]] std::pair<float, float> GetSize() const {
-			float w{}, y{};
+      return mode;
+    }
 
-			SDL_GetTextureSize(_texture.get(), &w, &y);
-			return std::make_pair(w,y);
-		}
+    [[nodiscard]] auto GetSize() const -> std::pair<float, float> {
+      float w{}, y{};
 
-	private:
-		std::shared_ptr<SDL_Texture> _texture;
-	};
+      SDL_GetTextureSize(_texture.get(), &w, &y);
+      return std::make_pair(w, y);
+    }
+
+  private:
+    std::shared_ptr<SDL_Texture> _texture;
+  };
 } // namespace swgtk
 #endif // SWGTK_ENGINE_INCLUDE_SWGTK_TEXTURE_HPP_

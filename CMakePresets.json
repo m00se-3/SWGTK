@@ -17,8 +17,8 @@
       "name": "msvc",
       "inherits": "base",
       "cacheVariables": {
-          "CMAKE_C_COMPILER": "cl",
-          "CMAKE_CXX_COMPILER": "cl"
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
       },
       "environment": {
         "SWGTK_INSTALL_FREETYPE": "OFF",
@@ -30,7 +30,7 @@
           "enableMicrosoftCodeAnalysis": true
         }
       }
-		},
+    },
     {
       "name": "emscripten",
       "inherits": "base",

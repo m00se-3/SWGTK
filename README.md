@@ -17,7 +17,7 @@ A rendering backend is selected by the user and is injected into the application
 This library is built with a strict set of compiler options and analyzer warnings. Warnings
 are treated as errors. This project takes safe software and best practices very seriously.
 
-Example programs can be found in the 'examples' folder. The examples are kind of a testing playground at the moment, as a proper testing framework is still in the works.
+Example programs can be found in the 'examples' folder.
 
 ## Features
 
@@ -57,7 +57,7 @@ releases:
 - Development Tools
   - CMake
   - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake.
-  - clang-tidy [Optional]
+  - clang-tidy 
   - cppcheck [Optional]
   - ccache [Optional]
 
@@ -66,8 +66,7 @@ releases:
 SWGTK requires CMake 3.28 or newer. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
 ```cmake
-# v0.1.0 is somewhat outdated
-CPMAddPackage("gh:m00se-3/SWGTK#main")
+CPMAddPackage("gh:m00se-3/SWGTK@0.2.0")
 
 # This is the easiest way to make sure all the shared library dependencies are where they need to be.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
@@ -92,19 +91,20 @@ After this you can create your application using something like this:
 #include <swgtk/SDLHW2D.hpp>
 
 class MyAppClass : public swgtk::Scene::Node{
-    public:
-    explicit MyAppClass(const swgtk::ObjectRef<swgtk::Scene>& scene) : swgtk::Scene::Node(scene) {}
-    bool Create() override;        // Called after object is created.
-    bool Update(float) override;   // Called every frame.
+   public:
+   explicit MyAppClass(const swgtk::ObjectRef<swgtk::Scene>& scene) :
+            swgtk::Scene::Node(scene) {}
+   auto Create() -> bool override;        // Called after object is created.
+   auto Update(float) -> bool override;   // Called every frame.
 };
 
-int main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) {
-    constexpr auto windowWidth = 800;
-    constexpr auto windowHeight = 600;
+auto main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) -> int {
+   constexpr auto windowWidth = 800;
+   constexpr auto windowHeight = 600;
 
-    if(swgtk::App app; app.InitGraphics("App Title.", windowWidth, windowHeight, swgtk::SDLHW2D::Create())) {
-        app.RunGame<MyAppClass>();
-    }
+   if(swgtk::App app; app.InitGraphics("App Title.", windowWidth, windowHeight, swgtk::SDLHW2D::Create())) {
+       app.RunGame<MyAppClass>();
+   }
 }
 ```
 Please see the example programs for more information.

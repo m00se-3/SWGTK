@@ -1,10 +1,10 @@
-﻿cmake_minimum_required (VERSION 3.28)
+﻿cmake_minimum_required(VERSION 3.28)
 
 project(
-	"SWGTK"
-	DESCRIPTION "Software and Games Tool Kit" 
-	HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
-    VERSION 0.2.0
+  "SWGTK"
+  DESCRIPTION "Software and Games Tool Kit"
+  HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
+  VERSION 0.2.0
 )
 
 include("CPM.cmake")
@@ -32,7 +32,7 @@ if(CCACHE_PROGRAM AND ${SWGTK_NO_CCACHE} MATCHES OFF)
   if(NOT CPM_SOURCE_CACHE)
     set(CPM_SOURCE_CACHE ${CMAKE_CURRENT_LIST_DIR}/.cache/CPM)
   endif()
-  
+
 endif()
 
 if(${SWGTK_BUILD_TESTS} MATCHES ON)
@@ -75,7 +75,7 @@ if(${SWGTK_INSTALL_FREETYPE})
   CPMAddPackage("gh:freetype/freetype#master")
 
   # Add a custom target alias for Freetype, since it uses a legacy version of cmake
-  if (freetype_ADDED)
+  if(freetype_ADDED)
     add_library(Freetype::Freetype ALIAS freetype)
   endif()
 endif()
@@ -84,7 +84,7 @@ CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
   GIT_TAG "release-3.2.22"
-  OPTIONS 
+  OPTIONS
   "SDL_TEST_LIBRARY false"
 )
 
@@ -92,7 +92,7 @@ CPMAddPackage(
   NAME "SDL_image"
   GITHUB_REPOSITORY "libsdl-org/SDL_image"
   GIT_TAG "release-3.2.4"
-  OPTIONS 
+  OPTIONS
   "SDLIMAGE_VENDORED false"
 )
 
@@ -100,12 +100,12 @@ CPMAddPackage(
   NAME "SDL3_ttf"
   GITHUB_REPOSITORY "libsdl-org/SDL_ttf"
   GIT_TAG "release-3.2.2"
-  OPTIONS 
+  OPTIONS
   "FREETYPE_LIBRARY ${freetype_BINARY_DIR}"
   "FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}"
 )
 
-add_subdirectory ("SWGTK")
+add_subdirectory("SWGTK")
 
 if(${SWGTK_BUILD_EXAMPLES} MATCHES ON)
   add_subdirectory("examples")
