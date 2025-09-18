@@ -85,7 +85,7 @@ namespace swgtk {
       return value;
     }
 
-    Type _value;
+    Type _value{};
   };
 
   /** @brief Strongly typed representation of an angle in degrees.
@@ -152,7 +152,7 @@ namespace swgtk {
       return value;
     }
 
-    Type _value;
+    Type _value{};
   };
 
   // Inline representations of the above types.
