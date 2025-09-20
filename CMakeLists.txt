@@ -39,6 +39,7 @@ if(${SWGTK_BUILD_TESTS} MATCHES ON)
   include(CTest)
 
   CPMAddPackage("gh:catchorg/Catch2@3.10.0")
+  enable_testing()
 endif()
 
 if(${SWGTK_LUA_BINDINGS} MATCHES ON)

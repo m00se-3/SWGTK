@@ -50,4 +50,12 @@ target_sources(
 )
 
 target_link_libraries(testsuite PRIVATE swgtk swgtk::SDLHW2D Catch2::Catch2WithMain)
-catch_discover_tests(testsuite)
+catch_discover_tests(testsuite DISCOVERY_MODE PRE_TEST)
+
+if(WIN32) # Windows
+      add_custom_command(
+      TARGET testsuite POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:testsuite> $<TARGET_RUNTIME_DLLS:testsuite>
+      COMMAND_EXPAND_LISTS
+  )
+endif()
