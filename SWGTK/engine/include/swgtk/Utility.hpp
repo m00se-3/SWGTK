@@ -16,6 +16,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "Input.hpp"
+
 #ifdef _DEBUG
 #include <format>
 #define DEBUG_PRINT(Debug_Message, Debug_Error) std::puts(std::format(Debug_Message, Debug_Error).c_str());
@@ -39,14 +41,31 @@ namespace swgtk {
   class ObjectRef {
   public:
     ObjectRef() = default;
-    explicit ObjectRef(Ptr* ptr) :
-        _ptr(ptr) {}
+    explicit ObjectRef(Ptr* ptr) : _ptr(ptr) {}
     auto operator->() const -> Ptr* { return _ptr; }
     explicit operator bool() const { return _ptr != nullptr; }
 
   private:
     Ptr* _ptr = nullptr;
   };
+
+  // Items for internal use only.
+  namespace detail {
+    template<typename Ptr>
+    class NonOwning {
+    public:
+      constexpr NonOwning() = default;
+      constexpr explicit NonOwning(Ptr* ptr) : _ptr(ptr) {}
+      auto operator->() const -> Ptr* { return _ptr; }
+      auto operator->() -> Ptr* { return _ptr; }
+      explicit operator bool() const { return _ptr != nullptr; }
+      auto operator*() const -> Ptr* { return _ptr; }
+      auto operator*() -> Ptr* { return _ptr; }
+
+    private:
+      Ptr* _ptr = nullptr;
+    };
+  }
 
   // Enum class operators.
 

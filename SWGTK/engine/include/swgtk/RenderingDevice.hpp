@@ -30,8 +30,8 @@ namespace sol {
 
 namespace swgtk {
 
-  static constexpr auto defaultAlphaFloat = 1.0f;
-  static constexpr auto defaultAlphaInt = 255u;
+  inline constexpr auto defaultAlphaFloat = 1.0f;
+  inline constexpr auto defaultAlphaInt = 255u;
 
   // SDL supports a number of interesting values for vsync support.
   enum class VSync {
@@ -51,9 +51,9 @@ namespace swgtk {
   class RenderingDevice {
   public:
     RenderingDevice() = default;
-    RenderingDevice(const RenderingDevice&) = default;
+    RenderingDevice(const RenderingDevice&) = delete;
     RenderingDevice(RenderingDevice&&) noexcept = delete;
-    auto operator=(const RenderingDevice&) -> RenderingDevice& = default;
+    auto operator=(const RenderingDevice&) -> RenderingDevice& = delete;
     auto operator=(RenderingDevice&&) noexcept -> RenderingDevice& = delete;
     virtual ~RenderingDevice() = default;
 

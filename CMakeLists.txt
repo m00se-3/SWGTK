@@ -84,7 +84,7 @@ endif()
 CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
-  GIT_TAG "release-3.2.22"
+  GIT_TAG "release-3.4.0"
   OPTIONS
   "SDL_TEST_LIBRARY false"
 )
@@ -92,7 +92,7 @@ CPMAddPackage(
 CPMAddPackage(
   NAME "SDL_image"
   GITHUB_REPOSITORY "libsdl-org/SDL_image"
-  GIT_TAG "release-3.2.4"
+  GIT_TAG "release-3.4.0"
   OPTIONS
   "SDLIMAGE_VENDORED false"
 )

@@ -50,7 +50,7 @@ namespace swgtk {
     }
 
     if (generate) {
-      std::ranges::generate(_particles, [&gen = ParticlesTest::_gen, mouse = ParticlesTest::_mouse.pos]() {
+      std::ranges::generate(_particles, [&gen = ParticlesTest::_gen, mouse = ParticlesTest::_mouse.pos]() -> Particle {
         const auto speed = std::generate_canonical<float, canonicalBitSize>(gen) * speedConstant;
         const auto angle = std::generate_canonical<double, canonicalBitSize>(gen) * Rads::pi2;
         const auto angleF = static_cast<float>(angle);
@@ -76,7 +76,7 @@ namespace swgtk {
         _runningTime = 0.0f;
       }
 
-      std::ranges::for_each(_particles, [&](Particle &particle) {
+      std::ranges::for_each(_particles, [&](Particle &particle) -> void {
         const auto speedFrame = particle.speed * deltaTime;
 
         particle.pos.x += particle.velocity.x * speedFrame;
