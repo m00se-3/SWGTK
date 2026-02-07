@@ -38,7 +38,7 @@ namespace swgtk {
 
     _render->BufferClear(SDL_FColor{.r = particleRed, .g = 0.0f, .b = 0.0f, .a = 1.0f});
 
-    return _render->SetDrawTarget(Texture{});
+    return _render->SetDrawTarget(Texture2D{});
   }
 
   auto ParticlesTest::Update(const float deltaTime) -> bool {

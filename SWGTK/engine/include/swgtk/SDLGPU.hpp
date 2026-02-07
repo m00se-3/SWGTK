@@ -4,6 +4,7 @@
 #include <swgtk/RenderingDevice.hpp>
 #include <swgtk/Texture.hpp>
 #include <swgtk/Utility.hpp>
+#include <utility>
 #include <SDL3/SDL_gpu.h>
 #include <SDL3_ttf/SDL_textengine.h>
 
@@ -25,15 +26,15 @@ namespace swgtk {
     std::string apiName{};
   };
 
-  class SDLGPU : public RenderingDevice, std::enable_shared_from_this<SDLGPU> {
+  class SDLGPU : public RenderingDevice, public std::enable_shared_from_this<SDLGPU> {
     public:
     constexpr SDLGPU() = default;
-    explicit constexpr SDLGPU(const GPU_Params& params) : _params(params) {}
+    explicit constexpr SDLGPU(GPU_Params  params) : _params(std::move(params)) {}
 
     constexpr SDLGPU(const SDLGPU&) = delete;
-    constexpr SDLGPU& operator=(const SDLGPU&) = delete;
+    constexpr auto operator=(const SDLGPU&) -> SDLGPU& = delete;
     constexpr SDLGPU(SDLGPU&&) = delete;
-    constexpr SDLGPU& operator=(SDLGPU&&) = delete;
+    constexpr auto operator=(SDLGPU&&) -> SDLGPU& = delete;
     ~SDLGPU() override { SDLGPU::DestroyDevice(); }
 
     auto BufferClear(const SDL_FColor& color = SDL_FColor{.r = 0.0f, .g = 0.0f, .b = 0.0f, .a = 1.0f}) -> void override;
@@ -44,7 +45,7 @@ namespace swgtk {
     auto IsDeviceInitialized() const -> bool override;
     [[nodiscard]] auto GetRef() -> std::weak_ptr<RenderingDevice> override { return shared_from_this(); }
 
-    auto SetBackgroundColor(const SDL_FColor&) -> void override;
+    auto SetBackgroundColor(const SDL_FColor& color) -> void override;
     auto SetFont(TTF_Font* font) -> void override;
     auto SetVSync(VSync value) -> void override;
     [[nodiscard]] auto GetVSync() const -> VSync override;
@@ -55,7 +56,7 @@ namespace swgtk {
     private:
     SDL_GPUDevice* _device = nullptr;
     TTF_TextEngine* _textEngine = nullptr;
-    detail::NonOwning<SDL_Window> _window{};
+    detail::NonOwning<SDL_Window> _window;
     GPU_Params _params{};
   };
 

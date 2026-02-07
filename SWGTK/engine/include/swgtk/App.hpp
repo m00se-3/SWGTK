@@ -174,7 +174,7 @@ namespace swgtk {
     [[nodiscard]] constexpr auto GetMouseClicks(MButton button) const -> uint8_t { return _input.mouseEvents.at(static_cast<uint32_t>(button)).clicks; }
     [[nodiscard]] constexpr auto GetMouseX() const { return _input.mouseState.x; }
     [[nodiscard]] constexpr auto GetMouseY() const { return _input.mouseState.y; }
-    [[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{_input.mouseState.x, _input.mouseState.y}; }
+    [[nodiscard]] constexpr auto GetMousePos() const { return SDL_FPoint{.x=_input.mouseState.x, .y=_input.mouseState.y}; }
 
     /*
       Input state and event management. For internal use only.

@@ -16,8 +16,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "Input.hpp"
-
 #ifdef _DEBUG
 #include <format>
 #define DEBUG_PRINT(Debug_Message, Debug_Error) std::puts(std::format(Debug_Message, Debug_Error).c_str());

@@ -14,24 +14,31 @@
 #define SWGTK_ENGINE_INCLUDE_SWGTK_TEXTURE_HPP_
 
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_gpu.h>
 #include <SDL3/SDL_surface.h>
 #include <memory>
 #include <utility>
 
 namespace swgtk {
+
+  struct GPUTextureHandle {
+    SDL_GPUDevice* device;
+    SDL_GPUTexture* texture;
+  };
+
   /**
     @brief A simple, reference-counted, RAII container class for SDL_Texture.
 
     When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,
-    the Texture class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
+    the Texture2D class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
   */
-  class Texture {
+  class Texture2D {
     static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); }
 
   public:
-    Texture() = default;
-    explicit Texture(SDL_Texture* texture) :
-        _texture(std::shared_ptr<SDL_Texture>{texture, Texture::DestroyTexture}) {}
+    Texture2D() = default;
+    explicit Texture2D(SDL_Texture* texture) :
+        _texture(std::shared_ptr<SDL_Texture>{texture, DestroyTexture}) {}
 
     [[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
     [[nodiscard]] auto Get(this auto&& self) { return self._texture; }
@@ -78,6 +85,24 @@ namespace swgtk {
 
   private:
     std::shared_ptr<SDL_Texture> _texture;
+  };
+
+  class TextureGPU {
+  public:
+    TextureGPU() = default;
+    TextureGPU(SDL_GPUDevice* device, SDL_GPUTexture* texture)
+      : _texture({ texture, Destroyer{.device = device} }) {}
+
+    [[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
+    [[nodiscard]] auto Get(this auto&& self) { return self._texture; }
+
+    struct Destroyer {
+      SDL_GPUDevice* device = nullptr;
+      auto operator()(SDL_GPUTexture* texture) const -> void { SDL_ReleaseGPUTexture(device, texture); }
+    };
+
+  private:
+    std::shared_ptr<SDL_GPUTexture> _texture;
   };
 } // namespace swgtk
 #endif // SWGTK_ENGINE_INCLUDE_SWGTK_TEXTURE_HPP_

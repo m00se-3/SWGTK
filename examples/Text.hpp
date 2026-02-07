@@ -21,7 +21,7 @@ namespace swgtk {
 
   struct MouseCursor {
     SDL_FPoint pos{};
-    Texture texture;
+    Texture2D texture;
     Rads angle{};
   };
 
@@ -35,7 +35,7 @@ namespace swgtk {
 
   private:
     MouseCursor _mouse{};
-    Texture _background;
+    Texture2D _background;
     ObjectRef<App> _app;
     ObjectRef<SDLHW2D> _render;
   };

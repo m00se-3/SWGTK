@@ -45,7 +45,7 @@ target_sources(
 
   PUBLIC
 
-  ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Texture.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Texture.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Surface.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/SDLHW2D.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/RenderingDevice.hpp
