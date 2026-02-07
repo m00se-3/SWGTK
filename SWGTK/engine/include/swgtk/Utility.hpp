@@ -16,8 +16,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "Input.hpp"
-
 #ifdef _DEBUG
 #include <format>
 #define DEBUG_PRINT(Debug_Message, Debug_Error) std::puts(std::format(Debug_Message, Debug_Error).c_str());
@@ -67,21 +65,6 @@ namespace swgtk {
     };
   }
 
-  // Enum class operators.
-
-  template<typename T>
-  concept ScopedEnum = std::is_scoped_enum_v<T>;
-
-  template<ScopedEnum Enum>
-  [[nodiscard]] constexpr auto operator&(const Enum rhs, const Enum lhs) -> Enum {
-    return Enum{std::to_underlying(rhs) & std::to_underlying(lhs)};
-  }
-
-  template<ScopedEnum Enum>
-  [[nodiscard]] constexpr auto operator|(const Enum rhs, const Enum lhs) -> Enum {
-    return Enum{std::to_underlying(rhs) | std::to_underlying(lhs)};
-  }
-
   enum class LuaPrivledges {
     None = 0,
     UserInput = 1,
@@ -89,6 +72,29 @@ namespace swgtk {
     Fonts = 4,
     All = 15,
   };
+
+  // Enum class operators.
+
+  template<typename T>
+  concept ScopedEnum = std::is_scoped_enum_v<T>;
+
+  template<ScopedEnum Enum>
+  [[nodiscard]] constexpr auto operator bitand(const Enum& lhs, const Enum& rhs) -> Enum {
+    return Enum{std::to_underlying(lhs) bitand std::to_underlying(rhs)};
+  }
+
+  template<ScopedEnum Enum>
+  [[nodiscard]] constexpr auto operator bitor(const Enum& lhs, const Enum& rhs) -> Enum {
+    return Enum{std::to_underlying(lhs) bitor std::to_underlying(rhs)};
+  }
+
+  [[nodiscard]] constexpr auto operator bitand(const LuaPrivledges& lhs, const LuaPrivledges& rhs) -> LuaPrivledges {
+    return LuaPrivledges{std::to_underlying(lhs) bitand std::to_underlying(rhs)};
+  }
+
+  [[nodiscard]] constexpr auto operator bitor(const LuaPrivledges& lhs, const LuaPrivledges& rhs) -> LuaPrivledges {
+    return LuaPrivledges{std::to_underlying(lhs) bitor std::to_underlying(rhs)};
+  }
 
 } // namespace swgtk
 
