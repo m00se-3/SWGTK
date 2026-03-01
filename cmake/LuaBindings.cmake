@@ -29,15 +29,11 @@ if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 endif()
 
 if(CLANG_TIDY_PROGRAM)
-
-  message("-- Enabling clang-tidy.\n")
   set_target_properties(swgtk_lua PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
 
 endif()
 
 if(CPPCHECK_PROGRAM)
-
-  message("-- Enabling cppcheck.\n")
   set_target_properties(swgtk_lua PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
 
 endif()

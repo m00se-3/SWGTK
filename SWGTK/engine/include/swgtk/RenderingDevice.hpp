@@ -93,9 +93,9 @@ namespace swgtk {
      */
     virtual void DestroyDevice() = 0;
 
-    virtual void SetVSync(VSync value) = 0;
+    virtual void SetVSync([[maybe_unused]] VSync value) {}
 
-    [[nodiscard]] virtual auto GetVSync() const -> VSync = 0;
+    [[nodiscard]] virtual auto GetVSync() const -> VSync { return VSync::Disable; }
 
 #ifdef SWGTK_BUILD_WITH_LUA
     virtual void InitLua(sol::state*) = 0;

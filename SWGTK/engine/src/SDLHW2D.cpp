@@ -20,13 +20,16 @@
 #include <SDL3/SDL_video.h>
 #include <filesystem>
 #include <memory>
-#include <sol/optional_implementation.hpp>
 #include <string>
 #include <string_view>
 #include <utility>
 #include "SDL3_image/SDL_image.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "swgtk/RenderingDevice.hpp"
+
+#ifdef SWGTK_BUILD_WITH_LUA
+#include <sol/optional_implementation.hpp>
+#endif
 
 namespace swgtk {
   auto SDLHW2D::PrepareDevice(const std::any& window_ptr) -> bool {
@@ -260,7 +263,7 @@ namespace swgtk {
 
     SWGTK["Texture2D"]["SetBlendMode"] = &Texture2D::SetBlendMode;
 
-    SWGTK["Texture2D"]["SetTint"] = [](const Texture2D& self, const sol::optional<SDL_FColor>& color) {
+    SWGTK["Texture"]["SetTint"] = [](const Texture& self, const sol::optional<SDL_FColor>& color) -> void {
       self.SetTint(color.value_or(SDL_FColor{.r = 1.0, .g = 1.0f, .b = 1.0f, .a = 1.0f}));
     };
 
@@ -283,7 +286,7 @@ namespace swgtk {
     Simple2DRenderer_Type["BufferPresent"] = &SDLHW2D::BufferPresent;
 
     Simple2DRenderer_Type["SetDrawColor"] = [](const std::shared_ptr<SDLHW2D>& context, const sol::optional<float> r, const sol::optional<float> g,
-                                               const sol::optional<float> b, const sol::optional<float> a) {
+                                               const sol::optional<float> b, const sol::optional<float> a) -> void {
       context->SetDrawColor(
           r.value_or(defaultAlphaFloat),
           g.value_or(defaultAlphaFloat),
@@ -293,8 +296,8 @@ namespace swgtk {
 
     Simple2DRenderer_Type["SetDrawTarget"] = &SDLHW2D::SetDrawTarget;
 
-    Simple2DRenderer_Type["DrawTexture"] = [](const std::shared_ptr<SDLHW2D>& context, const Texture2D& tex, const sol::optional<SDL_FRect>& src,
-                                              const sol::optional<SDL_FRect>& dest) {
+    Simple2DRenderer_Type["DrawTexture"] = [](const std::shared_ptr<SDLHW2D>& context, const Texture& tex, const sol::optional<SDL_FRect>& src,
+                                              const sol::optional<SDL_FRect>& dest) -> void {
       context->DrawTexture(tex,
                            (src) ? std::optional<SDL_FRect>{std::in_place_t{}, *src} : std::nullopt,
                            (dest) ? std::optional<SDL_FRect>{std::in_place_t{}, *dest} : std::nullopt);
@@ -302,7 +305,7 @@ namespace swgtk {
 
     Simple2DRenderer_Type["DrawTextureRotated"] = [](const std::shared_ptr<SDLHW2D>& context, const Texture2D& tex, const sol::optional<SDL_FRect>& src, const sol::optional<SDL_FRect>& dest,
                                                      const sol::optional<double> angle, sol::optional<SDL_FPoint> center,
-                                                     const sol::optional<SDL_FlipMode> flip) {
+                                                     const sol::optional<SDL_FlipMode> flip) -> void {
       context->DrawTexture(tex,
                            (src) ? std::optional<SDL_FRect>{std::in_place_t{}, *src} : std::nullopt,
                            (dest) ? std::optional<SDL_FRect>{std::in_place_t{}, *dest} : std::nullopt,

@@ -8,8 +8,20 @@ project(
 )
 
 include("CPM.cmake")
-include("cmake/CMakeOptions.cmake")
 include("cmake/Config.cmake")
+
+# If developing SWGTK
+if(SWGTK_IS_TOP_LEVEL)
+  if(NOT SWGTK_BUILD_EXAMPLES)
+    set(SWGTK_BUILD_EXAMPLES ON)
+  endif()
+  if(NOT SWGTK_BUILD_TESTS)
+    set(SWGTK_BUILD_TESTS ON)
+  endif()
+  if(NOT SWGTK_LUA_BINDINGS)
+    set(SWGTK_LUA_BINDINGS ON)
+  endif()
+endif()
 
 # If building for emscripten
 
@@ -23,7 +35,7 @@ endif()
 
 # Add CCache, if available
 
-if(CCACHE_PROGRAM AND ${SWGTK_NO_CCACHE} MATCHES OFF)
+if(CCACHE_PROGRAM AND NOT SWGTK_NO_CCACHE)
 
   message("-- Enabling ccache.\n")
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
@@ -35,14 +47,14 @@ if(CCACHE_PROGRAM AND ${SWGTK_NO_CCACHE} MATCHES OFF)
 
 endif()
 
-if(${SWGTK_BUILD_TESTS} MATCHES ON)
+if(SWGTK_BUILD_TESTS)
   include(CTest)
 
   CPMAddPackage("gh:catchorg/Catch2@3.10.0")
   enable_testing()
 endif()
 
-if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+if(SWGTK_LUA_BINDINGS)
   # Lua and sol2
   CPMAddPackage(
     NAME lua
@@ -64,7 +76,7 @@ if(${SWGTK_LUA_BINDINGS} MATCHES ON)
       ${lua_SOURCE_DIR}
     )
 
-  endif()
+endif()
 
   CPMAddPackage("gh:ThePhD/sol2@3.5.0")
 endif()
@@ -108,11 +120,11 @@ CPMAddPackage(
 
 add_subdirectory("SWGTK")
 
-if(${SWGTK_BUILD_EXAMPLES} MATCHES ON)
+if(SWGTK_BUILD_EXAMPLES)
   add_subdirectory("examples")
 endif()
 
-if(${SWGTK_BUILD_TESTS} MATCHES ON)
+if(SWGTK_BUILD_TESTS)
   add_subdirectory("tests")
 endif()
 

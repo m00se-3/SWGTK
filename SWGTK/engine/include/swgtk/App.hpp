@@ -26,8 +26,8 @@
 #include <emscripten.h>
 #endif
 
-#include "swgtk/FontGroup.hpp"
-#include "swgtk/Scene.hpp"
+#include <swgtk/FontGroup.hpp>
+#include <swgtk/Scene.hpp>
 
 extern "C" {
 struct SDL_Window;

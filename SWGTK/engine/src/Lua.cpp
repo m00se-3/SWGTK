@@ -4,13 +4,14 @@
 #include <swgtk/Lua.hpp>
 #include <swgtk/Surface.hpp>
 #include <swgtk/Timer.hpp>
+#include <swgtk/Utility.hpp>
 
 namespace {
   void InitLuaFonts(swgtk::FontGroup* fonts, sol::state& lua);
 }
 
 namespace swgtk {
-  void InitLua(App* app, sol::state& lua, const LuaPrivledges priv) {
+  auto InitLua(App* app, sol::state& lua, const LuaPrivledges priv) -> void {
 
     lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::math, sol::lib::package);
 
@@ -52,7 +53,7 @@ namespace swgtk {
     SWGTK["GameTimer"]["GetSeconds"] = &Timer::GetSeconds;
 
     auto App_Type = lua.new_usertype<App>("Host");
-    App_Type["DeltaTime"] = [app] { return app->GetInternalClock()->GetSeconds(); };
+    App_Type["DeltaTime"] = [app] -> float { return app->GetInternalClock()->GetSeconds(); };
     SWGTK["App"] = app;
 
     if ((priv & LuaPrivledges::Fonts) == LuaPrivledges::Fonts) {
@@ -365,23 +366,23 @@ namespace {
     auto FontGroup_Type = lua.new_usertype<FontGroup>("FontGroup", sol::constructors<FontGroup()>());
     SWGTK["Fonts"] = fonts;
 
-    auto Font_Type = lua.new_usertype<Font>("FontHandle");
+    // auto Font_Type = lua.new_usertype<Font>("FontHandle");
 
-    FontGroup_Type["GetDefaultFont"] = [](const FontGroup& self) { return self.GetDefaultFont(); };
+    FontGroup_Type["GetDefaultFont"] = [](const FontGroup& self) -> Font { return self.GetDefaultFont(); };
 
-    FontGroup_Type["SetDefaultFontSize"] = [](FontGroup& self, const float size) { self.SetDefaultFontSize(size); };
+    FontGroup_Type["SetDefaultFontSize"] = [](FontGroup& self, const float size) -> void { self.SetDefaultFontSize(size); };
 
-    FontGroup_Type["SetAllFontSizes"] = [](const FontGroup& self, const float size) { self.SetAllFontSizes(size); };
+    FontGroup_Type["SetAllFontSizes"] = [](const FontGroup& self, const float size) -> void { self.SetAllFontSizes(size); };
 
-    FontGroup_Type["AddFont"] = [](FontGroup& self, const std::filesystem::path& filename) { self.AddFont(filename); };
+    FontGroup_Type["AddFont"] = [](FontGroup& self, const std::filesystem::path& filename) -> void { self.AddFont(filename); };
 
-    FontGroup_Type["GetFont"] = [](const FontGroup& self, const std::string& name) { return self.GetFont(name); };
+    FontGroup_Type["GetFont"] = [](const FontGroup& self, const std::string& name) -> Font { return self.GetFont(name); };
 
-    FontGroup_Type["SetFontStyle"] = [](const Font font, const FontStyle style) { FontGroup::SetFontStyle(font, style); };
+    FontGroup_Type["SetFontStyle"] = [](const Font font, const FontStyle style) -> void { FontGroup::SetFontStyle(font, style); };
 
-    FontGroup_Type["GetFontStyle"] = [](const Font font) { return FontGroup::GetFontStyle(font); };
+    FontGroup_Type["GetFontStyle"] = [](const Font font) ->FontStyle { return FontGroup::GetFontStyle(font); };
 
-    FontGroup_Type["ClearFonts"] = [](const FontGroup& self) { self.ClearFonts(); };
+    FontGroup_Type["ClearFonts"] = [](const FontGroup& self) -> void { self.ClearFonts(); };
   }
 
 } // namespace

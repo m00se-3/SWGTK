@@ -1,5 +1,4 @@
 ﻿include(${CMAKE_CURRENT_LIST_DIR}/engine/SDL2DRenderer.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/engine/SDLGPURenderer.cmake)
 
 add_library(swgtk STATIC)
 

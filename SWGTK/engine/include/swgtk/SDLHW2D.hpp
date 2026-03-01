@@ -13,16 +13,19 @@
 #ifndef SWGTK_ENGINE_INCLUDE_SWGTK_SIMPLE2DRENDERER_HPP_
 #define SWGTK_ENGINE_INCLUDE_SWGTK_SIMPLE2DRENDERER_HPP_
 
-#include "swgtk/Texture.hpp"
+#include <swgtk/Texture.hpp>
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
-#include <sol/sol.hpp>
 #include <swgtk/RenderingDevice.hpp>
 #include <swgtk/Surface.hpp>
-#include "SDL3/SDL_blendmode.h"
-#include "SDL3/SDL_render.h"
-#include "SDL3_ttf/SDL_ttf.h"
+#include <SDL3/SDL_blendmode.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3_ttf/SDL_ttf.h>
+
+#ifdef SWGTK_BUILD_WITH_LUA
+#include <sol/sol.hpp>
+#endif
 
 #include <filesystem>
 #include <memory>
