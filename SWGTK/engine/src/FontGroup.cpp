@@ -29,6 +29,7 @@ namespace swgtk {
       }
     }
 
+    DEBUG_PRINT("Cannot find font file {}\n", SWGTK_DEFAULT_FONT_FILE);
     return false;
   }
 

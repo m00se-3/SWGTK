@@ -22,7 +22,7 @@ namespace swgtk {
   struct MouseCursor {
     SDL_FPoint pos{};
     Texture texture;
-    Rads angle{};
+    Rads angle;
   };
 
   class TextTest final : public Scene::Node {

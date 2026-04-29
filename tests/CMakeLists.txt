@@ -18,12 +18,12 @@ if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   target_compile_definitions(testsuite PRIVATE _DEBUG)
 endif()
 
-if(CLANG_TIDY_PROGRAM)
-  set_target_properties(testsuite PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+if(SWGTK_CLANG_TIDY_FOUND)
+  set_target_properties(testsuite PROPERTIES CXX_CLANG_TIDY ${SWGTK_CLANG_TIDY})
 endif()
 
-if(CPPCHECK_PROGRAM)
-  set_target_properties(testsuite PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
+if(SWGTK_CPPCHECK_FOUND)
+  set_target_properties(testsuite PROPERTIES CXX_CPPCHECK "${SWGTK_CPPCHECK};--suppress=unknownMacro")
 endif()
 
 target_sources(

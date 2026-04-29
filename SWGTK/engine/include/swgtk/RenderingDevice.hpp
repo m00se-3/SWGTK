@@ -14,13 +14,13 @@
 #define SWGTK_ENGINE_INCLUDE_SWGTK_RENDERINGDEVICE_HPP_
 
 #include <SDL3/SDL_pixels.h>
-#include <any>
 #include <concepts>
 #include <memory>
 #include <swgtk/Utility.hpp>
 
 extern "C" {
 struct TTF_Font;
+struct SDL_Window;
 }
 #ifdef SWGTK_BUILD_WITH_LUA
 namespace sol {
@@ -79,7 +79,7 @@ namespace swgtk {
      * is needed, consider passing a struct. **We recommend using pointers to objects if you don't want exceptions.**
      * @return true if the device could be initialized, false otherwise
      */
-    [[nodiscard]] virtual auto PrepareDevice(const std::any& dependency) -> bool = 0;
+    [[nodiscard]] virtual auto PrepareDevice(SDL_Window* window) -> bool = 0;
 
     [[nodiscard]] virtual auto IsDeviceInitialized() const -> bool = 0;
     virtual void SetBackgroundColor(const SDL_FColor&) = 0;

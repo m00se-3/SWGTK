@@ -92,15 +92,20 @@ list(
 
 if(NOT DEFINED EMSCRIPTEN)
   list(APPEND CompilerFlags "-fcf-protection=full")
+
+  list(
+    APPEND LinkerFlags
+
+    "-Wl,-z,nodlopen"
+    "-Wl,-z,noexecstack"
+    "-Wl,-z,relro"
+    "-Wl,--as-needed"
+    "-Wl,--no-copy-dt-needed-entries"
+  )
 endif()
 
 list(
-  APPEND LinkerOptions
+  APPEND LinkerFlags
 
-  "-Wl,-z,nodlopen"
-  "-Wl,-z,noexecstack"
-  "-Wl,-z,relro"
-  "-Wl,--as-needed"
-  "-Wl,--no-copy-dt-needed-entries"
   "-pie"
 )

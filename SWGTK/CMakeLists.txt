@@ -2,10 +2,7 @@
 
 add_library(swgtk STATIC)
 
-set(SWGTK_ENGINE_INTERNALS ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/internal)
-set(SWGTK_ROOT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-
-if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+if(SWGTK_LUA_BINDINGS)
   include(${SWGTK_SOURCE_DIR}/cmake/LuaBindings.cmake)
 endif()
 
@@ -25,7 +22,7 @@ endif()
 
 target_compile_features(swgtk PRIVATE cxx_std_23)
 
-if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+if(SWGTK_LUA_BINDINGS)
   target_compile_definitions(swgtk PUBLIC SWGTK_BUILD_WITH_LUA="1")
 endif()
 
@@ -56,17 +53,17 @@ if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   target_compile_definitions(swgtk PRIVATE _DEBUG)
 endif()
 
-if(CLANG_TIDY_PROGRAM)
+if(CLANG_TIDY_PROGRAM_FOUND)
 
   message("-- Enabling clang-tidy.\n")
-  set_target_properties(swgtk PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+  set_target_properties(swgtk PROPERTIES CXX_CLANG_TIDY ${SWGTK_CLANG_TIDY})
 
 endif()
 
-if(CPPCHECK_PROGRAM)
+if(SWGTK_CPPCHECK_FOUND)
 
   message("-- Enabling cppcheck.\n")
-  set_target_properties(swgtk PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
+  set_target_properties(swgtk PROPERTIES CXX_CPPCHECK "${SWGTK_CPPCHECK};--suppress=unknownMacro")
 
 endif()
 
@@ -114,7 +111,7 @@ target_link_libraries(
   SDL3_ttf::SDL3_ttf
 )
 
-if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+if(SWGTK_LUA_BINDINGS)
   target_link_libraries(
     swgtk
 
@@ -123,7 +120,7 @@ if(${SWGTK_LUA_BINDINGS} MATCHES ON)
   )
 endif()
 
-if(${SWGTK_INSTALL_FREETYPE} MATCHES ON)
+if(SWGTK_INSTALL_FREETYPE)
   target_link_libraries(
     swgtk
 

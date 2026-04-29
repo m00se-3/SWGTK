@@ -111,12 +111,12 @@ namespace swgtk {
   void App::Run() {
     if ((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == SDL_INIT_VIDEO) {
       ShowWindow();
-      SDL_SyncWindow(_window); // Make sure window is ready before starting the simulation.
     }
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);
 
 #else
+    SDL_SyncWindow(_window); // Make sure window is ready before starting the simulation.
 
     bool gameOk = true;
 

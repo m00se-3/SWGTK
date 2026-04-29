@@ -4,46 +4,31 @@ project(
   "SWGTK"
   DESCRIPTION "Software and Games Tool Kit"
   HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
-  VERSION 0.2.0
+  VERSION 0.3.0
 )
 
 include("CPM.cmake")
 include("cmake/Config.cmake")
 
-# If developing SWGTK
-if(SWGTK_IS_TOP_LEVEL)
-  if(NOT SWGTK_BUILD_EXAMPLES)
-    set(SWGTK_BUILD_EXAMPLES ON)
-  endif()
-  if(NOT SWGTK_BUILD_TESTS)
-    set(SWGTK_BUILD_TESTS ON)
-  endif()
-  if(NOT SWGTK_LUA_BINDINGS)
-    set(SWGTK_LUA_BINDINGS ON)
-  endif()
-endif()
-
 # If building for emscripten
 
 if(EMSCRIPTEN)
-
   message("-- Emscripten build enabled.\n")
-  set(SWGTK_NO_CCACHE ON)
-  set(CMAKE_EXECUTABLE_SUFFIX ".html")
-
 endif()
 
 # Add CCache, if available
 
-if(CCACHE_PROGRAM AND NOT SWGTK_NO_CCACHE)
+if(SWGTK_CCACHE_FOUND AND NOT SWGTK_NO_CCACHE)
 
   message("-- Enabling ccache.\n")
-  set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
-  set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+  set(CMAKE_CXX_COMPILER_LAUNCHER ${SWGTK_CCACHE})
+  set(CMAKE_C_COMPILER_LAUNCHER ${SWGTK_CCACHE})
 
   if(NOT CPM_SOURCE_CACHE)
     set(CPM_SOURCE_CACHE ${CMAKE_CURRENT_LIST_DIR}/.cache/CPM)
   endif()
+
+  message("Caching libraries in location: ${CPM_SOURCE_CACHE}\n")
 
 endif()
 
@@ -84,27 +69,29 @@ endif()
 # SDL and external SDL dependencies
 # If any more external dependencies for SDL become necessary in the future, they should be added before any SDL.(For consistency)
 
-if(${SWGTK_INSTALL_FREETYPE})
+if(SWGTK_INSTALL_FREETYPE)
   CPMAddPackage("gh:freetype/freetype#master")
 
   # Add a custom target alias for Freetype, since it uses a legacy version of cmake
   if(freetype_ADDED)
     add_library(Freetype::Freetype ALIAS freetype)
   endif()
+else()
+  find_package(freetype REQUIRED)
 endif()
 
 CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
-  GIT_TAG "release-3.4.0"
+  GIT_TAG "release-3.4.4"
   OPTIONS
   "SDL_TEST_LIBRARY false"
 )
 
 CPMAddPackage(
-  NAME "SDL_image"
+  NAME "SDL3_image"
   GITHUB_REPOSITORY "libsdl-org/SDL_image"
-  GIT_TAG "release-3.4.0"
+  GIT_TAG "release-3.4.2"
   OPTIONS
   "SDLIMAGE_VENDORED false"
 )

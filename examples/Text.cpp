@@ -22,7 +22,7 @@ namespace swgtk {
     _app = _scene->GetApp();
     _render = _scene->AppRenderer<SDLHW2D>();
 
-    _mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", 0, SDL_Color{colorDefault, 0u, 0u, colorDefault});
+    _mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", 0, SDL_Color{.r=colorDefault, .g=0u, .b=0u, .a=colorDefault});
 
     FontGroup::SetFontStyle(_app->GetDefaultFont(), FontStyle::Underlined);
 

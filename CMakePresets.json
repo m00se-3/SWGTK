@@ -1,5 +1,5 @@
 ﻿{
-  "version": 3,
+  "version": 8,
   "configurePresets": [
     {
       "name": "base",
@@ -7,7 +7,18 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "SWGTK_INSTALL_FREETYPE": "ON",
+        "SWGTK_BUILD_TESTS": false,
+        "SWGTK_BUILD_EXAMPLES":false,
+        "SWGTK_LUA_BINDINGS": false,
+        "SWGTK_NO_CCACHE": false,
+        "SWGTK_EXCEPTIONS": false,
+        "SWGTK_CCACHE": "ccache",
+        "SWGTK_CLANG_TIDY": "clang-tidy",
+        "SWGTK_CPPCHECK": "cppcheck",
+        "SWGTK_ROOT_DIRECTORY": "${sourceDir}/SWGTK",
+        "SWGTK_ENGINE_INTERNALS": "${sourceDir}/SWGTK/engine/include/swgtk/internal"
       },
       "environment": {
         "CMAKE_BUILD_PARALLEL_LEVEL": "12"
@@ -18,10 +29,13 @@
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl",
-        "CMAKE_CXX_COMPILER": "cl"
+        "CMAKE_CXX_COMPILER": "cl",
+        "SWGTK_INSTALL_FREETYPE": "OFF",
+        "SWGTK_BUILD_TESTS": true,
+        "SWGTK_BUILD_EXAMPLES":true,
+        "SWGTK_LUA_BINDINGS": true
       },
       "environment": {
-        "SWGTK_INSTALL_FREETYPE": "OFF",
         "MSVC_IDE": "ON"
       },
       "vendor": {
@@ -32,12 +46,36 @@
       }
     },
     {
-      "name": "emscripten",
+      "name": "emscripten-debug",
       "inherits": "base",
-      "displayName": "Emscripten",
+      "displayName": "Emscripten Debug",
+      "toolchainFile": "$penv{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+      "condition": {
+        "type": "notEquals",
+        "lhs": "$penv{EMSDK}",
+        "rhs": ""
+      },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "MinSizeRel",
-        "EMSCRIPTEN": true
+        "CMAKE_BUILD_TYPE": "Debug",
+        "SWGTK_NO_CCACHE": true,
+        "SWGTK_BUILD_EXAMPLES":true,
+        "CMAKE_CXX_COMPILER": "em++",
+        "CMAKE_C_COMPILER": "emcc",
+        "CMAKE_EXECUTABLE_SUFFIX": ".html",
+        "SDL_STATIC": "ON"
+      }
+    },
+    {
+      "name": "emscripten-release",
+      "inherits": "emscripten-debug",
+      "displayName": "Emscripten Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "MinSizeRel"
+      },
+      "condition": {
+        "type": "notEquals",
+        "lhs": "$penv{EMSDK}",
+        "rhs": ""
       }
     },
     {
@@ -46,6 +84,9 @@
       "inherits": "base",
       "generator": "Ninja",
       "cacheVariables": {
+        "SWGTK_BUILD_TESTS": true,
+        "SWGTK_BUILD_EXAMPLES":true,
+        "SWGTK_LUA_BINDINGS": true,
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"
       }

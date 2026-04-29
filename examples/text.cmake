@@ -9,15 +9,15 @@ if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   target_compile_definitions(TextSample PRIVATE _DEBUG)
 endif()
 
-if(CLANG_TIDY_PROGRAM)
+if(SWGTK_CLANG_TIDY_FOUND)
 
-  set_property(TARGET TextSample PROPERTY CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+  set_property(TARGET TextSample PROPERTY CXX_CLANG_TIDY ${SWGTK_CLANG_TIDY})
 
 endif()
 
-if(CPPCHECK_PROGRAM)
+if(SWGTK_CPPCHECK_FOUND)
 
-  set_target_properties(TextSample PROPERTIES CXX_CPPCHECK ${CPPCHECK_PROGRAM})
+  set_target_properties(TextSample PROPERTIES CXX_CPPCHECK ${SWGTK_CPPCHECK})
 
 endif()
 
@@ -74,5 +74,5 @@ else()
     "--embed-file assets/swgtk.lua"
   )
 
-  target_link_options(TextSample PRIVATE "-s" "ALLOW_MEMORY_GROWTH=1")
+  target_link_options(TextSample PRIVATE "-sALLOW_MEMORY_GROWTH=1")
 endif()

@@ -32,9 +32,9 @@
 #endif
 
 namespace swgtk {
-  auto SDLHW2D::PrepareDevice(const std::any& window_ptr) -> bool {
-    if (auto* window = std::any_cast<SDL_Window*>(window_ptr); window != nullptr) {
-      _render = SDL_CreateRenderer(window, nullptr);
+  auto SDLHW2D::PrepareDevice(SDL_Window* window_ptr) -> bool {
+    if (window_ptr != nullptr) {
+      _render = SDL_CreateRenderer(window_ptr, nullptr);
       return IsDeviceInitialized();
     }
 

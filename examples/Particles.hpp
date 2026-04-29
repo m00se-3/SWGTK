@@ -32,7 +32,7 @@ namespace swgtk {
   struct Particle {
     SDL_FPoint pos{};
     SDL_FPoint velocity{};
-    Rads angle{};
+    Rads angle;
     float speed = 0.f;
     float lifetime = 0.f;
   };

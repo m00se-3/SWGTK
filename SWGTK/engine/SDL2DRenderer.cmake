@@ -5,7 +5,7 @@ target_link_options(sdl2drender PRIVATE ${LinkerFlags})
 
 target_compile_features(sdl2drender PRIVATE cxx_std_23)
 
-if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+if(SWGTK_LUA_BINDINGS)
   target_compile_definitions(sdl2drender PUBLIC SWGTK_BUILD_WITH_LUA="1")
 endif()
 
@@ -67,7 +67,7 @@ target_link_libraries(
 
 add_library(swgtk::SDLHW2D ALIAS sdl2drender)
 
-if(${SWGTK_LUA_BINDINGS} MATCHES ON)
+if(SWGTK_LUA_BINDINGS)
   target_link_libraries(
     sdl2drender
 

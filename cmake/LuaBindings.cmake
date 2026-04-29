@@ -1,11 +1,8 @@
 add_library(swgtk_lua STATIC)
+add_library(swgtk::Lua ALIAS swgtk_lua)
 
 target_compile_options(swgtk_lua PRIVATE ${CompilerFlags})
 target_link_options(swgtk_lua PRIVATE ${LinkerFlags})
-
-if(DEFINED SWGTK_SANITIZE AND NOT ${SWGTK_SANITIZE} MATCHES "")
-  target_compile_options(swgtk_lua PRIVATE ${SWGTK_SANITIZE})
-endif()
 
 target_compile_features(swgtk_lua PRIVATE cxx_std_23)
 
@@ -28,13 +25,13 @@ if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   target_compile_definitions(swgtk_lua PRIVATE _DEBUG)
 endif()
 
-if(CLANG_TIDY_PROGRAM)
-  set_target_properties(swgtk_lua PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+if(SWGTK_CLANG_TIDY_FOUND)
+  set_target_properties(swgtk_lua PROPERTIES CXX_CLANG_TIDY ${SWGTK_CLANG_TIDY})
 
 endif()
 
-if(CPPCHECK_PROGRAM)
-  set_target_properties(swgtk_lua PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
+if(SWGTK_CPPCHECK_FOUND)
+  set_target_properties(swgtk_lua PROPERTIES CXX_CPPCHECK "${SWGTK_CPPCHECK};--suppress=unknownMacro")
 
 endif()
 

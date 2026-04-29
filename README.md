@@ -57,7 +57,7 @@ releases:
 - Development Tools
   - CMake
   - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake.
-  - clang-tidy 
+  - clang-tidy
   - cppcheck [Optional]
   - ccache [Optional]
 
@@ -76,11 +76,12 @@ target_link_libraries([your_project] PRIVATE swgtk swgtk::SDLHW2D)
 ```
 
 In addition, the following options can be added depending on your needs:
-- SWGTK_BUILD_EXAMPLES: Include the example programs. (Default: ON)
+
+- SWGTK_BUILD_EXAMPLES: Include the example programs. (Default: OFF)
 - SWGTK_NO_CCACHE: Disable ccache support. (Default: OFF)
-- SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: OFF)
-- SWGTK_LUA_BINDINGS: Enable Lua scripting support via sol3. (Default: ON)
-- SWGTK_BUILD_TESTS: Build the unit test suite. (Default: ON)
+- SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: ON)
+- SWGTK_LUA_BINDINGS: Enable Lua scripting support via sol3. (Default: OFF)
+- SWGTK_BUILD_TESTS: Build the unit test suite. (Default: OFF)
 - SWGTK_EXCEPTIONS: Build with exceptions enabled. (Default: OFF)
 
 After this you can create your application using something like this:
@@ -107,6 +108,7 @@ auto main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) -> int {
    }
 }
 ```
+
 Please see the example programs for more information.
 
 ### For Visual Studio

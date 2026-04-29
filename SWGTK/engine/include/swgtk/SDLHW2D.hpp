@@ -22,6 +22,7 @@
 #include <SDL3/SDL_blendmode.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include "SDL3/SDL_video.h"
 
 #ifdef SWGTK_BUILD_WITH_LUA
 #include <sol/sol.hpp>
@@ -57,7 +58,7 @@ namespace swgtk {
 
     void SetFont(TTF_Font* font) override { _currentFont = font; }
 
-    [[nodiscard]] auto PrepareDevice(const std::any& window_ptr) -> bool override;
+    [[nodiscard]] auto PrepareDevice(SDL_Window* window_ptr) -> bool override;
     void DestroyDevice() override;
 
     /**
