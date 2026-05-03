@@ -8,7 +8,7 @@
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "SWGTK_INSTALL_FREETYPE": "ON",
+        "SWGTK_INSTALL_FREETYPE": true,
         "SWGTK_BUILD_TESTS": false,
         "SWGTK_BUILD_EXAMPLES":false,
         "SWGTK_LUA_BINDINGS": false,
@@ -30,7 +30,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl",
-        "SWGTK_INSTALL_FREETYPE": "OFF",
+        "SWGTK_INSTALL_FREETYPE": false,
         "SWGTK_BUILD_TESTS": true,
         "SWGTK_BUILD_EXAMPLES":true,
         "SWGTK_LUA_BINDINGS": true

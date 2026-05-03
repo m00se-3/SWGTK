@@ -73,5 +73,5 @@ else()
     "--embed-file assets/swgtk.lua"
   )
 
-  target_link_options(ParticlesSample PRIVATE "-s" "ALLOW_MEMORY_GROWTH=1")
+  target_link_options(ParticlesSample PRIVATE "-s" "ALLOW_MEMORY_GROWTH=1" "-sASYNCIFY=1")
 endif()
