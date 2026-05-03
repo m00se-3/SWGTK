@@ -10,7 +10,12 @@ project(
 include("CPM.cmake")
 include("cmake/Config.cmake")
 
-# If building for emscripten
+if(SWGTK_BUILD_EXAMPLES AND NOT SWGTK_LUA_BINDINGS)
+  message(
+    FATAL_ERROR
+    "Fatal Error: Building the examples requires the Lua bindings.\nPlease enable SWGTK_LUA_BINDINGS."
+  )
+endif()
 
 if(EMSCRIPTEN)
   message("-- Emscripten build enabled.\n")
@@ -83,7 +88,7 @@ endif()
 CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
-  GIT_TAG "release-3.4.4"
+  GIT_TAG "release-3.4.8"
   OPTIONS
   "SDL_TEST_LIBRARY false"
 )
@@ -91,7 +96,7 @@ CPMAddPackage(
 CPMAddPackage(
   NAME "SDL3_image"
   GITHUB_REPOSITORY "libsdl-org/SDL_image"
-  GIT_TAG "release-3.4.2"
+  GIT_TAG "release-3.4.4"
   OPTIONS
   "SDLIMAGE_VENDORED false"
 )
