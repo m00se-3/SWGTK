@@ -5,6 +5,8 @@ target_link_options(Platformer PRIVATE ${LinkerFlags})
 
 target_compile_features(Platformer PRIVATE cxx_std_23)
 
+target_compile_definitions(Platformer PRIVATE ASSETS_DIR="${CMAKE_CURRENT_LIST_DIR}/assets/")
+
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
     target_compile_definitions(Platformer PRIVATE _DEBUG)
 endif()
@@ -21,16 +23,6 @@ if(SWGTK_CPPCHECK_FOUND)
 
 endif()
 
-target_include_directories(
-        Platformer
-
-        PUBLIC
-
-        ${SWGTK_ROOT_DIRECTORY}/engine/include
-        ${CMAKE_CURRENT_LIST_DIR}/src
-        ${lua_SOURCE_DIR}
-)
-
 target_link_libraries(
         Platformer
 
@@ -45,10 +37,23 @@ target_sources(
         Platformer
 
         PUBLIC
+        FILE_SET HEADERS
 
+        BASE_DIRS
+        ${SWGTK_ROOT_DIRECTORY}/engine/include
+        ${CMAKE_CURRENT_LIST_DIR}/src
+        ${lua_SOURCE_DIR}
+
+        FILES
+
+        PUBLIC
+
+        ${CMAKE_CURRENT_LIST_DIR}/src/Platformer.hpp
 
         PRIVATE
 
+        ${CMAKE_CURRENT_LIST_DIR}/src/Platformer.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
 )
 if(NOT EMSCRIPTEN)
     if(WIN32) # Windows

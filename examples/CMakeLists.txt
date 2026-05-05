@@ -19,5 +19,6 @@ if($<TARGET_EXISTS:freetype-shared>)
 endif()
 
 
+add_subdirectory("platformer")
 include(${CMAKE_CURRENT_LIST_DIR}/text.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/particles.cmake)

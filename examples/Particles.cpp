@@ -28,8 +28,6 @@ namespace swgtk {
 
   auto ParticlesTest::Create() -> bool {
 
-    _child = std::make_shared<TimeToFramesScene>(_scene->GetRootNode<ParticlesTest>());
-
     _mouse.texture = _render->CreateRenderableTexture(particleSize, particleSize);
 
     if (!_render->SetDrawTarget(_mouse.texture)) {
@@ -111,17 +109,10 @@ namespace swgtk {
       }
 
       if (showTime) {
-        _child->Update(deltaTime);
+        _render->DrawPlainText(std::format("Time between frames: {}", GetAverageTime()),
+                             SDL_FRect{.x = 5.f, .y = 10.f, .w = 400.f, .h = 40.f}); // NOLINT
       }
     }
-    return true;
-  }
-
-  auto TimeToFramesScene::Update([[maybe_unused]] const float deltaTime) -> bool {
-    const auto p = GetParent<ParticlesTest>().lock();
-    p->Draw()->DrawPlainText(std::format("Time between frames: {}", p->GetAverageTime()),
-                             SDL_FRect{.x = 5.f, .y = 10.f, .w = 400.f, .h = 40.f}); // NOLINT
-
     return true;
   }
 

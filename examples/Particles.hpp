@@ -37,8 +37,6 @@ namespace swgtk {
     float lifetime = 0.f;
   };
 
-  class TimeToFramesScene;
-
   class ParticlesTest final : public Scene::Node {
   public:
     explicit ParticlesTest(const ObjectRef<Scene> &scene) :
@@ -64,17 +62,9 @@ namespace swgtk {
     float _averageTime = 0.0f;
     bool generate = true;
     bool showTime = false;
-    std::shared_ptr<TimeToFramesScene> _child;
   };
 
-  class TimeToFramesScene : public Scene::Node {
-  public:
-    explicit TimeToFramesScene(const std::shared_ptr<Node> &parent) :
-        Node(parent) {}
 
-    auto Create() -> bool override { return true; };
-    auto Update(float deltaTime) -> bool override;
-  };
 
 } // namespace swgtk
 

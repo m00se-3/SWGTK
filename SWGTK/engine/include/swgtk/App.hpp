@@ -137,8 +137,18 @@ namespace swgtk {
     void MinimizeWindow() const { SDL_MinimizeWindow(_window); }
 
     [[nodiscard]] auto GetDefaultFont() const -> Font { return _fonts.GetDefaultFont(); }
+
+    /*
+     * Load a font from a .ttf file. The font added is identified by the file name of the .ttf file.
+     * e.g. If the file is 'assets/fonts/my-font.ttf', the identifier will be 'my-font'.
+     */
     void AddFont(const std::filesystem::path& path) { _fonts.AddFont(path); }
+
+    /*
+     * Retrieve a loaded font using the built-in identifier.
+     */
     [[nodiscard]] auto GetFont(const std::string& path) const -> Font { return _fonts.GetFont(path); }
+
     static void SetFontStyle(const Font font, const FontStyle style) { FontGroup::SetFontStyle(font, style); }
     [[nodiscard]] static auto GetFontStyle(const Font font) -> FontStyle { return FontGroup::GetFontStyle(font); }
 
