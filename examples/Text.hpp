@@ -15,6 +15,7 @@
 
 #include <swgtk/SDLHW2D.hpp>
 #include <swgtk/Scene.hpp>
+#include <swgtk/Font.hpp>
 #include <swgtk/Math.hpp>
 
 namespace swgtk {
@@ -28,7 +29,7 @@ namespace swgtk {
   class TextTest final : public Scene::Node {
   public:
     explicit TextTest(const ObjectRef<Scene> &scene) :
-        Node(scene) {}
+        Node(scene), _font{Font::LoadDefault()} {}
 
     auto Create() -> bool override;
     auto Update(float dt) -> bool override;
@@ -36,6 +37,7 @@ namespace swgtk {
   private:
     MouseCursor _mouse{};
     Texture _background;
+    Font _font;
     ObjectRef<App> _app;
     ObjectRef<SDLHW2D> _render;
   };

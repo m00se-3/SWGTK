@@ -1,6 +1,7 @@
 ﻿include(${CMAKE_CURRENT_LIST_DIR}/engine/SDL2DRenderer.cmake)
 
 add_library(swgtk STATIC)
+add_library(swgtk::SWGTK ALIAS swgtk)
 
 if(SWGTK_LUA_BINDINGS)
   include(${SWGTK_SOURCE_DIR}/cmake/LuaBindings.cmake)
@@ -89,7 +90,7 @@ target_sources(
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Input.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Scene.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/RenderingDevice.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/FontGroup.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Font.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Math.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Timer.hpp
@@ -98,7 +99,7 @@ target_sources(
 
   ${CMAKE_CURRENT_LIST_DIR}/engine/src/App.cpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/src/Scene.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/engine/src/FontGroup.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/engine/src/Font.cpp
 )
 
 target_link_libraries(

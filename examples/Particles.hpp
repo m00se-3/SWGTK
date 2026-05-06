@@ -18,6 +18,7 @@
 #include <swgtk/Scene.hpp>
 #include <vector>
 
+#include "swgtk/Font.hpp"
 #include "swgtk/Math.hpp"
 
 inline constexpr auto particleCount = 100uz;
@@ -57,6 +58,7 @@ namespace swgtk {
     std::mt19937_64 _gen;
     ObjectRef<App> _app;
     ObjectRef<SDLHW2D> _render;
+    Font _font{Font::LoadDefault()};
     uint32_t _currentFrameCount = 0u;
     float _runningTime = 0.0f;
     float _averageTime = 0.0f;

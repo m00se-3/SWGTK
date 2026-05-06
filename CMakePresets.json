@@ -58,6 +58,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "SWGTK_NO_CCACHE": true,
+        "SWGTK_LUA_BINDINGS": true,
         "SWGTK_BUILD_EXAMPLES":true,
         "CMAKE_CXX_COMPILER": "em++",
         "CMAKE_C_COMPILER": "emcc",

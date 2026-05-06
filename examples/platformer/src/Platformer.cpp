@@ -3,9 +3,6 @@
 
 auto swgtk::Platformer::Create() -> bool {
 
-  // TODO: How to retrieve the font later is unclear. Need to rethink this API.
-  _app->AddFont(assets::GetAssetFile(assets::normalFont));
-  _app->AddFont(assets::GetAssetFile(assets::boldFont));
 
   return true;
 }

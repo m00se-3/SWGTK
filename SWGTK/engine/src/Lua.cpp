@@ -1,14 +1,10 @@
 #include <swgtk/App.hpp>
-#include <swgtk/FontGroup.hpp>
+#include <swgtk/Font.hpp>
 #include <swgtk/Input.hpp>
 #include <swgtk/Lua.hpp>
 #include <swgtk/Surface.hpp>
 #include <swgtk/Timer.hpp>
 #include <swgtk/Utility.hpp>
-
-namespace {
-  void InitLuaFonts(swgtk::FontGroup* fonts, sol::state& lua);
-}
 
 namespace swgtk {
   auto InitLua(App* app, sol::state& lua, const LuaPrivledges priv) -> void {
@@ -57,7 +53,24 @@ namespace swgtk {
     SWGTK["App"] = app;
 
     if ((priv & LuaPrivledges::Fonts) == LuaPrivledges::Fonts) {
-      InitLuaFonts(app->GetFontHandle(), lua);
+      SWGTK["Font"] = lua.new_usertype<Font>("Font", sol::constructors<Font(), Font(TTF_Font*), Font(const std::filesystem::path&, float)>());
+      auto FontType = SWGTK["Font"];
+      lua.new_enum<FontStyle>("FontStyle",
+                            {std::make_pair("Normal", FontStyle::Normal),
+                             std::make_pair("Bold", FontStyle::Bold),
+                             std::make_pair("Italic", FontStyle::Italic),
+                             std::make_pair("Underlined", FontStyle::Underlined),
+                             std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
+                             std::make_pair("Bold_Underlined", FontStyle::Bold_Underlined),
+                             std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
+                             std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)});
+
+      SWGTK["FontStyle"] = lua["FontStyle"];
+
+      FontType["IsEmpty"] = &Font::IsEmpty;
+      FontType["SetStyle"] = &Font::SetStyle;
+      FontType["GetStyle"] = &Font::GetStyle;
+      FontType["LoadDefault"] = &Font::LoadDefault;
     }
 
     if ((priv & LuaPrivledges::UserInput) == LuaPrivledges::UserInput) {
@@ -342,47 +355,6 @@ namespace swgtk {
     SWGTK["Surface"]["FillRect"] = &Surface::FillRect;
 
     SWGTK["Surface"]["FillRects"] = &Surface::FillRects;
-  }
-} // namespace swgtk
-
-namespace {
-  void InitLuaFonts(swgtk::FontGroup* fonts, sol::state& lua) {
-    using namespace swgtk;
-
-    auto SWGTK = lua["swgtk"];
-
-    lua.new_enum<FontStyle>("FontStyle",
-                            {std::make_pair("Normal", FontStyle::Normal),
-                             std::make_pair("Bold", FontStyle::Bold),
-                             std::make_pair("Italic", FontStyle::Italic),
-                             std::make_pair("Underlined", FontStyle::Underlined),
-                             std::make_pair("Bold_Italic", FontStyle::Bold_Italic),
-                             std::make_pair("Bold_Underlined", FontStyle::Bold_Underlined),
-                             std::make_pair("Bold_Italic_Underlined", FontStyle::Bold_Italic_Underlined),
-                             std::make_pair("Italic_Underlined", FontStyle::Italic_Underlined)});
-
-    SWGTK["FontStyle"] = lua["FontStyle"];
-
-    auto FontGroup_Type = lua.new_usertype<FontGroup>("FontGroup", sol::constructors<FontGroup()>());
-    SWGTK["Fonts"] = fonts;
-
-    // auto Font_Type = lua.new_usertype<Font>("FontHandle");
-
-    FontGroup_Type["GetDefaultFont"] = [](const FontGroup& self) -> Font { return self.GetDefaultFont(); };
-
-    FontGroup_Type["SetDefaultFontSize"] = [](FontGroup& self, const float size) -> void { self.SetDefaultFontSize(size); };
-
-    FontGroup_Type["SetAllFontSizes"] = [](const FontGroup& self, const float size) -> void { self.SetAllFontSizes(size); };
-
-    FontGroup_Type["AddFont"] = [](FontGroup& self, const std::filesystem::path& filename) -> void { self.AddFont(filename); };
-
-    FontGroup_Type["GetFont"] = [](const FontGroup& self, const std::string& name) -> Font { return self.GetFont(name); };
-
-    FontGroup_Type["SetFontStyle"] = [](const Font font, const FontStyle style) -> void { FontGroup::SetFontStyle(font, style); };
-
-    FontGroup_Type["GetFontStyle"] = [](const Font font) ->FontStyle { return FontGroup::GetFontStyle(font); };
-
-    FontGroup_Type["ClearFonts"] = [](const FontGroup& self) -> void { self.ClearFonts(); };
   }
 
 } // namespace

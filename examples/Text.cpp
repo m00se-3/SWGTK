@@ -21,12 +21,11 @@ namespace swgtk {
 
     _app = _scene->GetApp();
     _render = _scene->AppRenderer<SDLHW2D>();
+    _font.SetStyle(FontStyle::Underlined);
 
-    _mouse.texture = _render->LoadPlainWrapText("Hello\nWorld!", 0, SDL_Color{.r=colorDefault, .g=0u, .b=0u, .a=colorDefault});
+    _mouse.texture = _render->LoadPlainWrapText(*_font, "Hello\nWorld!", 0, SDL_Color{.r = colorDefault, .g = 0u, .b = 0u, .a = colorDefault});
 
-    FontGroup::SetFontStyle(_app->GetDefaultFont(), FontStyle::Underlined);
-
-    _background = _render->LoadLCDWrapText("EAT!\nSLEEP!\nCODE!");
+    _background = _render->LoadLCDWrapText(*_font, "EAT!\nSLEEP!\nCODE!");
 
     return true;
   }

@@ -74,16 +74,12 @@ namespace swgtk {
     virtual void BufferPresent() = 0;
 
     /** @brief Finishes initializing the device.
-     *
-     * @param dependency An implementation dependency may be unique to a derived class. If more than one value
-     * is needed, consider passing a struct. **We recommend using pointers to objects if you don't want exceptions.**
      * @return true if the device could be initialized, false otherwise
      */
     [[nodiscard]] virtual auto PrepareDevice(SDL_Window* window) -> bool = 0;
 
     [[nodiscard]] virtual auto IsDeviceInitialized() const -> bool = 0;
     virtual void SetBackgroundColor(const SDL_FColor&) = 0;
-    virtual void SetFont(TTF_Font* font) = 0;
 
     /**
      * @brief Destroy all the resources allocated by the rendering backend.

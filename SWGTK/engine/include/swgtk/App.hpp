@@ -26,7 +26,7 @@
 #include <emscripten.h>
 #endif
 
-#include <swgtk/FontGroup.hpp>
+#include <SDL3/SDL_init.h>
 #include <swgtk/Scene.hpp>
 
 extern "C" {
@@ -85,7 +85,7 @@ namespace swgtk {
      * @return true on successful initialization
      * @return false on failure
      */
-    auto InitializeGame() -> bool;
+    auto InitializeGame() const -> bool;
 
     /**
      * @brief After confirming your app is initialized, call this function to start the main loop.
@@ -136,23 +136,6 @@ namespace swgtk {
     void MaximizeWindow() const { SDL_MaximizeWindow(_window); }
     void MinimizeWindow() const { SDL_MinimizeWindow(_window); }
 
-    [[nodiscard]] auto GetDefaultFont() const -> Font { return _fonts.GetDefaultFont(); }
-
-    /*
-     * Load a font from a .ttf file. The font added is identified by the file name of the .ttf file.
-     * e.g. If the file is 'assets/fonts/my-font.ttf', the identifier will be 'my-font'.
-     */
-    void AddFont(const std::filesystem::path& path) { _fonts.AddFont(path); }
-
-    /*
-     * Retrieve a loaded font using the built-in identifier.
-     */
-    [[nodiscard]] auto GetFont(const std::string& path) const -> Font { return _fonts.GetFont(path); }
-
-    static void SetFontStyle(const Font font, const FontStyle style) { FontGroup::SetFontStyle(font, style); }
-    [[nodiscard]] static auto GetFontStyle(const Font font) -> FontStyle { return FontGroup::GetFontStyle(font); }
-
-    [[nodiscard]] auto GetFontHandle() -> FontGroup* { return &_fonts; }
     [[nodiscard]] auto GetInternalClock() -> Timer* { return &_gameTimer; }
 
     [[nodiscard]] auto Renderer(this auto&& self) -> std::weak_ptr<RenderingDevice> { return self._renderer; }
@@ -233,7 +216,6 @@ namespace swgtk {
     std::unique_ptr<Scene> _currentScene;
 
     InputSystem _input;
-    FontGroup _fonts;
     Timer _gameTimer;
 
     bool _running = true;

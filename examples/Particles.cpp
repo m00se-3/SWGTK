@@ -109,8 +109,8 @@ namespace swgtk {
       }
 
       if (showTime) {
-        _render->DrawPlainText(std::format("Time between frames: {}", GetAverageTime()),
-                             SDL_FRect{.x = 5.f, .y = 10.f, .w = 400.f, .h = 40.f}); // NOLINT
+        _render->DrawPlainText(*_font,
+                               std::format("Time between frames: {}", GetAverageTime()), SDL_FRect{.x = 5.f, .y = 10.f, .w = 400.f, .h = 40.f}); // NOLINT
       }
     }
     return true;

@@ -28,7 +28,7 @@ target_link_libraries(
 
         PRIVATE
 
-        swgtk
+        swgtk::SWGTK
         swgtk::SDLHW2D
         swgtk::Lua
 )

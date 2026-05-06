@@ -17,6 +17,7 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_video.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include <memory>
 #include <utility>
@@ -24,7 +25,8 @@
 
 namespace swgtk {
   App::~App() {
-    _fonts.ClearFonts();
+    _currentScene.reset();
+
     if ((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == SDL_INIT_VIDEO) {
       _renderer.reset();
       SDL_DestroyWindow(_window);
@@ -98,9 +100,8 @@ namespace swgtk {
     _gameTimer.UpdateTime();
   }
 
-  auto App::InitializeGame() -> bool {
-    if (_renderer->PrepareDevice(_window) && _fonts.LoadDefaultFont()) {
-      _renderer->SetFont(_fonts.GetDefaultFont().ptr);
+  auto App::InitializeGame() const -> bool {
+    if (_renderer->PrepareDevice(_window)) {
       return true;
     }
 

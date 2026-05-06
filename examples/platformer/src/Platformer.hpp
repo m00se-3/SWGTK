@@ -18,6 +18,8 @@ MIT License
 #include <swgtk/Scene.hpp>
 #include <filesystem>
 
+#include <swgtk/Font.hpp>
+
 namespace swgtk {
 
   namespace assets {
@@ -52,6 +54,8 @@ namespace swgtk {
 
     private:
     SDL_FRect _camera{};
+    Font _normalFont{assets::GetAssetFile(assets::normalFont)};
+    Font _boldFont{assets::GetAssetFile(assets::boldFont)};
     ObjectRef<App> _app;
     ObjectRef<SDLHW2D> _render;
 

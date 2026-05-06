@@ -114,9 +114,10 @@ namespace swgtk {
     SDL_RenderTextureRotated(_render, *texture, source, destination, angle, cen, flip);
   }
 
-  void SDLHW2D::DrawPlainText(const std::string_view text, const SDL_FRect& pos, const SDL_Color& color) const {
+  void SDLHW2D::DrawPlainText(TTF_Font* font, const std::string_view text, const SDL_FRect& pos, const SDL_Color& color) const {
+    SDL_assert_release(font != nullptr);
 
-    if (auto* ttf = TTF_RenderText_Solid(_currentFont, text.data(), text.size(), color); ttf != nullptr) {
+    if (auto* ttf = TTF_RenderText_Solid(font, text.data(), text.size(), color); ttf != nullptr) {
       auto* texture = SDL_CreateTextureFromSurface(_render, ttf);
       SDL_RenderTexture(_render, texture, nullptr, &pos);
       SDL_DestroySurface(ttf);
@@ -125,8 +126,10 @@ namespace swgtk {
     }
   }
 
-  void SDLHW2D::DrawPlainWrapText(const std::string_view text, const SDL_FRect& pos, const int wrapLen, const SDL_Color& color) const {
-    if (auto* ttf = TTF_RenderText_Solid_Wrapped(_currentFont, text.data(), text.size(), color, wrapLen); ttf != nullptr) {
+  void SDLHW2D::DrawPlainWrapText(TTF_Font* font, const std::string_view text, const SDL_FRect& pos, const int wrapLen, const SDL_Color& color) const {
+    SDL_assert_release(font != nullptr);
+
+    if (auto* ttf = TTF_RenderText_Solid_Wrapped(font, text.data(), text.size(), color, wrapLen); ttf != nullptr) {
       auto* texture = SDL_CreateTextureFromSurface(_render, ttf);
       SDL_RenderTexture(_render, texture, nullptr, &pos);
       SDL_DestroySurface(ttf);
@@ -135,64 +138,80 @@ namespace swgtk {
     }
   }
 
-  auto SDLHW2D::LoadPlainText(const std::string_view text, const SDL_Color& color) const -> Texture {
-    auto* surf = TTF_RenderText_Solid(_currentFont, text.data(), text.size(), color);
+  auto SDLHW2D::LoadPlainText(TTF_Font* font, const std::string_view text, const SDL_Color& color) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_Solid(font, text.data(), text.size(), color);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
     return Texture{texture};
   }
 
-  auto SDLHW2D::LoadBlendedText(const std::string_view text, const SDL_Color& color) const -> Texture {
-    auto* surf = TTF_RenderText_Blended(_currentFont, text.data(), text.size(), color);
+  auto SDLHW2D::LoadBlendedText(TTF_Font* font, const std::string_view text, const SDL_Color& color) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_Blended(font, text.data(), text.size(), color);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
     return Texture{texture};
   }
 
-  auto SDLHW2D::LoadShadedText(const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture {
-    auto* surf = TTF_RenderText_Shaded(_currentFont, text.data(), text.size(), fg, bg);
+  auto SDLHW2D::LoadShadedText(TTF_Font* font, const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_Shaded(font, text.data(), text.size(), fg, bg);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
     return Texture{texture};
   }
 
-  auto SDLHW2D::LoadLCDText(const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture {
-    auto* surf = TTF_RenderText_LCD(_currentFont, text.data(), text.size(), fg, bg);
+  auto SDLHW2D::LoadLCDText(TTF_Font* font, const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_LCD(font, text.data(), text.size(), fg, bg);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
     return Texture{texture};
   }
 
-  auto SDLHW2D::LoadPlainWrapText(const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture {
-    auto* surf = TTF_RenderText_Solid_Wrapped(_currentFont, text.data(), text.size(), color, wrapLen);
+  auto SDLHW2D::LoadPlainWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_Solid_Wrapped(font, text.data(), text.size(), color, wrapLen);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
     return Texture{texture};
   }
 
-  auto SDLHW2D::LoadBlendedWrapText(const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture {
-    auto* surf = TTF_RenderText_Blended_Wrapped(_currentFont, text.data(), text.size(), color, wrapLen);
+  auto SDLHW2D::LoadBlendedWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_Blended_Wrapped(font, text.data(), text.size(), color, wrapLen);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
     return Texture{texture};
   }
 
-  auto SDLHW2D::LoadShadedWrapText(const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture {
-    auto* surf = TTF_RenderText_Shaded_Wrapped(_currentFont, text.data(), text.size(), fg, bg, wrapLen);
+  auto SDLHW2D::LoadShadedWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_Shaded_Wrapped(font, text.data(), text.size(), fg, bg, wrapLen);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
     return Texture{texture};
   }
 
-  auto SDLHW2D::LoadLCDWrapText(const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture {
-    auto* surf = TTF_RenderText_LCD_Wrapped(_currentFont, text.data(), text.size(), fg, bg, wrapLen);
+  auto SDLHW2D::LoadLCDWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture {
+    SDL_assert_release(font != nullptr);
+
+    auto* surf = TTF_RenderText_LCD_Wrapped(font, text.data(), text.size(), fg, bg, wrapLen);
     auto* texture = SDL_CreateTextureFromSurface(_render, surf);
 
     SDL_DestroySurface(surf);
