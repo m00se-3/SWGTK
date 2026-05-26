@@ -1,5 +1,9 @@
 ﻿{
   "version": 8,
+  "include": [
+    "cmake/generators.json",
+    "cmake/compilers.json"
+  ],
   "configurePresets": [
     {
       "name": "base",
@@ -9,9 +13,9 @@
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "SWGTK_INSTALL_FREETYPE": true,
-        "SWGTK_BUILD_TESTS": false,
-        "SWGTK_BUILD_EXAMPLES":false,
-        "SWGTK_LUA_BINDINGS": false,
+        "SWGTK_BUILD_TESTS": true,
+        "SWGTK_BUILD_EXAMPLES":true,
+        "SWGTK_LUA_BINDINGS": true,
         "SWGTK_NO_CCACHE": false,
         "SWGTK_EXCEPTIONS": false,
         "SWGTK_CCACHE": "ccache",
@@ -25,30 +29,15 @@
       }
     },
     {
-      "name": "msvc",
-      "inherits": "base",
+      "name": "msvc22",
+      "inherits": ["base", "msvc-cl", "msvc17"],
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "cl",
-        "CMAKE_CXX_COMPILER": "cl",
-        "SWGTK_INSTALL_FREETYPE": false,
-        "SWGTK_BUILD_TESTS": true,
-        "SWGTK_BUILD_EXAMPLES":true,
-        "SWGTK_LUA_BINDINGS": true
-      },
-      "environment": {
-        "MSVC_IDE": "ON"
-      },
-      "vendor": {
-        "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "enableClangTidyCodeAnalysis": true,
-          "enableMicrosoftCodeAnalysis": true
-        }
+        "SWGTK_INSTALL_FREETYPE": false
       }
     },
     {
-      "name": "emscripten-debug",
-      "inherits": "base",
-      "displayName": "Emscripten Debug",
+      "name": "emscripten",
+      "inherits": ["base", "nj-multi"],
       "toolchainFile": "$penv{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
       "condition": {
         "type": "notEquals",
@@ -56,104 +45,83 @@
         "rhs": ""
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "SWGTK_NO_CCACHE": true,
-        "SWGTK_LUA_BINDINGS": true,
-        "SWGTK_BUILD_EXAMPLES":true,
-        "CMAKE_CXX_COMPILER": "em++",
-        "CMAKE_C_COMPILER": "emcc",
         "CMAKE_EXECUTABLE_SUFFIX": ".html",
         "SDL_STATIC": "ON"
       }
     },
     {
-      "name": "emscripten-release",
-      "inherits": "emscripten-debug",
-      "displayName": "Emscripten Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "MinSizeRel"
-      },
-      "condition": {
-        "type": "notEquals",
-        "lhs": "$penv{EMSDK}",
-        "rhs": ""
-      }
+      "name": "msvc26",
+      "inherits": ["base", "msvc-cl", "msvc18"]
     },
     {
-      "name": "desktop-base",
-      "hidden": true,
-      "inherits": "base",
-      "generator": "Ninja",
-      "cacheVariables": {
-        "SWGTK_BUILD_TESTS": true,
-        "SWGTK_BUILD_EXAMPLES":true,
-        "SWGTK_LUA_BINDINGS": true,
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
+      "name": "nj-clang",
+      "inherits": ["base", "nj-multi", "clang"]
     },
     {
-      "name": "win-debug",
-      "displayName": "Win64 Debug",
-      "inherits": "desktop-base",
-      "installDir": "${sourceDir}\\install\\${presetName}",
-      "binaryDir": "${sourceDir}\\build\\${presetName}",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+      "name": "nj-gnu",
+      "inherits": ["base", "nj-multi", "gcc"]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "clang-debug",
+      "displayName": "Clang with Ninja(Debug)",
+      "configurePreset": "nj-clang",
+      "configuration": "Debug"
     },
     {
-      "name": "win-release",
-      "displayName": "Win64 Release",
-      "inherits": "win-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+      "name": "clang-release",
+      "displayName": "Clang with Ninja(Release)",
+      "configurePreset": "nj-clang",
+      "configuration": "Release"
     },
     {
-      "name": "linux-debug",
-      "displayName": "Linux Debug",
-      "inherits": "desktop-base",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "installDir": "${sourceDir}/install/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
-      },
-      "vendor": {
-        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
-          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
-        }
-      }
+      "name": "gcc-debug",
+      "displayName": "GCC with Ninja(Debug)",
+      "configurePreset": "nj-gnu",
+      "configuration": "Debug"
     },
     {
-      "name": "macos-debug",
-      "displayName": "macOS Debug",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "installDir": "${sourceDir}/install/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Darwin"
-      },
-      "vendor": {
-        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
-          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
-        }
-      }
+      "name": "gcc-release",
+      "displayName": "GCC with Ninja(Release)",
+      "configurePreset": "nj-gnu",
+      "configuration": "Release"
+    },
+    {
+      "name": "ms17-debug",
+      "displayName": "Visual Studio 2022(Debug)",
+      "configurePreset": "msvc22",
+      "configuration": "Debug"
+    },
+    {
+      "name": "ms17-release",
+      "displayName": "Visual Studio 2022(Release)",
+      "configurePreset": "msvc22",
+      "configuration": "Release"
+    },
+    {
+      "name": "ms18-debug",
+      "displayName": "Visual Studio 2026(Debug)",
+      "configurePreset": "msvc26",
+      "configuration": "Debug"
+    },
+    {
+      "name": "ms18-release",
+      "displayName": "Visual Studio 2026(Release)",
+      "configurePreset": "msvc26",
+      "configuration": "Release"
+    },
+    {
+      "name": "em-debug",
+      "displayName": "Emscripten(Debug)",
+      "configurePreset": "emscripten",
+      "configuration": "Debug"
+    },
+    {
+      "name": "em-release",
+      "displayName": "Emscripten(Release)",
+      "configurePreset": "emscripten",
+      "configuration": "MinSizeRel"
     }
   ]
 }

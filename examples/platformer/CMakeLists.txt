@@ -3,13 +3,14 @@ add_executable(Platformer)
 target_compile_options(Platformer PRIVATE ${CompilerFlags})
 target_link_options(Platformer PRIVATE ${LinkerFlags})
 
-target_compile_features(Platformer PRIVATE cxx_std_23)
+set_target_properties(swgtk PROPERTIES CXX_STANDARD ${CXX_VERSION})
 
-target_compile_definitions(Platformer PRIVATE ASSETS_DIR="${CMAKE_CURRENT_LIST_DIR}/assets/")
-
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-    target_compile_definitions(Platformer PRIVATE _DEBUG)
-endif()
+target_compile_definitions(
+  Platformer
+  PRIVATE
+  ASSETS_DIR="${CMAKE_CURRENT_LIST_DIR}/assets/"
+  $<$<CONFIG:Debug>:_DEBUG>
+)
 
 if(SWGTK_CLANG_TIDY_FOUND)
 

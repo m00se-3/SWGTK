@@ -4,8 +4,6 @@ add_library(swgtk::Lua ALIAS swgtk_lua)
 target_compile_options(swgtk_lua PRIVATE ${CompilerFlags})
 target_link_options(swgtk_lua PRIVATE ${LinkerFlags})
 
-target_compile_features(swgtk_lua PRIVATE cxx_std_23)
-
 if(NOT EMSCRIPTEN)
   target_compile_definitions(
     swgtk_lua PUBLIC

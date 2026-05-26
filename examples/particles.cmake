@@ -3,11 +3,8 @@ add_executable(ParticlesSample)
 target_compile_options(ParticlesSample PRIVATE ${CompilerFlags})
 target_link_options(ParticlesSample PRIVATE ${LinkerFlags})
 
-target_compile_features(ParticlesSample PRIVATE cxx_std_23)
-
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  target_compile_definitions(ParticlesSample PRIVATE _DEBUG)
-endif()
+set_target_properties(ParticlesSample PROPERTIES CXX_STANDARD ${CXX_VERSION})
+target_compile_definitions(ParticlesSample PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 if(SWGTK_CLANG_TIDY_FOUND)
 

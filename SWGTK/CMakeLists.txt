@@ -21,17 +21,12 @@ if(EMSCRIPTEN)
   )
 endif()
 
-target_compile_features(swgtk PRIVATE cxx_std_23)
-
-if(SWGTK_LUA_BINDINGS)
-  target_compile_definitions(swgtk PUBLIC SWGTK_BUILD_WITH_LUA="1")
-endif()
-
+set_target_properties(swgtk PROPERTIES CXX_STANDARD ${CXX_VERSION})
 target_compile_definitions(
   swgtk
-
-  PUBLIC
-
+  PRIVATE
+  $<$<CONFIG:Debug>:_DEBUG>
+  $<$<BOOL:${SWGTK_LUA_BINDINGS}>:SWGTK_BUILD_WITH_LUA="1">
   HAV_STRINGS_H="0" # Disable non-standard strings.
 )
 
@@ -48,10 +43,6 @@ else()
     SWGTK_DEFAULT_FONT_FILE="assets/Natural_Mono-Regular.ttf"
     SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
   )
-endif()
-
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  target_compile_definitions(swgtk PRIVATE _DEBUG)
 endif()
 
 if(CLANG_TIDY_PROGRAM_FOUND)
@@ -110,22 +101,6 @@ target_link_libraries(
   SDL3::SDL3
   SDL3_image::SDL3_image
   SDL3_ttf::SDL3_ttf
+  $<$<TARGET_EXISTS:swgtk::Lua>:swgtk::Lua>
+  $<$<TARGET_EXISTS:Freetype::Freetype>:Freetype::Freetype>
 )
-
-if(SWGTK_LUA_BINDINGS)
-  target_link_libraries(
-    swgtk
-
-    PUBLIC
-    swgtk_lua
-  )
-endif()
-
-if(SWGTK_INSTALL_FREETYPE)
-  target_link_libraries(
-    swgtk
-
-    PUBLIC
-    Freetype::Freetype
-  )
-endif()

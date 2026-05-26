@@ -4,19 +4,13 @@ target_compile_options(testsuite PRIVATE ${CompilerFlags})
 
 target_link_options(testsuite PRIVATE ${LinkerFlags})
 
-target_compile_features(testsuite PRIVATE cxx_std_23)
-
+set_target_properties(testsuite PROPERTIES CXX_STANDARD ${CXX_VERSION})
 target_compile_definitions(
-  testsuite
-
-  PUBLIC
-
+ testsuite
+  PRIVATE
+  $<$<CONFIG:Debug>:_DEBUG>
   HAV_STRINGS_H="0" # Disable non-standard strings.
 )
-
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  target_compile_definitions(testsuite PRIVATE _DEBUG)
-endif()
 
 if(SWGTK_CLANG_TIDY_FOUND)
   set_target_properties(testsuite PROPERTIES CXX_CLANG_TIDY ${SWGTK_CLANG_TIDY})
@@ -49,7 +43,7 @@ target_sources(
   ${CMAKE_CURRENT_LIST_DIR}/src/MathTests.cpp
 )
 
-target_link_libraries(testsuite PRIVATE swgtk swgtk::SDLHW2D Catch2::Catch2WithMain)
+target_link_libraries(testsuite PRIVATE swgtk::SWGTK swgtk::SDLHW2D Catch2::Catch2WithMain)
 catch_discover_tests(testsuite DISCOVERY_MODE PRE_TEST)
 
 if(WIN32) # Windows

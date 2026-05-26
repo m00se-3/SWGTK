@@ -3,23 +3,13 @@ target_compile_options(sdl2drender PRIVATE ${CompilerFlags})
 
 target_link_options(sdl2drender PRIVATE ${LinkerFlags})
 
-target_compile_features(sdl2drender PRIVATE cxx_std_23)
-
-if(SWGTK_LUA_BINDINGS)
-  target_compile_definitions(sdl2drender PUBLIC SWGTK_BUILD_WITH_LUA="1")
-endif()
-
-target_compile_definitions(
-  sdl2drender
-
-  PUBLIC
-
-  HAV_STRINGS_H="0" # Disable non-standard strings.
+set_target_properties(sdl2drender PROPERTIES CXX_STANDARD ${CXX_VERSION})
+target_compile_definitions(sdl2drender
+  PRIVATE
+  $<$<CONFIG:Debug>:_DEBUG>
+  $<$<BOOL:${SWGTK_LUA_BINDINGS}>:SWGTK_BUILD_WITH_LUA="1">
+  HAV_STRINGS="0"
 )
-
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  target_compile_definitions(sdl2drender PRIVATE _DEBUG)
-endif()
 
 if(CLANG_TIDY_PROGRAM)
   set_target_properties(sdl2drender PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
@@ -63,15 +53,8 @@ target_link_libraries(
   SDL3::SDL3
   SDL3_image::SDL3_image
   SDL3_ttf::SDL3_ttf
+  $<$<TARGET_EXISTS:swgtk::Lua>:swgtk::Lua>
 )
 
 add_library(swgtk::SDLHW2D ALIAS sdl2drender)
 
-if(SWGTK_LUA_BINDINGS)
-  target_link_libraries(
-    sdl2drender
-
-    PUBLIC
-    swgtk_lua
-  )
-endif()

@@ -10,6 +10,16 @@ project(
 include("CPM.cmake")
 include("cmake/Config.cmake")
 
+file(WRITE ${CMAKE_BINARY_DIR}/.gitignore "*")
+
+if(NOT DEFINED CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS "23")
+  set(CXX_VERSION 23)
+
+  if(CMAKE_CXX_STANDARD LESS "23")
+    message(STATUS "SWGTK set to CXX 23 standard.")
+  endif()
+endif()
+
 if(SWGTK_BUILD_EXAMPLES AND NOT SWGTK_LUA_BINDINGS)
   message(
     FATAL_ERROR
@@ -21,7 +31,7 @@ if(EMSCRIPTEN)
   message("-- Emscripten build enabled.\n")
 endif()
 
-# Add CCache, if available
+# Add ccache, if available
 
 if(SWGTK_CCACHE_FOUND AND NOT SWGTK_NO_CCACHE)
 
@@ -40,7 +50,14 @@ endif()
 if(SWGTK_BUILD_TESTS)
   include(CTest)
 
-  CPMAddPackage("gh:catchorg/Catch2@3.10.0")
+  CPMAddPackage(
+    NAME Catch2
+    GITHUB_REPOSITORY catchorg/Catch2
+    VERSION 3.10.0
+    GIT_SHALLOW true
+    GIT_PROGRESS true
+    EXCLUDE_FROM_ALL
+  )
   enable_testing()
 endif()
 
@@ -51,6 +68,8 @@ if(SWGTK_LUA_BINDINGS)
     GITHUB_REPOSITORY lua/lua
     VERSION 5.4.6
     DOWNLOAD_ONLY Yes
+    GIT_SHALLOW true
+    GIT_PROGRESS true
   )
 
   if(lua_ADDED)
@@ -58,7 +77,7 @@ if(SWGTK_LUA_BINDINGS)
     FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
     list(REMOVE_ITEM lua_sources ${lua_SOURCE_DIR}/lua.c ${lua_SOURCE_DIR}/luac.c)
 
-    add_library(lua STATIC ${lua_sources})
+    add_library(lua STATIC EXCLUDE_FROM_ALL ${lua_sources})
 
     target_include_directories(
       lua
@@ -68,14 +87,28 @@ if(SWGTK_LUA_BINDINGS)
 
 endif()
 
-  CPMAddPackage("gh:ThePhD/sol2@3.5.0")
+  CPMAddPackage(
+    NAME sol2
+    GITHUB_REPOSITORY ThePhd/sol2
+    VERSION 3.5.0
+    GIT_SHALLOW true
+    GIT_PROGRESS true
+    EXCLUDE_FROM_ALL
+  )
 endif()
 
 # SDL and external SDL dependencies
 # If any more external dependencies for SDL become necessary in the future, they should be added before any SDL.(For consistency)
 
 if(SWGTK_INSTALL_FREETYPE)
-  CPMAddPackage("gh:freetype/freetype#master")
+  CPMAddPackage(
+    NAME freetype
+    GITHUB_REPOSITORY freetype/freetype
+    GIT_TAG master
+    GIT_SHALLOW true
+    GIT_PROGRESS true
+    EXCLUDE_FROM_ALL
+  )
 
   # Add a custom target alias for Freetype, since it uses a legacy version of cmake
   if(freetype_ADDED)
@@ -89,6 +122,9 @@ CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
   GIT_TAG "release-3.4.8"
+  GIT_SHALLOW true
+  GIT_PROGRESS true
+  EXCLUDE_FROM_ALL
   OPTIONS
   "SDL_TEST_LIBRARY false"
 )
@@ -97,6 +133,9 @@ CPMAddPackage(
   NAME "SDL3_image"
   GITHUB_REPOSITORY "libsdl-org/SDL_image"
   GIT_TAG "release-3.4.4"
+  GIT_SHALLOW true
+  GIT_PROGRESS true
+  EXCLUDE_FROM_ALL
   OPTIONS
   "SDLIMAGE_VENDORED false"
 )
@@ -105,6 +144,9 @@ CPMAddPackage(
   NAME "SDL3_ttf"
   GITHUB_REPOSITORY "libsdl-org/SDL_ttf"
   GIT_TAG "release-3.2.2"
+  GIT_SHALLOR true
+  GIT_PROGRESS true
+  EXCLUDE_FROM_ALL
   OPTIONS
   "FREETYPE_LIBRARY ${freetype_BINARY_DIR}"
   "FREETYPE_INCLUDE_DIRS ${freetype_SOURCE_DIR}"

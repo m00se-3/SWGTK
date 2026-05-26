@@ -8,11 +8,15 @@ Having SDL3 at the backend, SWGTK should be portable to anything that SDL3 can s
 
 ## Design
 
-SWGTK is designed to be flexible, able to fully cooperate with the user's vision. Its focus is, primarily, on getting a window on the screen and hooking up the user with an easy-to-use rendering pipeling. The rendering system itself is very extensible. Our plans are to eventually have a rendering pipeline for every backend SDL3 supports, which should cover the vast majority of use cases.
+SWGTK is designed to be flexible, able to fully cooperate with the user's vision. Its focus is, primarily, on getting a 
+window on the screen and hooking up the user with an easy-to-use rendering pipeling. The rendering system itself is very 
+extensible. Our plans are to eventually have a rendering pipeline for every backend SDL3 supports, which should cover the vast majority of use cases.
 
-A rendering backend is selected by the user and is injected into the application during initialization. The class hierarchy is intended not only as a means to support more renderers, but also allows users to customize existing ones to fit their exact needs.
+A rendering backend is selected by the user and is injected into the application during initialization. The class hierarchy 
+is intended not only as a means to support more renderers, but also allows users to customize existing ones to fit their exact needs.
 
-**Note:** SWGTK, at this time, does *not* come with any audio features. I plan to include an example program for integrating a 3rd party library into your code.
+**Note:** SWGTK, at this time, does *not* come with any audio features. I plan to include an example program for 
+integrating a 3rd party library into your code.
 
 This library is built with a strict set of compiler options and analyzer warnings. Warnings
 are treated as errors. This project takes safe software and best practices very seriously.
@@ -63,7 +67,8 @@ releases:
 
 ### Getting started with CMake
 
-SWGTK requires CMake 3.28 or newer. Here is an example of adding it to your project. The sample uses CPM as the package manager. It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
+SWGTK requires CMake 3.28 or newer. Here is an example of adding it to your project. The sample uses CPM as the package manager.
+It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
 ```cmake
 CPMAddPackage("gh:m00se-3/SWGTK@0.2.0")
@@ -110,16 +115,6 @@ auto main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) -> int {
 ```
 
 Please see the example programs for more information.
-
-### For Visual Studio
-
-If you clone this repository and build it from source, there is a special CMake preset for Visual Studio users.
-Open a command prompt in the root directory and enter this:
-
-```bash
-  cmake . --preset=msvc -G "Visual Studio 17 2022"
-```
-
 *If, at any time, you discover a bug or a memory leak from within the framework, please post an issue with details.*
 
 ## MIT License
