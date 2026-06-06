@@ -19,7 +19,7 @@ else()
   )
 endif()
 
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+if($<CONFIG:Debug>)
   target_compile_definitions(swgtk_lua PRIVATE _DEBUG)
 endif()
 
@@ -38,13 +38,19 @@ target_sources(
 
   PUBLIC
   FILE_SET HEADERS
-  BASE_DIRS ${SWGTK_SOURCE_DIR}/SWGTK/engine/include
+  BASE_DIRS 
 
-  PUBLIC
+  ${SWGTK_SOURCE_DIR}/SWGTK/engine/include
+  ${lua_SOURCE_DIR}
+
+  FILES 
+
   ${SWGTK_SOURCE_DIR}/SWGTK/engine/include/swgtk/Lua.hpp
 
   PRIVATE
+
   ${SWGTK_SOURCE_DIR}/SWGTK/engine/src/Lua.cpp
+  ${lua_SOURCES}
 )
 
 target_link_libraries(
@@ -54,6 +60,5 @@ target_link_libraries(
   SDL3::SDL3
   SDL3_image::SDL3_image
   SDL3_ttf::SDL3_ttf
-  lua
   sol2
 )

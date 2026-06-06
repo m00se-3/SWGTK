@@ -11,6 +11,7 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
+        "CMAKE_CXX_SCAN_FOR_MODULES": false,
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
         "SWGTK_INSTALL_FREETYPE": true,
         "SWGTK_BUILD_TESTS": true,

@@ -4,7 +4,6 @@ target_compile_options(testsuite PRIVATE ${CompilerFlags})
 
 target_link_options(testsuite PRIVATE ${LinkerFlags})
 
-set_target_properties(testsuite PROPERTIES CXX_STANDARD ${CXX_VERSION})
 target_compile_definitions(
  testsuite
   PRIVATE

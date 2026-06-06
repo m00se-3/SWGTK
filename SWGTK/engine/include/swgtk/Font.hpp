@@ -14,6 +14,7 @@
 #define SWGTK_ENGINE_INCLUDE_SWGTK_TTFFONT_HPP_
 
 #include <filesystem>
+#include <type_traits>
 #include <utility>
 
 #include <SDL3_ttf/SDL_ttf.h>
@@ -38,8 +39,6 @@ namespace swgtk {
 
   namespace detail {
     constexpr inline float defaultFontSize = 16.0f;
-
-    using FontHandle = std::unique_ptr<TTF_Font, decltype([](TTF_Font* font) -> void { if (font != nullptr) { TTF_CloseFont(font); } })>;
   }
 
   /**
@@ -47,6 +46,7 @@ namespace swgtk {
    */
   class Font {
   public:
+    using FontHandle = std::unique_ptr<TTF_Font, decltype([](TTF_Font* font) -> void { if (font != nullptr) { TTF_CloseFont(font); } })>;
     Font() = default;
     explicit Font(TTF_Font* font) : _ptr{font} {}
     explicit Font(const std::filesystem::path& path, float fontSize = detail::defaultFontSize);
@@ -60,7 +60,7 @@ namespace swgtk {
     auto SetStyle(const FontStyle style) const -> void { TTF_SetFontStyle(_ptr.get(), std::to_underlying(style)); }
 
   private:
-    detail::FontHandle _ptr;
+    FontHandle _ptr;
   };
 
 } // namespace swgtk

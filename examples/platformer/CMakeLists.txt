@@ -3,8 +3,6 @@ add_executable(Platformer)
 target_compile_options(Platformer PRIVATE ${CompilerFlags})
 target_link_options(Platformer PRIVATE ${LinkerFlags})
 
-set_target_properties(swgtk PROPERTIES CXX_STANDARD ${CXX_VERSION})
-
 target_compile_definitions(
   Platformer
   PRIVATE

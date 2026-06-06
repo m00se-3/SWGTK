@@ -1,9 +1,7 @@
 add_library(sdl2drender STATIC)
 target_compile_options(sdl2drender PRIVATE ${CompilerFlags})
-
 target_link_options(sdl2drender PRIVATE ${LinkerFlags})
 
-set_target_properties(sdl2drender PROPERTIES CXX_STANDARD ${CXX_VERSION})
 target_compile_definitions(sdl2drender
   PRIVATE
   $<$<CONFIG:Debug>:_DEBUG>
@@ -32,8 +30,6 @@ target_sources(
   ${lua_SOURCE_DIR}
 
   FILES
-
-  PUBLIC
 
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Texture.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Surface.hpp

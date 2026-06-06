@@ -32,7 +32,7 @@ namespace swgtk {
 
   Font::Font(const std::filesystem::path& path, const float fontSize) {
     const auto fileString = path.string();
-    if ( _ptr = detail::FontHandle{ TTF_OpenFont(fileString.c_str(), fontSize) }; _ptr == nullptr) {
+    if ( _ptr = FontHandle{ TTF_OpenFont(fileString.c_str(), fontSize) }; _ptr == nullptr) {
         DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
     }
   }

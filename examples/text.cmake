@@ -3,7 +3,6 @@ add_executable(TextSample)
 target_compile_options(TextSample PRIVATE ${CompilerFlags})
 target_link_options(TextSample PRIVATE ${LinkerFlags})
 
-set_target_properties(TextSample PROPERTIES CXX_STANDARD ${CXX_VERSION})
 target_compile_definitions(TextSample PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 if(SWGTK_CLANG_TIDY_FOUND)

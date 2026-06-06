@@ -3,7 +3,6 @@ add_executable(ParticlesSample)
 target_compile_options(ParticlesSample PRIVATE ${CompilerFlags})
 target_link_options(ParticlesSample PRIVATE ${LinkerFlags})
 
-set_target_properties(ParticlesSample PROPERTIES CXX_STANDARD ${CXX_VERSION})
 target_compile_definitions(ParticlesSample PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 if(SWGTK_CLANG_TIDY_FOUND)

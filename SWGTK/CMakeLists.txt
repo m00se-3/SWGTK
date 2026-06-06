@@ -4,7 +4,7 @@ add_library(swgtk STATIC)
 add_library(swgtk::SWGTK ALIAS swgtk)
 
 if(SWGTK_LUA_BINDINGS)
-  include(${SWGTK_SOURCE_DIR}/cmake/LuaBindings.cmake)
+  include(${CMAKE_CURRENT_LIST_DIR}/engine/LuaBindings.cmake)
 endif()
 
 target_compile_options(swgtk PRIVATE ${CompilerFlags})
@@ -21,7 +21,6 @@ if(EMSCRIPTEN)
   )
 endif()
 
-set_target_properties(swgtk PROPERTIES CXX_STANDARD ${CXX_VERSION})
 target_compile_definitions(
   swgtk
   PRIVATE
@@ -45,7 +44,7 @@ else()
   )
 endif()
 
-if(CLANG_TIDY_PROGRAM_FOUND)
+if(SWGTK_CLANG_TIDY_FOUND)
 
   message("-- Enabling clang-tidy.\n")
   set_target_properties(swgtk PROPERTIES CXX_CLANG_TIDY ${SWGTK_CLANG_TIDY})
@@ -72,8 +71,6 @@ target_sources(
   ${lua_SOURCE_DIR}
 
   FILES
-
-  PUBLIC
 
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/App.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Texture.hpp

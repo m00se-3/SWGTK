@@ -25,7 +25,7 @@ namespace swgtk {
     };
 
     SWGTK["Vec2f"] = lua.new_usertype<SDL_FPoint>(
-        "Vec2f", "x", &SDL_FPoint::x, "y", &SDL_FPoint::y);
+        "Vec2f", std::make_pair("x", &SDL_FPoint::x), std::make_pair("y", &SDL_FPoint::y));
 
     SWGTK["Vec2f"]["new"] = [](const sol::optional<float> nx, const sol::optional<float> ny) -> SDL_FPoint {
       return SDL_FPoint{nx.value_or(0.0f), ny.value_or(0.0f)};

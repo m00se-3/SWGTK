@@ -1,5 +1,5 @@
 # Enable compiler flags for certain build configurations
-if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
+if($<NOT:$<CONFIG:Debug>>)
   list(
     APPEND CompilerFlags
     "/O2"

@@ -1,11 +1,11 @@
 # Enable compiler flags for certain build configurations
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+if($<CONFIG:Debug>)
   list(
     APPEND CompilerFlags
     "-g"
     "-D_GLIBCXX_ASSERTIONS"
   )
-elseif(${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo)
+elseif($<CONFIG:RelWithDebInfo>)
   list(
     APPEND CompilerFlags
     "-g"
@@ -30,7 +30,7 @@ else()
 endif()
 
 # Enable special flags when using GCC
-if(${CMAKE_CXX_COMPILIER_ID} MATCHES "GNU")
+if($<CXX_COMPILER_ID:GNU>)
   list(
     APPEND CompilerFlags
 
@@ -42,20 +42,17 @@ if(${CMAKE_CXX_COMPILIER_ID} MATCHES "GNU")
 endif()
 
 #Exclude unsupported flags on Windows
-if(NOT ${CMAKE_HOST_WIN32})
-  list(
-    APPEND CompilerFlags
 
-    "-mbranch-protection=standard"
-  )
+list(
+  APPEND CompilerFlags
 
-  list(
-    APPEND LinkerFlags
+  "$<$<AND:$<NOT:$<PLATFORM_ID:Windows>>,$<CXX_COMPILER_ID:Clang>>:-mbranch-protection=standard>"
+)
 
-    "-fPIC"
-    "-fPIE"
-  )
-endif()
+list(
+  APPEND LinkerFlags
+  "$<$<NOT:$<PLATFORM_ID:Windows>>:-fPIC;-fPIE>"
+)
 
 
 # Enable flags for all builds
@@ -64,19 +61,11 @@ list(
 
   "-Wall"
   "-Wextra"
+  "-Werror"
   "-Wformat"
   "-Wformat=2"
   "-Wimplicit-fallthrough"
-  "-Werror=format-security"
-  "-Werror=implicit"
-  "-Werror=incompatible-pointer-types"
-  "-Werror=int-conversion"
-  "-Werror=conversion"
-  "-Werror=sign-conversion"
-  "-Werror=div-by-zero"
-  "-Werror=alloca"
   "-Wreturn-local-addr"
-  "-Werror=return-local-addr"
   "-Wpedantic"
   "-Wdouble-promotion"
   "-Wconversion"

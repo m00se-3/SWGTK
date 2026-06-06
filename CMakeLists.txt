@@ -4,7 +4,6 @@ project(
   "SWGTK"
   DESCRIPTION "Software and Games Tool Kit"
   HOMEPAGE_URL "https://github.com/m00se-3/SWGTK"
-  VERSION 0.3.0
 )
 
 include("CPM.cmake")
@@ -12,18 +11,16 @@ include("cmake/Config.cmake")
 
 file(WRITE ${CMAKE_BINARY_DIR}/.gitignore "*")
 
-if(NOT DEFINED CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS "23")
-  set(CXX_VERSION 23)
-
-  if(CMAKE_CXX_STANDARD LESS "23")
-    message(STATUS "SWGTK set to CXX 23 standard.")
-  endif()
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 23)
+  set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
 if(SWGTK_BUILD_EXAMPLES AND NOT SWGTK_LUA_BINDINGS)
   message(
     FATAL_ERROR
-    "Fatal Error: Building the examples requires the Lua bindings.\nPlease enable SWGTK_LUA_BINDINGS."
+    "Fatal Error: Building the examples requires the Lua bindings.\n"
+    "Please enable SWGTK_LUA_BINDINGS."
   )
 endif()
 
@@ -76,14 +73,6 @@ if(SWGTK_LUA_BINDINGS)
 
     FILE(GLOB lua_sources ${lua_SOURCE_DIR}/*.c)
     list(REMOVE_ITEM lua_sources ${lua_SOURCE_DIR}/lua.c ${lua_SOURCE_DIR}/luac.c)
-
-    add_library(lua STATIC EXCLUDE_FROM_ALL ${lua_sources})
-
-    target_include_directories(
-      lua
-      PUBLIC
-      ${lua_SOURCE_DIR}
-    )
 
 endif()
 
