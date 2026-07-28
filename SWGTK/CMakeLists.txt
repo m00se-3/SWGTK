@@ -73,7 +73,7 @@ target_sources(
   FILES
 
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/App.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Texture.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Texture.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Surface.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Input.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Scene.hpp

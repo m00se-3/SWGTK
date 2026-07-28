@@ -25,7 +25,7 @@ namespace swgtk {
   /**
       @brief A reference-counted RAII wrapper for the SDL_Surface type.
 
-      Unlike Texture, Surface provides a number of constructors that cover the majority of use cases.
+      Unlike Texture2D, Surface provides a number of constructors that cover the majority of use cases.
    */
   class Surface {
     static void DestroySurface(SDL_Surface* surface) { SDL_DestroySurface(surface); }

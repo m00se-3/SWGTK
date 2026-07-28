@@ -27,7 +27,7 @@ namespace swgtk {
 
   struct MouseCursor {
     SDL_FPoint pos{};
-    Texture texture;
+    Texture2D texture;
   };
 
   struct Particle {

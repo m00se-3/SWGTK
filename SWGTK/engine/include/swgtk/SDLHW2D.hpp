@@ -79,8 +79,8 @@ namespace swgtk {
       SDL_SetRenderDrawColorFloat(_render, color.r, color.g, color.b, color.a);
     }
 
-    void DrawTexture(Texture texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;
-    void DrawTexture(Texture texture, const std::optional<SDL_FRect>& src,
+    void DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;
+    void DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src,
                      const std::optional<SDL_FRect>& dest, double angle,
                      const std::optional<SDL_FPoint>& center = std::nullopt,
                      SDL_FlipMode flip = SDL_FLIP_NONE) const;
@@ -148,14 +148,14 @@ namespace swgtk {
      * @param vertices
      * @param indices
      */
-    void DrawGeometry(Texture texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
+    void DrawGeometry(Texture2D texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
       SDL_RenderGeometry(_render, *texture, vertices.data(), static_cast<int>(std::ssize(vertices)),
                          indices.data(), static_cast<int>(std::ssize(indices)));
     }
 
-    [[nodiscard]] auto LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> Texture;
-    [[nodiscard]] auto CreateRenderableTexture(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> Texture;
-    [[nodiscard]] auto CreateTextureFromSurface(const Surface& surface) const -> Texture;
+    [[nodiscard]] auto LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> Texture2D;
+    [[nodiscard]] auto CreateRenderableTexture(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> Texture2D;
+    [[nodiscard]] auto CreateTextureFromSurface(const Surface& surface) const -> Texture2D;
 
     [[nodiscard]] auto GetDrawColor() const -> SDL_FColor {
       SDL_FColor res{};
@@ -164,7 +164,7 @@ namespace swgtk {
       return res;
     }
 
-    auto SetDrawTarget(Texture texture) const -> bool { return SDL_SetRenderTarget(_render, *texture); }
+    auto SetDrawTarget(Texture2D texture) const -> bool { return SDL_SetRenderTarget(_render, *texture); }
 
     [[nodiscard]] static auto Create() noexcept { return std::make_shared<SDLHW2D>(); }
 
