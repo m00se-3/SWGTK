@@ -46,7 +46,7 @@ endif()
 list(
   APPEND CompilerFlags
 
-  "$<$<AND:$<NOT:$<PLATFORM_ID:Windows>>,$<CXX_COMPILER_ID:Clang>>:-mbranch-protection=standard>"
+  "$<$<STREQUAL:${CMAKE_SYSTEM_PROCESSOR},ARM>:-mbranch-protection=standard>"
 )
 
 list(
@@ -72,6 +72,10 @@ list(
   "-Wsign-conversion"
   "-Wsuggest-override"
 
+  # Suppress errors caused by Catch2.
+  "-Wno-error=pragmas"
+  "-Wno-error=unknown-pragmas"
+
   "-fvisibility=hidden"
   "-fstrict-flex-arrays=3"
   "-fno-strict-overflow"
@@ -80,7 +84,7 @@ list(
 )
 
 if(NOT DEFINED EMSCRIPTEN)
-  list(APPEND CompilerFlags "-fcf-protection=full")
+  list(APPEND CompilerFlags "$<$<STREQUAL:${CMAKE_SYSTEM_PROCESSOR},x86_64>:-fcf-protection=full>")
 
   list(
     APPEND LinkerFlags

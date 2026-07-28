@@ -3,17 +3,13 @@ target_compile_options(sdlgpu PRIVATE ${CompilerFlags})
 
 target_link_options(sdlgpu PRIVATE ${LinkerFlags})
 
-target_compile_features(sdlgpu PRIVATE cxx_std_23)
-
-if(${SWGTK_LUA_BINDINGS} MATCHES ON)
-  target_compile_definitions(sdlgpu PUBLIC SWGTK_BUILD_WITH_LUA="1")
-endif()
-
 target_compile_definitions(
   sdlgpu
 
   PUBLIC
 
+  $<$<CONFIG:Debug>:_DEBUG>
+  $<$<BOOL:${SWGTK_LUA_BINDINGS}>:SWGTK_BUILD_WITH_LUA="1">
   HAV_STRINGS_H="0" # Disable non-standard strings.
 )
 
@@ -45,7 +41,7 @@ target_sources(
 
   PUBLIC
 
-        ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Texture.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Texture.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Surface.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/SDLGPU.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/RenderingDevice.hpp

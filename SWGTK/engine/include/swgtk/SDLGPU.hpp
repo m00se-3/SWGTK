@@ -23,7 +23,7 @@ namespace swgtk {
   struct GPU_Params {
     ShaderFormat format{ShaderFormat::Spirv};
     bool debugMode{false};
-    std::string apiName{};
+    std::string apiName;
   };
 
   class SDLGPU : public RenderingDevice, public std::enable_shared_from_this<SDLGPU> {
@@ -40,13 +40,13 @@ namespace swgtk {
     auto BufferClear(const SDL_FColor& color = SDL_FColor{.r = 0.0f, .g = 0.0f, .b = 0.0f, .a = 1.0f}) -> void override;
     auto BufferPresent() -> void override;
 
-    auto PrepareDevice(const std::any& dependency) -> bool override;
+    auto PrepareDevice(SDL_Window* window) -> bool override;
     auto DestroyDevice() -> void override;
     auto IsDeviceInitialized() const -> bool override;
     [[nodiscard]] auto GetRef() -> std::weak_ptr<RenderingDevice> override { return shared_from_this(); }
 
     auto SetBackgroundColor(const SDL_FColor& color) -> void override;
-    auto SetFont(TTF_Font* font) -> void override;
+    auto SetFont(TTF_Font* font) -> void;
     auto SetVSync(VSync value) -> void override;
     [[nodiscard]] auto GetVSync() const -> VSync override;
 

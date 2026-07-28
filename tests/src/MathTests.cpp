@@ -1,16 +1,22 @@
 #include <catch2/catch_test_macros.hpp>
 #include <swgtk/Math.hpp>
 
-// NOLINTBEGIN(readability-magic-numbers, *-avoid-magic-numbers)
+// NOLINTBEGIN(readability-magic-numbers, *-avoid-magic-numbers, *-avoid-do-while, readability-function-cognitive-complexity, misc-use-anonymous-namespace)
 
 // Attempting to convince msvc to test the helper functions at compile-time
 
-static constexpr auto expected1 = swgtk::DegreesToRadians(swgtk::Degrees{90.0f}) == swgtk::Radians{std::numbers::pi_v<float> * 0.5f};
-static constexpr auto expected2 = swgtk::DegreesToRadians(swgtk::Degrees{180.0}) == swgtk::Radians{std::numbers::pi};
-static constexpr auto expected3 = swgtk::RadiansToDegrees(swgtk::Radians{std::numbers::pi_v<float> * 0.25f}) == swgtk::Degrees{45.0f};
-static constexpr auto expected4 = swgtk::RadiansToDegrees(swgtk::Radians{std::numbers::pi * 2.0}) == swgtk::Degrees{360.0};
-static constexpr auto outOfBounds = [] consteval -> bool { return swgtk::DegreesToRadians(swgtk::Degs{540.0} - 45.0) == swgtk::Rads{ std::numbers::pi * 1.75 }; }();
-static constexpr auto outOfBounds1 = [] consteval -> bool { return swgtk::RadiansToDegrees(swgtk::Rads{ std::numbers::pi } + (std::numbers::pi * 30.0)) == swgtk::Degs{ 180.0 }; }();
+namespace {
+  constexpr auto expected1 = swgtk::DegreesToRadians(swgtk::Degrees{90.0f}) == swgtk::Radians{std::numbers::pi_v<float> * 0.5f};
+  constexpr auto expected2 = swgtk::DegreesToRadians(swgtk::Degrees{180.0}) == swgtk::Radians{std::numbers::pi};
+  constexpr auto expected3 = swgtk::RadiansToDegrees(swgtk::Radians{std::numbers::pi_v<float> * 0.25f}) == swgtk::Degrees{45.0f};
+  constexpr auto expected4 = swgtk::RadiansToDegrees(swgtk::Radians{std::numbers::pi * 2.0}) == swgtk::Degrees{360.0};
+  constexpr auto outOfBounds = [] consteval -> bool { return swgtk::DegreesToRadians(swgtk::Degs{540.0} - 45.0) == swgtk::Rads{ std::numbers::pi * 1.75 }; }();
+  constexpr auto outOfBounds1 = [] consteval -> bool { return swgtk::RadiansToDegrees(swgtk::Rads{ std::numbers::pi } + (std::numbers::pi * 30.0)) == swgtk::Degs{ 180.0 }; }();
+}
+
+// Suppress irrelevant wornings that prevent Catch2 macros from compiling.
+#pragma clang diagnostic ignored "-Wc2y-extensions"
+#pragma GCC diagnostic ignored "-Wc2y-extensions"
 
 TEST_CASE("Angle Tests") {
   SECTION("Test type traits") {
@@ -50,4 +56,4 @@ TEST_CASE("Angle Tests") {
     STATIC_REQUIRE(swgtk::Rads{std::numbers::pi / 2} > swgtk::Rads{std::numbers::pi * 0.4});
   }
 }
-// NOLINTEND(readability-magic-numbers, *-avoid-magic-numbers)
+// NOLINTEND(readability-magic-numbers, *-avoid-magic-numbers, *-avoid-do-while, readability-function-cognitive-complexity, misc-use-anonymous-namespace)

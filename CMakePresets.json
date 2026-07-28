@@ -13,6 +13,7 @@
       "cacheVariables": {
         "CMAKE_CXX_SCAN_FOR_MODULES": false,
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_CXX_STANDARD": "23",
         "SWGTK_INSTALL_FREETYPE": true,
         "SWGTK_BUILD_TESTS": true,
         "SWGTK_BUILD_EXAMPLES":true,

@@ -28,6 +28,7 @@
 
 #include <SDL3/SDL_init.h>
 #include <swgtk/Scene.hpp>
+#include <swgtk/Surface.hpp>
 
 extern "C" {
 struct SDL_Window;
@@ -48,6 +49,46 @@ namespace swgtk {
     Camera = SDL_INIT_CAMERA,
   };
 
+  enum class WindowFlags : uint64_t {
+    Fullscreen         =  SDL_UINT64_C(0x0000000000000001),    /**< window is in fullscreen mode */
+    Opengl             =  SDL_UINT64_C(0x0000000000000002),    /**< window usable with OpenGL context */
+    Occluded           =  SDL_UINT64_C(0x0000000000000004),    /**< window is occluded */
+    Hidden             =  SDL_UINT64_C(0x0000000000000008),    /**< window is neither mapped onto the desktop nor shown in the taskbar/dock/window list; SDL_ShowWindow() is required for it to become visible */
+    Borderless         =  SDL_UINT64_C(0x0000000000000010),    /**< no window decoration */
+    Resizable          =  SDL_UINT64_C(0x0000000000000020),    /**< window can be resized */
+    Minimized          =  SDL_UINT64_C(0x0000000000000040),    /**< window is minimized */
+    Maximized          =  SDL_UINT64_C(0x0000000000000080),    /**< window is maximized */
+    MouseGrabbed       =  SDL_UINT64_C(0x0000000000000100),   /**< window has grabbed mouse input */
+    InputFocus         =  SDL_UINT64_C(0x0000000000000200),    /**< window has input focus */
+    MouseFocus         =  SDL_UINT64_C(0x0000000000000400),    /**< window has mouse focus */
+    External           =  SDL_UINT64_C(0x0000000000000800),    /**< window not created by SDL */
+    Modal              =  SDL_UINT64_C(0x0000000000001000),    /**< window is modal */
+    HighPixelDensity   =  SDL_UINT64_C(0x0000000000002000),    /**< window uses high pixel density back buffer if possible */
+    MouseCapture       =  SDL_UINT64_C(0x0000000000004000),    /**< window has mouse captured (unrelated to MOUSE_GRABBED) */
+    MouseRelative_mode =  SDL_UINT64_C(0x0000000000008000),    /**< window has relative mode enabled */
+    AlwaysOnTop        =  SDL_UINT64_C(0x0000000000010000),    /**< window should always be above others */
+    Utility            =  SDL_UINT64_C(0x0000000000020000),    /**< window should be treated as a utility window, not showing in the task bar and window list */
+    Tooltip            =  SDL_UINT64_C(0x0000000000040000),    /**< window should be treated as a tooltip and does not get mouse or keyboard focus, requires a parent window */
+    PopupMenu          =  SDL_UINT64_C(0x0000000000080000),   /**< window should be treated as a popup menu, requires a parent window */
+    KeyboardGrabbed    =  SDL_UINT64_C(0x0000000000100000),    /**< window has grabbed keyboard input */
+    FillDocument       =  SDL_UINT64_C(0x0000000000200000),    /**< window is in fill-document mode (Emscripten only), since SDL 3.4.0 */
+    Vulkan             =  SDL_UINT64_C(0x0000000010000000),    /**< window usable for Vulkan surface */
+    Metal              =  SDL_UINT64_C(0x0000000020000000),    /**< window usable for Metal view */
+    Transparent        =  SDL_UINT64_C(0x0000000040000000),    /**< window with transparent buffer */
+    NotFocusable       =  SDL_UINT64_C(0x0000000080000000),    /**< window should not be focusable */
+  };
+
+  struct WindowConfig {
+    std::string windowTitle;
+    int width{};
+    int height{};
+    int posX = SDL_WINDOWPOS_CENTERED;
+    int posY = SDL_WINDOWPOS_CENTERED;
+    float opacity = 1.0f;
+    Surface icon;
+    WindowFlags flags = WindowFlags::Hidden;
+  };
+
   /**
     @brief This class is the root manager of the SWGTK framework.
 
@@ -57,26 +98,24 @@ namespace swgtk {
   class App {
   public:
     App() = default;
+    App(const std::string& appName, int winWidth, int winHeight, std::shared_ptr<RenderingDevice>&& renderPtr, SystemInit sysFlags = SystemInit::Video);
     App(const App&) = delete;
     App(App&&) noexcept = delete;
     auto operator=(const App&) -> App& = delete;
     auto operator=(App&&) noexcept -> App& = delete;
     ~App();
 
-    /**
-     * @brief Initialize an application that requires a window and a rendering context.
-     *
-     * @param appName The text that appears in the title bar.
-     * @param width Window width
-     * @param height Window height
-     * @param renderPtr A shared pointer to a class inherited from RendererBase
-     * @param flags Specifies which SDL subsystems to initialize
-     *
-     * @return true
-     * @return false
-     */
-    [[nodiscard]] auto InitGraphics(const char* appName, int width, int height,
-                                    std::shared_ptr<RenderingDevice>&& renderPtr, SystemInit flags = SystemInit::Video) -> bool;
+    [[nodiscard]] auto AppName(const std::string& _appName) -> App&; // Real name of your application, can be different from window title.
+    [[nodiscard]] auto WindowTitle(const std::string& title) -> App&; // App window title, can be different from name.
+    [[nodiscard]] auto AppSize(std::pair<int, int> dimensions) -> App&;
+    [[nodiscard]] auto AppPos(std::pair<int, int> position) -> App&;
+    [[nodiscard]] auto AppRenderer(std::shared_ptr<RenderingDevice>&& renderPtr) -> App&;
+    [[nodiscard]] auto SubSystems(SystemInit sysFlags) -> App&;
+    [[nodiscard]] auto AppIcon(const std::string &iconPath) -> App&;
+    [[nodiscard]] auto AppOpacity(float opacity) -> App&;
+    [[nodiscard]] auto Fullscreen() -> App&;
+
+    [[nodiscard]] auto Build() -> bool;
 
     /**
      * @brief Starts up the application's framework. There is no need to call this function yourself
@@ -85,12 +124,12 @@ namespace swgtk {
      * @return true on successful initialization
      * @return false on failure
      */
-    auto InitializeGame() const -> bool;
+    [[nodiscard]] auto InitializeGame() const -> bool;
 
     /**
      * @brief After confirming your app is initialized, call this function to start the main loop.
      *
-     * @tparam T Your application's startup class
+     * @tparam T Your application's startup Scene::Node 
      * @param args Arguments your application needs
      */
     template<std::derived_from<Scene::Node> T>
@@ -100,6 +139,49 @@ namespace swgtk {
       }
     }
 
+    /**
+     * @brief Works like RunGame() except you also pass in a custom Scene class to manage your game.
+     *
+     * @tparam Manager Your application's container class
+     * @tparam Root Your application's startup Scene::Node
+     *
+     * @param argsMan Arguments to your Manager class
+     * @param argsRoot Arguments to your Root Scene::Node
+     */
+    template<
+    std::derived_from<Scene> Manager,
+    std::derived_from<Scene::Node> Root,
+    typename...ArgsMan,
+    typename... ArgsRoot>
+    constexpr void RunGameExt(std::tuple<ArgsMan&&...> argsMan, std::tuple<ArgsRoot&&...> argsRoot) noexcept {
+      if (MakeSceneExt<Manager, Root>(std::forward_as_tuple(argsMan), std::forward_as_tuple(argsRoot))) {
+        Run();
+      }
+    }
+
+    /**
+     * @brief Works like MakeScene() except you also pass in a custom Scene class to manage your game.
+     *
+     * @tparam Manager Your application's container class
+     * @tparam Root Your application's startup Scene::Node
+     *
+     * @param argsMan Arguments to your Manager class
+     * @param argsRoot Arguments to your Root Scene::Node
+     */
+    template<
+    std::derived_from<Scene> Manager,
+    std::derived_from<Scene::Node> Root,
+    typename...ArgsMan,
+    typename... ArgsRoot>
+    constexpr auto MakeSceneExt(std::tuple<ArgsMan&&...> argsMan, std::tuple<ArgsRoot&&...> argsRoot) -> bool {
+      _currentScene = std::make_unique<Manager>(ObjectRef<App>{this}, std::forward<ArgsMan>(argsMan)...);
+      _currentScene->AddRootNode<Root>(std::forward<ArgsRoot>(argsRoot)...);
+      return _currentScene->Create();
+    }
+
+    /**
+     * @brief Create the game scene along with the root Scene::Node You defined in the template arguments.
+     */
     template<std::derived_from<Scene::Node> T>
     constexpr auto MakeScene(auto&&... args) -> bool {
       _currentScene = std::make_unique<Scene>(ObjectRef<App>{this});
@@ -211,6 +293,9 @@ namespace swgtk {
 
     void Run();
 
+    WindowConfig _winConfig{};
+    std::string appName;
+    SystemInit _sysFlags = SystemInit::Video;
     SDL_Window* _window = nullptr;
     std::shared_ptr<RenderingDevice> _renderer;
     std::unique_ptr<Scene> _currentScene;

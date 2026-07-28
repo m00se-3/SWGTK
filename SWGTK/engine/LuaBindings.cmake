@@ -33,6 +33,13 @@ if(SWGTK_CPPCHECK_FOUND)
 
 endif()
 
+# Lua target
+
+add_library(lua STATIC ${lua_sources})
+target_include_directories(lua PUBLIC ${lua_SOURCE_DIR})
+
+# end Lua target
+
 target_sources(
   swgtk_lua
 
@@ -50,7 +57,6 @@ target_sources(
   PRIVATE
 
   ${SWGTK_SOURCE_DIR}/SWGTK/engine/src/Lua.cpp
-  ${lua_SOURCES}
 )
 
 target_link_libraries(
@@ -60,5 +66,6 @@ target_link_libraries(
   SDL3::SDL3
   SDL3_image::SDL3_image
   SDL3_ttf::SDL3_ttf
+  lua
   sol2
 )

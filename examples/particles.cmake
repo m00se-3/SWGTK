@@ -34,6 +34,7 @@ target_link_libraries(
 
   swgtk::SWGTK
   swgtk::SDLHW2D
+  swgtk::Lua
 )
 
 target_sources(

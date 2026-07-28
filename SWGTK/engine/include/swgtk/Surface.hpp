@@ -52,6 +52,8 @@ namespace swgtk {
 
     [[nodiscard]] auto operator*() const -> SDL_Surface* { return _surface.get(); }
 
+    [[nodiscard]] auto Empty() const -> bool { return static_cast<bool>(_surface); }
+
     void Clear(const SDL_FColor& color = SDL_FColor{.r = 0.0f, .g = 0.0f, .b = 0.0f, .a = 1.0f}) const { SDL_ClearSurface(_surface.get(), color.r, color.g, color.b, color.a); }
 
     [[nodiscard]] auto ReadPixel(const int x, const int y) const -> SDL_FColor {

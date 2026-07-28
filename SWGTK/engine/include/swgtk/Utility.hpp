@@ -54,11 +54,13 @@ namespace swgtk {
     public:
       constexpr NonOwning() = default;
       constexpr explicit NonOwning(Ptr* ptr) : _ptr(ptr) {}
-      auto operator->() const -> Ptr* { return _ptr; }
-      auto operator->() -> Ptr* { return _ptr; }
-      explicit operator bool() const { return _ptr != nullptr; }
-      auto operator*() const -> Ptr* { return _ptr; }
-      auto operator*() -> Ptr* { return _ptr; }
+      [[nodiscard]] auto operator->() const -> Ptr* { return _ptr; }
+      [[nodiscard]] auto operator->() -> Ptr* { return _ptr; }
+      [[nodiscard]] explicit operator bool() const { return _ptr != nullptr; }
+      [[nodiscard]] auto operator*() const -> Ptr* { return _ptr; }
+      [[nodiscard]] auto operator*() -> Ptr* { return _ptr; }
+      [[nodiscard]] explicit operator Ptr*() const { return _ptr; }
+      [[nodiscard]] explicit operator Ptr*() { return _ptr; }
 
     private:
       Ptr* _ptr = nullptr;

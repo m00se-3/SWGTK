@@ -25,13 +25,16 @@ namespace swgtk {
   /**
     @brief Describes the game simulation.
 
-    This intermediary class may be a needless middle man right now. However, I am looking into incorporating
-    trees of swgtk::Scene::Nodes as part of the library for complex applications.
+    By default, this class acts as a gateway into the Scene::Node that your application logic is in.
+    However, users have the option of inheriting from this class if they require more control over
+    their application's global state.
+
+    Note: This class has no functions to override.
 
     Users should inject their code into the engine by inheriting from swgtk::Scene::Node.
   */
   class Scene {
-  public:
+    public:
     /**
       @brief This class helps SWGTK manage the lifetime of your code. The lifetime of a Node has a similar design
       to the Scene class.
@@ -48,7 +51,7 @@ namespace swgtk {
         using non-RAII structures for your allocated resources. (This is not recommended!)
      */
     class Node {
-    public:
+      public:
       Node(const Node&) = default;
       Node(Node&&) noexcept = default;
       auto operator=(const Node&) -> Node& = default;
@@ -65,17 +68,28 @@ namespace swgtk {
       [[nodiscard]] virtual constexpr auto Update(float dt) -> bool = 0;
       virtual constexpr void Destroy() {}
 
-      [[nodiscard]] constexpr auto GetScene() const -> ObjectRef<Scene> { return _scene; }
+      // Get the Scene object managing the game.
+      [[nodiscard]] auto GetScene() const -> ObjectRef<Scene> { return _scene; }
 
+      /// Get the parent of the current node.
+      /// Returns a std::weak_ptr to the parent if it exists. Returns an empty std::weak_ptr if it doesn't.(i.e. root node)
       template<std::derived_from<Node> T>
-      [[nodiscard]] constexpr auto GetParent() const -> std::weak_ptr<T> { return std::static_pointer_cast<T>(_parent.lock()); }
+      [[nodiscard]] auto GetParent() const -> std::weak_ptr<T> { return std::static_pointer_cast<T>(_parent.lock()); }
+      
+      template<std::derived_from<Node> T, typename... Args>
+      [[nodiscard]] auto CreateChild(Args&&... args) -> std::shared_ptr<T> { return std::make_shared<T>(std::forward<Args>(args)...); }
 
-    protected:
+      protected:
       ObjectRef<Scene> _scene;
       std::weak_ptr<Node> _parent;
     };
 
+    Scene(const Scene&) = delete;
+    Scene(Scene&&) = delete;
+    auto operator=(const Scene&) -> Scene& = delete;
+    auto operator=(Scene&&) -> Scene& = delete;
     explicit Scene(const ObjectRef<App>& parent);
+    virtual ~Scene() = default;
 
     template<std::derived_from<Node> T>
     void AddRootNode(auto&&... args) {
@@ -94,7 +108,7 @@ namespace swgtk {
     template<std::derived_from<RenderingDevice> T>
     [[nodiscard]] constexpr auto AppRenderer() const { return RenderImpl<T>(_renderer); }
 
-  private:
+    private:
     ObjectRef<App> _parent;
     std::shared_ptr<RenderingDevice> _renderer;
     std::shared_ptr<Node> _root;

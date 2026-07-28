@@ -1,4 +1,4 @@
-# SWGTK (SoftWare & Games ToolKit)
+# SWGTK (SoftWare & Games Tool Kit)
 
 SWGTK is a toolkit for creating games and applications. It comes with built-in Lua bindings.
 SWGTK is written in C++ 23, is relatively unopinionated, and is a great starting place for creating larger engines.
@@ -8,17 +8,17 @@ Having SDL3 at the backend, SWGTK should be portable to anything that SDL3 can s
 
 ## Design
 
-SWGTK is designed to be flexible, able to fully cooperate with the user's vision. Its focus is, primarily, on getting a 
-window on the screen and hooking up the user with an easy-to-use rendering pipeling. The rendering system itself is very 
+SWGTK is designed to be flexible, able to fully cooperate with the user's vision. Its focus is, primarily, on getting a
+window on the screen and hooking up the user with an easy-to-use rendering pipeline. The rendering system itself is very
 extensible. Our plans are to eventually have a rendering pipeline for every backend SDL3 supports, which should cover the vast majority of use cases.
 
-A rendering backend is selected by the user and is injected into the application during initialization. The class hierarchy 
+A rendering backend is selected by the user and is injected into the application during initialization. The class hierarchy
 is intended not only as a means to support more renderers, but also allows users to customize existing ones to fit their exact needs.
 
-**Note:** SWGTK, at this time, does *not* come with any audio features. I plan to include an example program for 
+**Note:** SWGTK, at this time, does *not* come with any audio features. I plan to include an example program for
 integrating a 3rd party library into your code.
 
-This library is built with a strict set of compiler options and analyzer warnings. Warnings
+This library is built with a strict set of compiler and analyzer warnings. Warnings
 are treated as errors. This project takes safe software and best practices very seriously.
 
 Example programs can be found in the 'examples' folder.
@@ -39,7 +39,7 @@ releases:
 - [ ] Input from gamepads.
 - [ ] Input from joysticks.
 - [x] External Lua scripts for C++ programs.
-- [x] Dedicated 2D Lua runner. ([SWL](https://github.com/m00se-3/SWL))
+- [x] Dedicated 2D Lua runner. ([SWL](https://github.com/m00se-3/SWL)) - Outdated
 - [x] Hardware accelerated 2D rendering system.
 - [ ] 2D software rendering system.
 - [ ] 3D capable GPU rendering pipelines.
@@ -52,18 +52,23 @@ releases:
   - LLVM 19 or newer
   - GCC 14 or newer
   - Visual Studio 2022 or newer
-- 3rd Party Libraries
-  - [SDL3](https://github.com/libsdl-org/SDL)
-  - SDL3_image
-  - SDL3_ttf
-  - [sol3](https://github.com/ThePhD/sol2) - For the Lua bindings.
-  - Lua
-- Development Tools
+- Required Tools
   - CMake
+- Helpful options
   - [CPM](https://github.com/cpm-cmake/CPM.cmake) - A package manager that works directly in CMake.
   - clang-tidy
-  - cppcheck [Optional]
-  - ccache [Optional]
+  - cppcheck
+  - ccache
+
+This framework depends on the following libraries. These dependencies are fetched
+and cached by default.
+
+- [SDL3](https://github.com/libsdl-org/SDL)
+- SDL3_image
+- SDL3_ttf
+- freetype
+- [sol3](https://github.com/ThePhD/sol2) - For the Lua bindings.
+- Lua
 
 ### Getting started with CMake
 
@@ -71,7 +76,7 @@ SWGTK requires CMake 3.28 or newer. Here is an example of adding it to your proj
 It should go without saying, then, that you can easily add SWGTK using CMake's FetchContent API:
 
 ```cmake
-CPMAddPackage("gh:m00se-3/SWGTK@0.2.0")
+CPMAddPackage("gh:m00se-3/SWGTK#main")
 
 # This is the easiest way to make sure all the shared library dependencies are where they need to be.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
@@ -83,7 +88,7 @@ target_link_libraries([your_project] PRIVATE swgtk swgtk::SDLHW2D)
 In addition, the following options can be added depending on your needs:
 
 - SWGTK_BUILD_EXAMPLES: Include the example programs. (Default: OFF)
-- SWGTK_NO_CCACHE: Disable ccache support. (Default: OFF)
+- SWGTK_NO_CCACHE: Disable ccache support. (Default: OFF. ccache is enabled.)
 - SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: ON)
 - SWGTK_LUA_BINDINGS: Enable Lua scripting support via sol3. (Default: OFF)
 - SWGTK_BUILD_TESTS: Build the unit test suite. (Default: OFF)
@@ -96,7 +101,7 @@ After this you can create your application using something like this:
 #include <swgtk/Scene.hpp>
 #include <swgtk/SDLHW2D.hpp>
 
-class MyAppClass : public swgtk::Scene::Node{
+class MyAppClass final : public swgtk::Scene::Node{
    public:
    explicit MyAppClass(const swgtk::ObjectRef<swgtk::Scene>& scene) :
             swgtk::Scene::Node(scene) {}
@@ -108,7 +113,7 @@ auto main([[maybe_unused]]int argc, [[maybe_unused]]const char** argv) -> int {
    constexpr auto windowWidth = 800;
    constexpr auto windowHeight = 600;
 
-   if(swgtk::App app; app.InitGraphics("App Title.", windowWidth, windowHeight, swgtk::SDLHW2D::Create())) {
+   if(swgtk::App app{ "App Title.", windowWidth, windowHeight, swgtk::SDLHW2D::Create() }; app.Build()) {
        app.RunGame<MyAppClass>();
    }
 }

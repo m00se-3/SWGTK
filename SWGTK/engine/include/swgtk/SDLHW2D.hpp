@@ -113,32 +113,32 @@ namespace swgtk {
     */
 
     [[nodiscard]] auto LoadPlainText(TTF_Font* font,
-                                     std::string_view text, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                     std::string_view text, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     [[nodiscard]] auto LoadBlendedText(TTF_Font* font,
-                                       std::string_view text, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                       std::string_view text, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     [[nodiscard]] auto LoadShadedText(TTF_Font* font,
                                       std::string_view text,
-                                      const SDL_Color& bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, const SDL_Color& fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                      const SDL_Color& bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, const SDL_Color& fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     [[nodiscard]] auto LoadLCDText(TTF_Font* font,
                                    std::string_view text,
-                                   const SDL_Color& bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, const SDL_Color& fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                   const SDL_Color& bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, const SDL_Color& fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     [[nodiscard]] auto LoadPlainWrapText(TTF_Font* font, std::string_view text,
-                                         int wrapLen = 0, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                         int wrapLen = 0, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     [[nodiscard]] auto LoadBlendedWrapText(TTF_Font* font, std::string_view text,
-                                           int wrapLen = 0, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                           int wrapLen = 0, const SDL_Color& color = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     [[nodiscard]] auto LoadShadedWrapText(TTF_Font* font, std::string_view text,
                                           int wrapLen = 0,
-                                          SDL_Color bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, SDL_Color fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                          SDL_Color bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, SDL_Color fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     [[nodiscard]] auto LoadLCDWrapText(TTF_Font* font, std::string_view text,
                                        int wrapLen = 0,
-                                       SDL_Color bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, SDL_Color fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture;
+                                       SDL_Color bg = SDL_Color{.r = 0u, .g = 0u, .b = 0u, .a = defaultAlphaInt}, SDL_Color fg = SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt}) const -> Texture2D;
 
     /**
      * @brief Used to draw arbitrary shapes with raw vertex information. Great for making draw calls from
@@ -166,7 +166,8 @@ namespace swgtk {
 
     auto SetDrawTarget(Texture2D texture) const -> bool { return SDL_SetRenderTarget(_render, *texture); }
 
-    [[nodiscard]] static auto Create() noexcept { return std::make_shared<SDLHW2D>(); }
+    template <typename... Args>
+    [[nodiscard]] static auto Create(Args&&... args) noexcept { return std::make_shared<SDLHW2D>(std::forward<Args>(args)...); }
 
 #ifdef SWGTK_BUILD_WITH_LUA
     void InitLua(sol::state* lua_) override;

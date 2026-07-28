@@ -66,14 +66,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv) -> int 
   constexpr auto w = 800;
   constexpr auto h = 600;
 
-  /*
-    This try block is to temporarily satisfy a clang-tidy warning that says 'main' could possibly throw
-    an exception.
-
-    I'm pretty sure this is caused by std::filesystem, so I will need to redesign my file handling
-    soon.
-  */
-  if (swgtk::App app; app.InitGraphics("Text Test", w, h, swgtk::SDLHW2D::Create())) {
+  if (swgtk::App app("Text Test", w, h, swgtk::SDLHW2D::Create()); app.Build()) {
     app.RunGame<swgtk::TextTest>();
   }
 }

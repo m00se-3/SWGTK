@@ -53,7 +53,7 @@ namespace swgtk {
     auto Update(float dt) -> bool override;
 
     private:
-    SDL_FRect _camera{};
+    [[maybe_unused]] SDL_FRect _camera{};
     Font _normalFont{assets::GetAssetFile(assets::normalFont)};
     Font _boldFont{assets::GetAssetFile(assets::boldFont)};
     ObjectRef<App> _app;

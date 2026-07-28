@@ -17,34 +17,90 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_video.h>
+#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 
 namespace swgtk {
   App::~App() {
     _currentScene.reset();
-
-    if ((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == SDL_INIT_VIDEO) {
-      _renderer.reset();
-      SDL_DestroyWindow(_window);
-    }
+    _renderer.reset();
+    SDL_DestroyWindow(_window);
 
     TTF_Quit();
     SDL_Quit();
   }
 
-  auto App::InitGraphics(const char* appName, const int width, const int height, std::shared_ptr<RenderingDevice>&& renderPtr, const SystemInit flags) -> bool {
+  App::App(const std::string& appName, const int winWidth, const int winHeight, std::shared_ptr<RenderingDevice>&& renderPtr, const SystemInit sysFlags) 
+  : _winConfig{.windowTitle = appName, .width = winWidth, .height = winHeight, .icon{}}, _sysFlags(sysFlags), _renderer(std::move(renderPtr)) {}
 
-    if (SDL_Init(std::to_underlying(flags)) && TTF_Init()) {
+  auto App::AppName(const std::string& _appName) -> App& {
+    appName = _appName;
+    return *this;
+  }
+
+  auto App::WindowTitle(const std::string& title) -> App& {
+    _winConfig.windowTitle = title;
+    return *this;
+  }
+
+  auto App::AppSize(std::pair<int, int> dimensions) -> App& {
+    _winConfig.width = dimensions.first;
+    _winConfig.height = dimensions.second;
+    return *this;
+  }
+
+  auto App::AppPos(std::pair<int, int> position) -> App& {
+    _winConfig.posX = position.first;
+    _winConfig.posY = position.second;
+    return *this;
+  }
+
+  auto App::SubSystems(const SystemInit sysFlags) -> App& {
+    _sysFlags = sysFlags;
+    return *this;
+  }
+
+  auto App::AppRenderer(std::shared_ptr<RenderingDevice>&& renderPtr) -> App& {
+    _renderer = std::move(renderPtr);
+    return *this;
+  }
+
+  auto App::AppOpacity(const float opacity) -> App& {
+    _winConfig.opacity = opacity;
+    return *this;
+  }
+
+  auto App::AppIcon(const std::string& iconPath) -> App& {
+    _winConfig.icon = Surface{IMG_Load(iconPath.c_str())};
+    return *this;
+  }
+
+  auto App::Fullscreen() -> App& {
+    _winConfig.flags = _winConfig.flags | WindowFlags::Fullscreen;
+    return *this;
+  }
+
+  auto App::Build() -> bool {
+    SDL_SetAppMetadata(appName.c_str(), nullptr, nullptr);
+    if (SDL_Init(std::to_underlying(_sysFlags)) && TTF_Init()) {
 
       // false positive
       // cppcheck-suppress syntaxError
-      if (_window = SDL_CreateWindow(appName, width, height, SDL_WINDOW_HIDDEN); _window != nullptr) {
-        SDL_SetWindowPosition(_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-        _renderer = std::move(renderPtr);
+      if (_window = SDL_CreateWindow(_winConfig.windowTitle.c_str(), _winConfig.width, _winConfig.height, std::to_underlying(_winConfig.flags)); _window != nullptr) {
+        SDL_SetWindowPosition(_window, _winConfig.posX, _winConfig.posY);
+
+        if (_winConfig.opacity != 1.0f) {
+          SDL_SetWindowOpacity(_window, _winConfig.opacity);
+        }
+        if (!_winConfig.icon.Empty()) {
+          SDL_SetWindowIcon(_window, *_winConfig.icon);
+        }
+
         return InitializeGame();
       }
     }
