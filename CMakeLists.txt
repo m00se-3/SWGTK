@@ -110,7 +110,7 @@ endif()
 CPMAddPackage(
   NAME "SDL"
   GITHUB_REPOSITORY "libsdl-org/SDL"
-  GIT_TAG "release-3.4.8"
+  GIT_TAG "release-3.4.12"
   GIT_SHALLOW true
   GIT_PROGRESS true
   EXCLUDE_FROM_ALL

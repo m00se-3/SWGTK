@@ -20,7 +20,7 @@ namespace swgtk {
     constexpr auto colorDefault = 255u;
 
     _app = _scene->GetApp();
-    _render = _scene->AppRenderer<SDLHW2D>();
+    _render = _scene->AppRenderer<Basic2D>();
     _font.SetStyle(FontStyle::Underlined);
 
     _mouse.texture = _render->LoadPlainWrapText(*_font, "Hello\nWorld!", 0, SDL_Color{.r = colorDefault, .g = 0u, .b = 0u, .a = colorDefault});
@@ -66,7 +66,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv) -> int 
   constexpr auto w = 800;
   constexpr auto h = 600;
 
-  if (swgtk::App app("Text Test", w, h, swgtk::SDLHW2D::Create()); app.Build()) {
+  if (swgtk::App app("Text Test", w, h, swgtk::Basic2D::Create()); app.Build()) {
     app.RunGame<swgtk::TextTest>();
   }
 }

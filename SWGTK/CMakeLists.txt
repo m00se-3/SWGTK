@@ -1,4 +1,4 @@
-﻿include(${CMAKE_CURRENT_LIST_DIR}/engine/SDL2DRenderer.cmake)
+﻿include(${CMAKE_CURRENT_LIST_DIR}/engine/Basic2DRenderer.cmake)
 
 add_library(swgtk STATIC)
 add_library(swgtk::SWGTK ALIAS swgtk)
@@ -82,6 +82,7 @@ target_sources(
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Utility.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Math.hpp
   ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Timer.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/engine/include/swgtk/Props.hpp
 
   PRIVATE
 

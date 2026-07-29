@@ -32,7 +32,7 @@
 #endif
 
 namespace swgtk {
-  auto SDLHW2D::PrepareDevice(SDL_Window* window_ptr) -> bool {
+  auto Basic2D::PrepareDevice(SDL_Window* window_ptr) -> bool {
     if (window_ptr != nullptr) {
       _render = SDL_CreateRenderer(window_ptr, nullptr);
       return IsDeviceInitialized();
@@ -41,11 +41,11 @@ namespace swgtk {
     return false;
   }
 
-  void SDLHW2D::DestroyDevice() {
+  void Basic2D::DestroyDevice() {
     SDL_DestroyRenderer(_render);
   }
 
-  void SDLHW2D::BufferClear(const SDL_FColor& color) {
+  void Basic2D::BufferClear(const SDL_FColor& color) {
     const auto tmpColor = GetDrawColor();
 
     SetDrawColor(color);
@@ -53,12 +53,12 @@ namespace swgtk {
     SetDrawColor(tmpColor);
   }
 
-  void SDLHW2D::BufferPresent() {
+  void Basic2D::BufferPresent() {
     SDL_SetRenderTarget(_render, nullptr);
     SDL_RenderPresent(_render);
   }
 
-  auto SDLHW2D::LoadTextureImg(const std::filesystem::path& img, const SDL_BlendMode blendMode) const -> Texture2D {
+  auto Basic2D::LoadTextureImg(const std::filesystem::path& img, const SDL_BlendMode blendMode) const -> Texture2D {
     if (std::filesystem::exists(img)) {
       const auto imgStr = img.string();
 
@@ -73,7 +73,7 @@ namespace swgtk {
     return Texture2D{};
   }
 
-  auto SDLHW2D::CreateRenderableTexture(int width, int height, const SDL_PixelFormat format, const SDL_BlendMode blendMode) const -> Texture2D {
+  auto Basic2D::CreateRenderableTexture(int width, int height, const SDL_PixelFormat format, const SDL_BlendMode blendMode) const -> Texture2D {
     if (width < 1 || height < 1) {
       DEBUG_PRINT2("Invalid texture dimensions: {}, {}\n", width, height)
       return Texture2D{};
@@ -88,7 +88,7 @@ namespace swgtk {
     return Texture2D{};
   }
 
-  auto SDLHW2D::CreateTextureFromSurface(const Surface& surface) const -> Texture2D {
+  auto Basic2D::CreateTextureFromSurface(const Surface& surface) const -> Texture2D {
     if (auto* texture = SDL_CreateTextureFromSurface(_render, *surface)) {
       return Texture2D{texture};
     }
@@ -97,14 +97,14 @@ namespace swgtk {
     return Texture2D{};
   }
 
-  void SDLHW2D::DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest) const {
+  void Basic2D::DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src, const std::optional<SDL_FRect>& dest) const {
     const auto* source = src ? &src.value() : nullptr;
     const auto* destination = dest ? &dest.value() : nullptr;
 
     SDL_RenderTexture(_render, *texture, source, destination);
   }
 
-  auto SDLHW2D::DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src,
+  auto Basic2D::DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src,
                             const std::optional<SDL_FRect>& dest, const double angle,
                             const std::optional<SDL_FPoint>& center, const SDL_FlipMode flip) const -> void {
     const auto* source = src ? &src.value() : nullptr;
@@ -114,7 +114,7 @@ namespace swgtk {
     SDL_RenderTextureRotated(_render, *texture, source, destination, angle, cen, flip);
   }
 
-  void SDLHW2D::DrawPlainText(TTF_Font* font, const std::string_view text, const SDL_FRect& pos, const SDL_Color& color) const {
+  void Basic2D::DrawPlainText(TTF_Font* font, const std::string_view text, const SDL_FRect& pos, const SDL_Color& color) const {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     if (auto* ttf = TTF_RenderText_Solid(font, text.data(), text.size(), color); ttf != nullptr) {
@@ -126,7 +126,7 @@ namespace swgtk {
     }
   }
 
-  void SDLHW2D::DrawPlainWrapText(TTF_Font* font, const std::string_view text, const SDL_FRect& pos, const int wrapLen, const SDL_Color& color) const {
+  void Basic2D::DrawPlainWrapText(TTF_Font* font, const std::string_view text, const SDL_FRect& pos, const int wrapLen, const SDL_Color& color) const {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     if (auto* ttf = TTF_RenderText_Solid_Wrapped(font, text.data(), text.size(), color, wrapLen); ttf != nullptr) {
@@ -138,7 +138,7 @@ namespace swgtk {
     }
   }
 
-  auto SDLHW2D::LoadPlainText(TTF_Font* font, const std::string_view text, const SDL_Color& color) const -> Texture2D {
+  auto Basic2D::LoadPlainText(TTF_Font* font, const std::string_view text, const SDL_Color& color) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_Solid(font, text.data(), text.size(), color);
@@ -148,7 +148,7 @@ namespace swgtk {
     return Texture2D{texture};
   }
 
-  auto SDLHW2D::LoadBlendedText(TTF_Font* font, const std::string_view text, const SDL_Color& color) const -> Texture2D {
+  auto Basic2D::LoadBlendedText(TTF_Font* font, const std::string_view text, const SDL_Color& color) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_Blended(font, text.data(), text.size(), color);
@@ -158,7 +158,7 @@ namespace swgtk {
     return Texture2D{texture};
   }
 
-  auto SDLHW2D::LoadShadedText(TTF_Font* font, const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture2D {
+  auto Basic2D::LoadShadedText(TTF_Font* font, const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_Shaded(font, text.data(), text.size(), fg, bg);
@@ -168,7 +168,7 @@ namespace swgtk {
     return Texture2D{texture};
   }
 
-  auto SDLHW2D::LoadLCDText(TTF_Font* font, const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture2D {
+  auto Basic2D::LoadLCDText(TTF_Font* font, const std::string_view text, const SDL_Color& bg, const SDL_Color& fg) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_LCD(font, text.data(), text.size(), fg, bg);
@@ -178,7 +178,7 @@ namespace swgtk {
     return Texture2D{texture};
   }
 
-  auto SDLHW2D::LoadPlainWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture2D {
+  auto Basic2D::LoadPlainWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_Solid_Wrapped(font, text.data(), text.size(), color, wrapLen);
@@ -188,7 +188,7 @@ namespace swgtk {
     return Texture2D{texture};
   }
 
-  auto SDLHW2D::LoadBlendedWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture2D {
+  auto Basic2D::LoadBlendedWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color& color) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_Blended_Wrapped(font, text.data(), text.size(), color, wrapLen);
@@ -198,7 +198,7 @@ namespace swgtk {
     return Texture2D{texture};
   }
 
-  auto SDLHW2D::LoadShadedWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture2D {
+  auto Basic2D::LoadShadedWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_Shaded_Wrapped(font, text.data(), text.size(), fg, bg, wrapLen);
@@ -208,7 +208,7 @@ namespace swgtk {
     return Texture2D{texture};
   }
 
-  auto SDLHW2D::LoadLCDWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture2D {
+  auto Basic2D::LoadLCDWrapText(TTF_Font* font, const std::string_view text, const int wrapLen, const SDL_Color bg, const SDL_Color fg) const -> Texture2D {
     SDL_assert_release(font != nullptr); //NOLINT(*-avoid-do-while, *-else-after-return)
 
     auto* surf = TTF_RenderText_LCD_Wrapped(font, text.data(), text.size(), fg, bg, wrapLen);
@@ -219,7 +219,7 @@ namespace swgtk {
   }
 
 #ifdef SWGTK_BUILD_WITH_LUA
-  void SDLHW2D::InitLua(sol::state* lua_) {
+  void Basic2D::InitLua(sol::state* lua_) {
 
     auto& lua = *lua_;
     auto SWGTK = lua["swgtk"];
@@ -296,15 +296,15 @@ namespace swgtk {
 
     SWGTK["Texture2D"]["GetSize"] = &Texture2D::GetSize;
 
-    auto Simple2DRenderer_Type = lua.new_usertype<SDLHW2D>("RenderingContext", sol::no_constructor);
+    auto Simple2DRenderer_Type = lua.new_usertype<Basic2D>("RenderingContext", sol::no_constructor);
     SWGTK["Render"] = shared_from_this();
 
 
-    Simple2DRenderer_Type["BufferClear"] = &SDLHW2D::BufferClear;
+    Simple2DRenderer_Type["BufferClear"] = &Basic2D::BufferClear;
 
-    Simple2DRenderer_Type["BufferPresent"] = &SDLHW2D::BufferPresent;
+    Simple2DRenderer_Type["BufferPresent"] = &Basic2D::BufferPresent;
 
-    Simple2DRenderer_Type["SetDrawColor"] = [](const std::shared_ptr<SDLHW2D>& context, const sol::optional<float> r, const sol::optional<float> g,
+    Simple2DRenderer_Type["SetDrawColor"] = [](const std::shared_ptr<Basic2D>& context, const sol::optional<float> r, const sol::optional<float> g,
                                                const sol::optional<float> b, const sol::optional<float> a) -> void {
       context->SetDrawColor(
           r.value_or(defaultAlphaFloat),
@@ -313,16 +313,16 @@ namespace swgtk {
           a.value_or(defaultAlphaFloat));
     };
 
-    Simple2DRenderer_Type["SetDrawTarget"] = &SDLHW2D::SetDrawTarget;
+    Simple2DRenderer_Type["SetDrawTarget"] = &Basic2D::SetDrawTarget;
 
-    Simple2DRenderer_Type["DrawTexture"] = [](const std::shared_ptr<SDLHW2D>& context, const Texture2D& tex, const sol::optional<SDL_FRect>& src,
+    Simple2DRenderer_Type["DrawTexture"] = [](const std::shared_ptr<Basic2D>& context, const Texture2D& tex, const sol::optional<SDL_FRect>& src,
                                               const sol::optional<SDL_FRect>& dest) -> void {
       context->DrawTexture(tex,
                            (src) ? std::optional<SDL_FRect>{std::in_place_t{}, *src} : std::nullopt,
                            (dest) ? std::optional<SDL_FRect>{std::in_place_t{}, *dest} : std::nullopt);
     };
 
-    Simple2DRenderer_Type["DrawTextureRotated"] = [](const std::shared_ptr<SDLHW2D>& context, const Texture2D& tex, const sol::optional<SDL_FRect>& src, const sol::optional<SDL_FRect>& dest,
+    Simple2DRenderer_Type["DrawTextureRotated"] = [](const std::shared_ptr<Basic2D>& context, const Texture2D& tex, const sol::optional<SDL_FRect>& src, const sol::optional<SDL_FRect>& dest,
                                                      const sol::optional<double> angle, sol::optional<SDL_FPoint> center,
                                                      const sol::optional<SDL_FlipMode> flip) -> void {
       context->DrawTexture(tex,
@@ -335,39 +335,39 @@ namespace swgtk {
 
     // NOLINTEND(*-easily-swappable-parameters)
 
-    Simple2DRenderer_Type["SetVSync"] = &SDLHW2D::SetVSync;
+    Simple2DRenderer_Type["SetVSync"] = &Basic2D::SetVSync;
 
-    Simple2DRenderer_Type["GetVSync"] = &SDLHW2D::GetVSync;
+    Simple2DRenderer_Type["GetVSync"] = &Basic2D::GetVSync;
 
-    Simple2DRenderer_Type["LoadTextureImg"] = &SDLHW2D::LoadTextureImg;
+    Simple2DRenderer_Type["LoadTextureImg"] = &Basic2D::LoadTextureImg;
 
-    Simple2DRenderer_Type["CreateRenderableTexture"] = &SDLHW2D::CreateRenderableTexture;
+    Simple2DRenderer_Type["CreateRenderableTexture"] = &Basic2D::CreateRenderableTexture;
 
-    Simple2DRenderer_Type["CreateTextureFromSurface"] = &SDLHW2D::CreateTextureFromSurface;
+    Simple2DRenderer_Type["CreateTextureFromSurface"] = &Basic2D::CreateTextureFromSurface;
 
-    Simple2DRenderer_Type["GetDrawColor"] = &SDLHW2D::GetDrawColor;
+    Simple2DRenderer_Type["GetDrawColor"] = &Basic2D::GetDrawColor;
 
-    Simple2DRenderer_Type["DrawGeometry"] = &SDLHW2D::DrawGeometry;
+    Simple2DRenderer_Type["DrawGeometry"] = &Basic2D::DrawGeometry;
 
-    Simple2DRenderer_Type["DrawPlainText"] = &SDLHW2D::DrawPlainText;
+    Simple2DRenderer_Type["DrawPlainText"] = &Basic2D::DrawPlainText;
 
-    Simple2DRenderer_Type["DrawPlainWrapText"] = &SDLHW2D::DrawPlainWrapText;
+    Simple2DRenderer_Type["DrawPlainWrapText"] = &Basic2D::DrawPlainWrapText;
 
-    Simple2DRenderer_Type["LoadPlainText"] = &SDLHW2D::LoadPlainText;
+    Simple2DRenderer_Type["LoadPlainText"] = &Basic2D::LoadPlainText;
 
-    Simple2DRenderer_Type["LoadBlendedText"] = &SDLHW2D::LoadBlendedText;
+    Simple2DRenderer_Type["LoadBlendedText"] = &Basic2D::LoadBlendedText;
 
-    Simple2DRenderer_Type["LoadShadedText"] = &SDLHW2D::LoadShadedText;
+    Simple2DRenderer_Type["LoadShadedText"] = &Basic2D::LoadShadedText;
 
-    Simple2DRenderer_Type["LoadLCDText"] = &SDLHW2D::LoadLCDText;
+    Simple2DRenderer_Type["LoadLCDText"] = &Basic2D::LoadLCDText;
 
-    Simple2DRenderer_Type["LoadPlainWrapText"] = &SDLHW2D::LoadPlainWrapText;
+    Simple2DRenderer_Type["LoadPlainWrapText"] = &Basic2D::LoadPlainWrapText;
 
-    Simple2DRenderer_Type["LoadBlendedWrapText"] = &SDLHW2D::LoadBlendedWrapText;
+    Simple2DRenderer_Type["LoadBlendedWrapText"] = &Basic2D::LoadBlendedWrapText;
 
-    Simple2DRenderer_Type["LoadShadedWrapText"] = &SDLHW2D::LoadShadedWrapText;
+    Simple2DRenderer_Type["LoadShadedWrapText"] = &Basic2D::LoadShadedWrapText;
 
-    Simple2DRenderer_Type["LoadLCDWrapText"] = &SDLHW2D::LoadLCDWrapText;
+    Simple2DRenderer_Type["LoadLCDWrapText"] = &Basic2D::LoadLCDWrapText;
   }
 
 #endif // SWGTK_BUILD_WITH_LUA

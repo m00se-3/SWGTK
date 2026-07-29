@@ -33,12 +33,12 @@ target_sources(
 
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Texture.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Surface.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/SDLHW2D.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Basic2D.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/RenderingDevice.hpp
 
   PRIVATE
 
-  ${CMAKE_CURRENT_LIST_DIR}/src/SDLHW2D.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/Basic2D.cpp
 )
 
 target_link_libraries(

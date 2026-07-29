@@ -39,7 +39,7 @@ namespace swgtk {
     Texture2D _background;
     Font _font;
     ObjectRef<App> _app;
-    ObjectRef<SDLHW2D> _render;
+    ObjectRef<Basic2D> _render;
   };
 
 } // namespace swgtk

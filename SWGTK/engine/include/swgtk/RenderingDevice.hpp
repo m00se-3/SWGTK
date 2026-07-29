@@ -21,6 +21,7 @@
 extern "C" {
 struct TTF_Font;
 struct SDL_Window;
+struct SDL_GPUDevice;
 }
 #ifdef SWGTK_BUILD_WITH_LUA
 namespace sol {

@@ -1,10 +1,10 @@
-add_library(sdlgpu STATIC)
-target_compile_options(sdlgpu PRIVATE ${CompilerFlags})
+add_library(gpu2d STATIC)
+target_compile_options(gpu2d PRIVATE ${CompilerFlags})
 
-target_link_options(sdlgpu PRIVATE ${LinkerFlags})
+target_link_options(gpu2d PRIVATE ${LinkerFlags})
 
 target_compile_definitions(
-  sdlgpu
+  gpu2d
 
   PUBLIC
 
@@ -14,19 +14,19 @@ target_compile_definitions(
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  target_compile_definitions(sdlgpu PRIVATE _DEBUG)
+  target_compile_definitions(gpu2d PRIVATE _DEBUG)
 endif()
 
 if(CLANG_TIDY_PROGRAM)
-  set_target_properties(sdlgpu PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
+  set_target_properties(gpu2d PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_PROGRAM})
 endif()
 
 if(CPPCHECK_PROGRAM)
-  set_target_properties(sdlgpu PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
+  set_target_properties(gpu2d PROPERTIES CXX_CPPCHECK "${CPPCHECK_PROGRAM};--suppress=unknownMacro")
 endif()
 
 target_sources(
-  sdlgpu
+  gpu2d
 
   PUBLIC
 
@@ -43,16 +43,16 @@ target_sources(
 
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Texture.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/Surface.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/SDLGPU.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/GPU2D.hpp
   ${CMAKE_CURRENT_LIST_DIR}/include/swgtk/RenderingDevice.hpp
 
   PRIVATE
 
-  ${CMAKE_CURRENT_LIST_DIR}/src/SDLGPU.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/GPU2D.cpp
 )
 
 target_link_libraries(
-  sdlgpu
+  gpu2d
 
   PUBLIC
 
@@ -61,11 +61,11 @@ target_link_libraries(
   SDL3_ttf::SDL3_ttf
 )
 
-add_library(swgtk::SDLGPU ALIAS sdlgpu)
+add_library(swgtk::GPU2D ALIAS gpu2d)
 
 if(${SWGTK_LUA_BINDINGS} MATCHES ON)
   target_link_libraries(
-    sdlgpu
+    gpu2d
 
     PUBLIC
     swgtk_lua

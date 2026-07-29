@@ -122,7 +122,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv) -> int 
   constexpr auto windowWidth = 800;
   constexpr auto windowHeight = 600;
 
-  if (auto app = swgtk::App{ "Particle Test.", windowWidth, windowHeight, swgtk::SDLHW2D::Create() }; app.Build()) {
+  if (auto app = swgtk::App{ "Particle Test.", windowWidth, windowHeight, swgtk::Basic2D::Create() }; app.Build()) {
     app.RunGame<swgtk::ParticlesTest>();
   }
 }

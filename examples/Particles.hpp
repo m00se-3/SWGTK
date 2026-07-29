@@ -43,7 +43,7 @@ namespace swgtk {
     explicit ParticlesTest(const ObjectRef<Scene> &scene) :
         Node(scene), _particles(std::vector<Particle>(particleCount)),
         _gen(_rd()), _app(scene->GetApp()),
-        _render(scene->AppRenderer<SDLHW2D>()) {}
+        _render(scene->AppRenderer<Basic2D>()) {}
 
     auto Create() -> bool override;
     auto Update(float deltaTime) -> bool override;
@@ -57,7 +57,7 @@ namespace swgtk {
     std::random_device _rd;
     std::mt19937_64 _gen;
     ObjectRef<App> _app;
-    ObjectRef<SDLHW2D> _render;
+    ObjectRef<Basic2D> _render;
     Font _font{Font::LoadDefault()};
     uint32_t _currentFrameCount = 0u;
     float _runningTime = 0.0f;
