@@ -15,14 +15,6 @@ if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 23)
 endif()
 
-if(SWGTK_BUILD_EXAMPLES AND NOT SWGTK_LUA_BINDINGS)
-  message(
-    FATAL_ERROR
-    "Fatal Error: Building the examples requires the Lua bindings.\n"
-    "Please enable SWGTK_LUA_BINDINGS."
-  )
-endif()
-
 if(EMSCRIPTEN)
   message("-- Emscripten build enabled.\n")
 endif()

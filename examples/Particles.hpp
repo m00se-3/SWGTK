@@ -14,7 +14,7 @@
 #define SWGTK_TESTS_TEST_CPP_PARTICLES_HPP_
 
 #include <random>
-#include <swgtk/SDLHW2D.hpp>
+#include <swgtk/Basic2D.hpp>
 #include <swgtk/Scene.hpp>
 #include <vector>
 

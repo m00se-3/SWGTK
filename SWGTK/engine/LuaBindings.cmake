@@ -1,18 +1,18 @@
 add_library(swgtk_lua STATIC)
 add_library(swgtk::Lua ALIAS swgtk_lua)
 
-target_compile_options(swgtk_lua PRIVATE ${CompilerFlags})
-target_link_options(swgtk_lua PRIVATE ${LinkerFlags})
+target_compile_options(swgtk_lua PUBLIC ${CompilerFlags})
+target_link_options(swgtk_lua PUBLIC ${LinkerFlags})
 
 if(NOT EMSCRIPTEN)
   target_compile_definitions(
-    swgtk_lua PUBLIC
+    swgtk_lua PRIVATE 
     SWGTK_TABLE_LUA_FILE="${SWGTK_ENGINE_INTERNALS}/swgtk.lua"
     SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
   )
 else()
   target_compile_definitions(
-    swgtk_lua PUBLIC
+    swgtk_lua PRIVATE
 
     SWGTK_TABLE_LUA_FILE="assets/swgtk.lua"
     SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
@@ -48,7 +48,6 @@ target_sources(
   BASE_DIRS 
 
   ${SWGTK_SOURCE_DIR}/SWGTK/engine/include
-  ${lua_SOURCE_DIR}
 
   FILES 
 
@@ -66,6 +65,11 @@ target_link_libraries(
   SDL3::SDL3
   SDL3_image::SDL3_image
   SDL3_ttf::SDL3_ttf
-  lua
   sol2
+)
+
+target_link_libraries(
+  swgtk_lua
+  PRIVATE 
+  lua
 )

@@ -65,7 +65,7 @@ namespace swgtk {
      * @param color Optional color to clear the layer to. Default is Black.
      *
      */
-    constexpr virtual void BufferClear(const SDL_FColor& color = SDL_FColor{.r = 0.0f, .g = 0.0f, .b = 0.0f, .a = 1.0f}) = 0;
+    constexpr virtual void BufferClear(const Color& color = Color{}) = 0;
 
     /**
      * @brief After finishing your draw calls, call this function to present the new frame
@@ -80,7 +80,7 @@ namespace swgtk {
     [[nodiscard]] virtual auto PrepareDevice(SDL_Window* window) -> bool = 0;
 
     [[nodiscard]] virtual auto IsDeviceInitialized() const -> bool = 0;
-    virtual void SetBackgroundColor(const SDL_FColor&) = 0;
+    virtual void SetBackgroundColor(const Color&) = 0;
 
     /**
      * @brief Destroy all the resources allocated by the rendering backend.

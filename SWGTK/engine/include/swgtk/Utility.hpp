@@ -15,6 +15,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <SDL3/SDL_pixels.h>
 
 #ifdef _DEBUG
 #include <format>
@@ -66,6 +67,92 @@ namespace swgtk {
       Ptr* _ptr = nullptr;
     };
   }
+
+  struct Red_t {
+    constexpr Red_t() = default;
+    constexpr explicit Red_t(float v) : value(v) {}
+    constexpr explicit Red_t(uint8_t v) : value(v) {}
+
+    std::common_type_t<uint8_t, float> value{};
+  };
+
+  struct Green_t {
+    constexpr Green_t() = default;
+    constexpr explicit Green_t(float v) : value(v) {}
+    constexpr explicit Green_t(uint8_t v) : value(v) {}
+
+    std::common_type_t<uint8_t, float> value{};
+  };
+
+  struct Blue_t {
+    constexpr Blue_t() = default;
+    constexpr explicit Blue_t(float v) : value(v) {}
+    constexpr explicit Blue_t(uint8_t v) : value(v) {}
+
+    std::common_type_t<uint8_t, float> value{};
+  };
+
+  struct Alpha_t {
+    constexpr Alpha_t() = default;
+    constexpr explicit Alpha_t(float v) : value(v) {}
+    constexpr explicit Alpha_t(uint8_t v) : value(v) {}
+
+    std::common_type_t<uint8_t, float> value = 1.0f;
+  };
+
+  struct Color {
+    constexpr static auto floatMax = 255.0f;
+    constexpr Color() = default;
+
+    constexpr explicit Color(const SDL_Color& color)
+    : red(static_cast<float>(color.r) / floatMax), green(static_cast<float>(color.g) / floatMax),
+    blue(static_cast<float>(color.b) / floatMax), alpha(static_cast<float>(color.a) / floatMax) {}
+
+    constexpr explicit Color(const SDL_FColor& color)
+    : red(color.r), green(color.g), blue(color.b), alpha(color.a) {}
+
+    constexpr Color(Red_t r, Green_t g, Blue_t b, Alpha_t a = Alpha_t{1.0f})
+    : red(r.value), green(g.value), blue(b.value), alpha(a.value) {}
+
+    constexpr explicit operator SDL_FColor() const {
+      return SDL_FColor{ .r = red, .g = green, .b = blue, .a = alpha };
+    }
+
+    constexpr explicit operator SDL_Color() const {
+      return SDL_Color{ 
+        .r = static_cast<uint8_t>(red * floatMax),
+        .g = static_cast<uint8_t>(green * floatMax),
+        .b = static_cast<uint8_t>(blue * floatMax),
+        .a = static_cast<uint8_t>(alpha* floatMax) 
+      };
+    }
+
+    constexpr static auto White() -> Color {
+      return Color{ Red_t{1.0f}, Green_t{1.0f}, Blue_t{1.0f}, Alpha_t{} };
+    }
+
+    constexpr static auto Black() -> Color {
+      return Color{ Red_t{}, Green_t{}, Blue_t{}, Alpha_t{} };
+    }
+
+    constexpr static auto Red() -> Color {
+      return Color{ Red_t{1.0f}, Green_t{}, Blue_t{}, Alpha_t{} };
+    }
+
+    constexpr static auto Green() -> Color {
+      return Color{ Red_t{}, Green_t{1.0f}, Blue_t{}, Alpha_t{} };
+    }
+
+    constexpr static auto Blue() -> Color {
+      return Color{ Red_t{}, Green_t{}, Blue_t{1.0f}, Alpha_t{} };
+    }
+
+    constexpr static auto Blank() -> Color {
+      return Color{ Red_t{}, Green_t{}, Blue_t{}, Alpha_t{0.0f} };
+    }
+
+    std::common_type_t<uint8_t, float> red{}, green{}, blue{}, alpha = 1.0f;
+  };
 
   enum class LuaPrivledges {
     None = 0,

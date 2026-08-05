@@ -42,7 +42,7 @@ target_sources(
   ${CMAKE_CURRENT_LIST_DIR}/src/MathTests.cpp
 )
 
-target_link_libraries(testsuite PRIVATE swgtk::SWGTK swgtk::SDLHW2D Catch2::Catch2WithMain)
+target_link_libraries(testsuite PRIVATE swgtk::SWGTK swgtk::Basic2D Catch2::Catch2WithMain)
 catch_discover_tests(testsuite DISCOVERY_MODE PRE_TEST)
 
 if(WIN32) # Windows

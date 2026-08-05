@@ -18,9 +18,10 @@
 #include <string>
 #include <swgtk/Timer.hpp>
 #include <swgtk/Utility.hpp>
+#include <swgtk/Props.hpp>
 #include <utility>
-#include "swgtk/Input.hpp"
-#include "swgtk/RenderingDevice.hpp"
+#include <swgtk/Input.hpp>
+#include <swgtk/RenderingDevice.hpp>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -99,6 +100,7 @@ namespace swgtk {
   public:
     App() = default;
     App(const std::string& appName, int winWidth, int winHeight, std::shared_ptr<RenderingDevice>&& renderPtr, SystemInit sysFlags = SystemInit::Video);
+    // App(std::initializer_list<std::pair<std::string_view, props::PropValue>>&&);
     App(const App&) = delete;
     App(App&&) noexcept = delete;
     auto operator=(const App&) -> App& = delete;

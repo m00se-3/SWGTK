@@ -12,7 +12,6 @@
 */
 #include <string>
 #include <swgtk/Utility.hpp>
-#include <utility>
 #include "swgtk/Font.hpp"
 
 namespace swgtk {

@@ -88,7 +88,7 @@ target_link_libraries([your_project] PRIVATE swgtk swgtk::SDLHW2D)
 In addition, the following options can be added depending on your needs:
 
 - SWGTK_BUILD_EXAMPLES: Include the example programs. (Default: OFF)
-- SWGTK_NO_CCACHE: Disable ccache support. (Default: OFF. ccache is enabled.)
+- SWGTK_NO_CCACHE: Disable ccache support. (Default: ON. ccache is disabled.)
 - SWGTK_INSTALL_FREETYPE: Build the Freetype font library from source. (Default: ON)
 - SWGTK_LUA_BINDINGS: Enable Lua scripting support via sol3. (Default: OFF)
 - SWGTK_BUILD_TESTS: Build the unit test suite. (Default: OFF)

@@ -12,6 +12,7 @@
 */
 #include <swgtk/App.hpp>
 #include <swgtk/Utility.hpp>
+#include <swgtk/Props.hpp>
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
@@ -19,6 +20,7 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3/SDL_properties.h>
 
 #include <memory>
 #include <string>
@@ -37,6 +39,35 @@ namespace swgtk {
 
   App::App(const std::string& appName, const int winWidth, const int winHeight, std::shared_ptr<RenderingDevice>&& renderPtr, const SystemInit sysFlags) 
   : _winConfig{.windowTitle = appName, .width = winWidth, .height = winHeight, .icon{}}, _sysFlags(sysFlags), _renderer(std::move(renderPtr)) {}
+
+  // App::App(std::initializer_list<std::pair<std::string_view, props::PropValue>>&& properites) {
+  //   auto props = SDL_CreateProperties();
+  //
+  //   for(auto&& [ propName, propValue ] : std::move(properites)) {
+  //   std::visit(
+  //     props::PropOverload {
+  //       [&props, propName] (int64_t num) -> void {
+  //         SDL_SetNumberProperty(props, propName.data(), num);
+  //       },
+  //       [&props, propName] (float num) -> void {
+  //         SDL_SetFloatProperty(props, propName.data(), num);
+  //       },
+  //       [&props, propName] (std::string_view str) -> void {
+  //         SDL_SetStringProperty(props, propName.data(), str.data());
+  //       },
+  //       [&props, propName] (void* ptr) -> void {
+  //         SDL_SetPointerProperty(props, propName.data(), ptr);
+  //       },
+  //       [&props, propName] (bool flag) -> void {
+  //         SDL_SetBooleanProperty(props, propName.data(), flag);
+  //       },
+  //       [] (const std::monostate&) -> void {
+  //
+  //       }
+  //     }
+  //   , propValue);
+  //   }
+  // }
 
   auto App::AppName(const std::string& _appName) -> App& {
     appName = _appName;

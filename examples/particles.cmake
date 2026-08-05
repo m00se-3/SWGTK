@@ -24,7 +24,6 @@ target_include_directories(
 
   ${SWGTK_ROOT_DIRECTORY}/engine/include
   ${CMAKE_CURRENT_LIST_DIR}
-  ${lua_SOURCE_DIR}
 )
 
 target_link_libraries(
@@ -33,8 +32,7 @@ target_link_libraries(
   PRIVATE
 
   swgtk::SWGTK
-  swgtk::SDLHW2D
-  swgtk::Lua
+  swgtk::Basic2D
 )
 
 target_sources(

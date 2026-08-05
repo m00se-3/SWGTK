@@ -13,7 +13,7 @@
 #ifndef SWGTK_TESTS_TEST_CPP_TEXT_HPP_
 #define SWGTK_TESTS_TEST_CPP_TEXT_HPP_
 
-#include <swgtk/SDLHW2D.hpp>
+#include <swgtk/Basic2D.hpp>
 #include <swgtk/Scene.hpp>
 #include <swgtk/Font.hpp>
 #include <swgtk/Math.hpp>

@@ -7,8 +7,8 @@ if(SWGTK_LUA_BINDINGS)
   include(${CMAKE_CURRENT_LIST_DIR}/engine/LuaBindings.cmake)
 endif()
 
-target_compile_options(swgtk PRIVATE ${CompilerFlags})
-target_link_options(swgtk PRIVATE ${LinkerFlags})
+target_compile_options(swgtk PUBLIC ${CompilerFlags})
+target_link_options(swgtk PUBLIC ${LinkerFlags})
 
 if(EMSCRIPTEN)
   file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/assets)
@@ -31,13 +31,13 @@ target_compile_definitions(
 
 if(NOT EMSCRIPTEN)
   target_compile_definitions(
-    swgtk PUBLIC
+    swgtk PRIVATE
     SWGTK_DEFAULT_FONT_FILE="${CMAKE_CURRENT_LIST_DIR}/default_font/Natural_Mono-Regular.ttf"
     SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
   )
 else()
   target_compile_definitions(
-    swgtk PUBLIC
+    swgtk PRIVATE
 
     SWGTK_DEFAULT_FONT_FILE="assets/Natural_Mono-Regular.ttf"
     SWGTK_DEFAULT_FONT_ID="Natural_Mono-Regular"
@@ -58,6 +58,8 @@ if(SWGTK_CPPCHECK_FOUND)
 
 endif()
 
+target_include_directories(swgtk PRIVATE ${lua_SOURCE_DIR})
+
 target_sources(
   swgtk
 
@@ -68,7 +70,6 @@ target_sources(
   BASE_DIRS
 
   ${CMAKE_CURRENT_LIST_DIR}/engine/include
-  ${lua_SOURCE_DIR}
 
   FILES
 
@@ -94,7 +95,7 @@ target_sources(
 target_link_libraries(
   swgtk
 
-  PUBLIC
+  PRIVATE 
 
   SDL3::SDL3
   SDL3_image::SDL3_image

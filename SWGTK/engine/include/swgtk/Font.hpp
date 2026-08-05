@@ -14,7 +14,6 @@
 #define SWGTK_ENGINE_INCLUDE_SWGTK_TTFFONT_HPP_
 
 #include <filesystem>
-#include <type_traits>
 #include <utility>
 
 #include <SDL3_ttf/SDL_ttf.h>

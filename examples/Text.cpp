@@ -17,13 +17,11 @@
 
 namespace swgtk {
   auto TextTest::Create() -> bool {
-    constexpr auto colorDefault = 255u;
-
     _app = _scene->GetApp();
     _render = _scene->AppRenderer<Basic2D>();
     _font.SetStyle(FontStyle::Underlined);
 
-    _mouse.texture = _render->LoadPlainWrapText(*_font, "Hello\nWorld!", 0, SDL_Color{.r = colorDefault, .g = 0u, .b = 0u, .a = colorDefault});
+    _mouse.texture = _render->LoadPlainWrapText(*_font, "Hello\nWorld!", 0, Color::Red());
 
     _background = _render->LoadLCDWrapText(*_font, "EAT!\nSLEEP!\nCODE!");
 
