@@ -16,20 +16,20 @@
 #include <swgtk/Utility.hpp>
 
 namespace swgtk {
-  Scene::Scene(const ObjectRef<App>& parent) :
-      _parent(parent), _renderer(parent->Renderer()) {
+  scene::scene(const object_ref<app>& parent) :
+      _parent(parent), _renderer(parent->renderer()) {
   }
 
-  auto Scene::Create() const -> bool {
-    return _root->Create();
+  auto scene::create() const -> bool {
+    return _root->create();
   }
 
-  auto Scene::Update(const float dt) const -> bool {
-    return _root->Update(dt);
+  auto scene::update(const float dt) const -> bool {
+    return _root->update(dt);
   }
 
-  void Scene::Destroy() const {
-    _root->Destroy();
+  void scene::destroy() const {
+    _root->destroy();
   }
 
 } // namespace swgtk

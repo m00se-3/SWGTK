@@ -20,26 +20,26 @@
 
 namespace swgtk {
 
-  struct MouseCursor {
+  struct mouse_cursor {
     SDL_FPoint pos{};
-    Texture2D texture;
-    Rads angle;
+    texture_2d texture;
+    rads angle;
   };
 
-  class TextTest final : public Scene::Node {
+  class text_test final : public scene::node {
   public:
-    explicit TextTest(const ObjectRef<Scene> &scene) :
-        Node(scene), _font{Font::LoadDefault()} {}
+    explicit text_test(const object_ref<scene> &scene) :
+        node(scene), _font{font::load_default()} {}
 
-    auto Create() -> bool override;
-    auto Update(float dt) -> bool override;
+    auto create() -> bool  override;
+    auto update(float dt) -> bool  override;
 
   private:
-    MouseCursor _mouse{};
-    Texture2D _background;
-    Font _font;
-    ObjectRef<App> _app;
-    ObjectRef<Basic2D> _render;
+    mouse_cursor _mouse{};
+    texture_2d _background;
+    font _font;
+    object_ref<app> _app;
+    object_ref<basic_2d> _render;
   };
 
 } // namespace swgtk

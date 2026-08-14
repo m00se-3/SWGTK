@@ -31,15 +31,15 @@ namespace sol {
 
 namespace swgtk {
 
-  inline constexpr auto defaultAlphaFloat = 1.0f;
-  inline constexpr auto defaultAlphaInt = 255u;
+  inline constexpr auto default_alpha_float = 1.0f;
+  inline constexpr auto default_alpha_int = 255u;
 
   // SDL supports a number of interesting values for vsync support.
-  enum class VSync {
-    Adaptive = -1,
-    Disable = 0,
-    Enable = 1,
-    EnableEveryOther = 2,
+  enum class vsync {
+    adaptive = -1,
+    disable = 0,
+    enable = 1,
+    enable_every_other = 2,
   };
 
   /**
@@ -49,14 +49,14 @@ namespace swgtk {
    * custom implementation through this interface.
    *
    */
-  class RenderingDevice {
+  class rendering_device {
   public:
-    RenderingDevice() = default;
-    RenderingDevice(const RenderingDevice&) = delete;
-    RenderingDevice(RenderingDevice&&) noexcept = delete;
-    auto operator=(const RenderingDevice&) -> RenderingDevice& = delete;
-    auto operator=(RenderingDevice&&) noexcept -> RenderingDevice& = delete;
-    virtual ~RenderingDevice() = default;
+    rendering_device() = default;
+    rendering_device(const rendering_device&) = delete;
+    rendering_device(rendering_device&&) noexcept = delete;
+    auto operator=(const rendering_device&) -> rendering_device& = delete;
+    auto operator=(rendering_device&&) noexcept -> rendering_device& = delete;
+    virtual ~rendering_device() = default;
 
     /**
      * @brief Clears the rendering backend and prepares it for accepting draw calls. Draws to the current
@@ -65,22 +65,22 @@ namespace swgtk {
      * @param color Optional color to clear the layer to. Default is Black.
      *
      */
-    constexpr virtual void BufferClear(const Color& color = Color{}) = 0;
+    constexpr virtual void buffer_clear(const color_t& color = color_t{}) = 0;
 
     /**
      * @brief After finishing your draw calls, call this function to present the new frame
      * to the screen.
      *
      */
-    virtual void BufferPresent() = 0;
+    virtual void buffer_present() = 0;
 
     /** @brief Finishes initializing the device.
      * @return true if the device could be initialized, false otherwise
      */
-    [[nodiscard]] virtual auto PrepareDevice(SDL_Window* window) -> bool = 0;
+    [[nodiscard]] virtual auto prepare_device(SDL_Window* window) -> bool = 0;
 
-    [[nodiscard]] virtual auto IsDeviceInitialized() const -> bool = 0;
-    virtual void SetBackgroundColor(const Color&) = 0;
+    [[nodiscard]] virtual auto is_device_initialized() const -> bool = 0;
+    virtual void set_background_color(const color_t&) = 0;
 
     /**
      * @brief Destroy all the resources allocated by the rendering backend.
@@ -88,14 +88,10 @@ namespace swgtk {
      * Typically, this would occur in the derived class destructor.
      *
      */
-    virtual void DestroyDevice() = 0;
-
-    virtual void SetVSync([[maybe_unused]] VSync value) {}
-
-    [[nodiscard]] virtual auto GetVSync() const -> VSync { return VSync::Disable; }
+    virtual void destroy_device() = 0;
 
 #ifdef SWGTK_BUILD_WITH_LUA
-    virtual void InitLua(sol::state*) = 0;
+    virtual void init_lua(sol::state*) = 0;
 #endif
 
     /**
@@ -103,17 +99,17 @@ namespace swgtk {
      *
      * @return constexpr std::shared_ptr<RendererBase>
      */
-    constexpr virtual auto GetRef() -> std::weak_ptr<RenderingDevice> = 0;
+    constexpr virtual auto get_ref() -> std::weak_ptr<rendering_device> = 0;
   };
 
   /**
    * @brief Used for getting a non-owning reference to the rendering system so you can use it in your code.
    * @tparam T The Rendering system you are currently using, a child of RendererBase.
-   * @param ptr A proxy wrapper to the renderer, typically obtained by calling Scene::AppRenderer().
+   * @param ptr A proxy wrapper to the renderer, typically obtained by calling Scene::appRenderer().
    * @return A non-owning pointer to the exact type of renderer your game is using.
    */
-  template<std::derived_from<RenderingDevice> T>
-  [[nodiscard]] constexpr auto RenderImpl(const std::shared_ptr<RenderingDevice>& ptr) { return ObjectRef<T>{std::static_pointer_cast<T>(ptr).get()}; }
+  template<std::derived_from<rendering_device> T>
+  [[nodiscard]] constexpr auto render_impl(const std::shared_ptr<rendering_device>& ptr) { return object_ref<T>{std::static_pointer_cast<T>(ptr).get()}; }
 } // namespace swgtk
 
 #endif // SWGTK_ENGINE_INCLUDE_SWGTK_RENDERINGDEVICE_HPP_

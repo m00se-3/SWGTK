@@ -26,57 +26,57 @@ namespace swgtk {
    * @tparam Type - Requires a floating-point type. Anything else is a compiler error.
    */
   template<std::floating_point Type>
-  class Radians {
+  class radians {
   public:
     using value_type = Type;
     static constexpr value_type pi2 = static_cast<value_type>(std::numbers::pi_v<Type> + std::numbers::pi_v<Type>);
 
-    constexpr Radians() = default;
-    constexpr explicit Radians(Type value) noexcept :
+    constexpr radians() = default;
+    constexpr explicit radians(Type value) noexcept :
         _value(std::clamp(value, -pi2, pi2)) {}
 
     [[nodiscard]] constexpr auto value() const noexcept -> value_type { return _value; }
     [[nodiscard]] constexpr auto operator*() const -> value_type { return _value; }
-    [[nodiscard]] constexpr auto operator<=>(const Radians& other) const = default;
+    [[nodiscard]] constexpr auto operator<=>(const radians& other) const = default;
 
-    [[nodiscard]] constexpr auto operator+(const Radians& other) const -> Radians {
-      return Radians{ApplySaturation(_value + *other)};
+    [[nodiscard]] constexpr auto operator+(const radians& other) const -> radians {
+      return radians{apply_saturation(_value + *other)};
     }
 
-    [[nodiscard]] constexpr auto operator-(const Radians& other) const -> Radians {
-      return Radians{ApplySaturation(_value - *other)};
+    [[nodiscard]] constexpr auto operator-(const radians& other) const -> radians {
+      return radians{apply_saturation(_value - *other)};
     }
 
-    constexpr auto operator+=(const Radians& other) -> Radians& {
-      _value = ApplySaturation(_value + *other);
+    constexpr auto operator+=(const radians& other) -> radians& {
+      _value = apply_saturation(_value + *other);
       return *this;
     }
 
-    constexpr auto operator-=(const Radians& other) -> Radians& {
-      _value = ApplySaturation(_value - *other);
+    constexpr auto operator-=(const radians& other) -> radians& {
+      _value = apply_saturation(_value - *other);
       return *this;
     }
 
-    [[nodiscard]] constexpr auto operator+(const value_type other) const -> Radians {
-      return *this + Radians{other};
+    [[nodiscard]] constexpr auto operator+(const value_type other) const -> radians {
+      return *this + radians{other};
     }
 
-    [[nodiscard]] constexpr auto operator-(const value_type other) const -> Radians {
-      return *this - Radians{other};
+    [[nodiscard]] constexpr auto operator-(const value_type other) const -> radians {
+      return *this - radians{other};
     }
 
-    constexpr auto operator+=(const value_type other) -> Radians& {
-      *this += Radians{other};
+    constexpr auto operator+=(const value_type other) -> radians& {
+      *this += radians{other};
       return *this;
     }
 
-    constexpr auto operator-=(const value_type other) -> Radians& {
-      *this -= Radians{other};
+    constexpr auto operator-=(const value_type other) -> radians& {
+      *this -= radians{other};
       return *this;
     }
 
   private:
-    [[nodiscard]] constexpr auto ApplySaturation(value_type value) const -> value_type {
+    [[nodiscard]] constexpr auto apply_saturation(value_type value) const -> value_type {
       if (value > pi2) {
         value -= pi2;
       } else if (value < -pi2) {
@@ -93,61 +93,61 @@ namespace swgtk {
    * @tparam Type - Requires a floating-point type. Anything else is a compiler error.
    */
   template<std::floating_point Type>
-  class Degrees {
+  class degrees {
   public:
     using value_type = Type;
-    static constexpr value_type threeSixty = static_cast<value_type>(360.0f);
+    static constexpr value_type three_sixty = static_cast<value_type>(360.0f);
 
-    constexpr Degrees() = default;
-    explicit constexpr Degrees(Type value) noexcept :
-        _value(std::clamp(value, -threeSixty, threeSixty)) {}
+    constexpr degrees() = default;
+    explicit constexpr degrees(Type value) noexcept :
+        _value(std::clamp(value, -three_sixty, three_sixty)) {}
 
     [[nodiscard]] constexpr auto value() const noexcept -> value_type { return _value; }
     [[nodiscard]] constexpr auto operator*() const -> value_type { return _value; }
-    [[nodiscard]] constexpr auto operator<=>(const Degrees& other) const = default;
+    [[nodiscard]] constexpr auto operator<=>(const degrees& other) const = default;
 
-    [[nodiscard]] constexpr auto operator+(const Degrees& other) const -> Degrees {
-      return Degrees{ApplySaturation(_value + *other)};
+    [[nodiscard]] constexpr auto operator+(const degrees& other) const -> degrees {
+      return degrees{apply_saturation(_value + *other)};
     }
 
-    [[nodiscard]] constexpr auto operator-(const Degrees& other) const -> Degrees {
-      return Degrees{ApplySaturation(_value - *other)};
+    [[nodiscard]] constexpr auto operator-(const degrees& other) const -> degrees {
+      return degrees{apply_saturation(_value - *other)};
     }
 
-    constexpr auto operator+=(const Degrees& other) -> Degrees& {
-      _value = ApplySaturation(_value + *other);
+    constexpr auto operator+=(const degrees& other) -> degrees& {
+      _value = apply_saturation(_value + *other);
       return *this;
     }
 
-    constexpr auto operator-=(const Degrees& other) -> Degrees& {
-      _value = ApplySaturation(_value - *other);
+    constexpr auto operator-=(const degrees& other) -> degrees& {
+      _value = apply_saturation(_value - *other);
       return *this;
     }
 
-    [[nodiscard]] constexpr auto operator+(const value_type other) const -> Degrees {
-      return *this + Degrees{other};
+    [[nodiscard]] constexpr auto operator+(const value_type other) const -> degrees {
+      return *this + degrees{other};
     }
 
-    [[nodiscard]] constexpr auto operator-(const value_type other) const -> Degrees {
-      return *this - Degrees{other};
+    [[nodiscard]] constexpr auto operator-(const value_type other) const -> degrees {
+      return *this - degrees{other};
     }
 
-    constexpr auto operator+=(const value_type other) -> Degrees& {
-      *this += Degrees{other};
+    constexpr auto operator+=(const value_type other) -> degrees& {
+      *this += degrees{other};
       return *this;
     }
 
-    constexpr auto operator-=(const value_type other) -> Degrees& {
-      *this -= Degrees{other};
+    constexpr auto operator-=(const value_type other) -> degrees& {
+      *this -= degrees{other};
       return *this;
     }
 
   private:
-    [[nodiscard]] constexpr auto ApplySaturation(value_type value) const -> value_type {
-      if (value > threeSixty) {
-        value -= threeSixty;
-      } else if (value < -threeSixty) {
-        value += threeSixty;
+    [[nodiscard]] constexpr auto apply_saturation(value_type value) const -> value_type {
+      if (value > three_sixty) {
+        value -= three_sixty;
+      } else if (value < -three_sixty) {
+        value += three_sixty;
       }
       return value;
     }
@@ -157,41 +157,41 @@ namespace swgtk {
 
   // Inline representations of the above types.
 
-  using Rads = Radians<double>;
-  using Radsf = Radians<float>;
-  using Radsl = Radians<long double>;
-  using Degs = Degrees<double>;
-  using Degsf = Degrees<float>;
-  using Degsl = Degrees<long double>;
+  using rads = radians<double>;
+  using radsf = radians<float>;
+  using radsl = radians<long double>;
+  using degs = degrees<double>;
+  using degsf = degrees<float>;
+  using degsl = degrees<long double>;
 
   /** @brief Convert an angle from radians to degrees. You are required to pass the
    * angle in a Radians object.
    *
    * @tparam Type - Requires a floating-point type. Otherwise, it won't compile.
-   * @param radians - The angle you wish to convert, passed as radians.
+   * @param rad - The angle you wish to convert, passed as radians.
    * @return - The same angle now represented as degrees.
    */
   template<std::floating_point Type>
-  [[nodiscard]] constexpr auto RadiansToDegrees(const Radians<Type> radians) {
-    static constexpr auto oneEighty = static_cast<Type>(180.0f);
+  [[nodiscard]] constexpr auto radians_to_degrees(const radians<Type> rad) {
+    static constexpr auto one_eighty = static_cast<Type>(180.0f);
     static constexpr auto pi = std::numbers::pi_v<Type>;
 
-    return Degrees{(*radians / pi) * oneEighty};
+    return degrees{(*rad / pi) * one_eighty};
   }
 
   /** @brief Convert an angle from degrees to radians. You are required to pass the
    * angle in a Degrees object.
    *
    * @tparam Type - Requires a floating-point type. Otherwise, it won't compile.
-   * @param degrees - The angle you wish to convert, passed as degrees.
+   * @param deg
    * @return - The same angle now represented as radians.
    */
   template<std::floating_point Type>
-  [[nodiscard]] constexpr auto DegreesToRadians(const Degrees<Type> degrees) {
-    static constexpr auto oneEighty = static_cast<Type>(180.0f);
+  [[nodiscard]] constexpr auto degrees_to_radians(const degrees<Type> deg) {
+    static constexpr auto one_eighty = static_cast<Type>(180.0f);
     static constexpr auto pi = std::numbers::pi_v<Type>;
 
-    return Radians{(*degrees / oneEighty) * pi};
+    return radians{(*deg / one_eighty) * pi};
   }
 } // namespace swgtk
 

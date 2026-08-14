@@ -11,16 +11,16 @@
     SOFTWARE.
 */
 #include <swgtk/App.hpp>
-#include <swgtk/Utility.hpp>
 #include <swgtk/Props.hpp>
+#include <swgtk/Utility.hpp>
 
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <SDL3/SDL_properties.h>
 
 #include <memory>
 #include <string>
@@ -28,7 +28,7 @@
 
 
 namespace swgtk {
-  App::~App() {
+  app::~app() {
     _currentScene.reset();
     _renderer.reset();
     SDL_DestroyWindow(_window);
@@ -37,10 +37,10 @@ namespace swgtk {
     SDL_Quit();
   }
 
-  App::App(const std::string& appName, const int winWidth, const int winHeight, std::shared_ptr<RenderingDevice>&& renderPtr, const SystemInit sysFlags) 
-  : _winConfig{.windowTitle = appName, .width = winWidth, .height = winHeight, .icon{}}, _sysFlags(sysFlags), _renderer(std::move(renderPtr)) {}
+  app::app(const std::string& name, const int win_width, const int win_height, std::shared_ptr<rendering_device>&& render_ptr, const system_init sys_flags)
+  : _win_config{.window_title = name, .width = win_width, .height = win_height, .icon{}}, _sys_flags(sys_flags), _renderer(std::move(render_ptr)) {}
 
-  // App::App(std::initializer_list<std::pair<std::string_view, props::PropValue>>&& properites) {
+  // app::app(std::initializer_list<std::pair<std::string_view, props::PropValue>>&& properites) {
   //   auto props = SDL_CreateProperties();
   //
   //   for(auto&& [ propName, propValue ] : std::move(properites)) {
@@ -69,70 +69,70 @@ namespace swgtk {
   //   }
   // }
 
-  auto App::AppName(const std::string& _appName) -> App& {
-    appName = _appName;
+  auto app::app_name(const std::string& name) -> app& {
+    _app_name = name;
     return *this;
   }
 
-  auto App::WindowTitle(const std::string& title) -> App& {
-    _winConfig.windowTitle = title;
+  auto app::window_title(const std::string& title) -> app& {
+    _win_config.window_title = title;
     return *this;
   }
 
-  auto App::AppSize(std::pair<int, int> dimensions) -> App& {
-    _winConfig.width = dimensions.first;
-    _winConfig.height = dimensions.second;
+  auto app::app_size(const std::pair<int, int> &dimensions) -> app& {
+    _win_config.width = dimensions.first;
+    _win_config.height = dimensions.second;
     return *this;
   }
 
-  auto App::AppPos(std::pair<int, int> position) -> App& {
-    _winConfig.posX = position.first;
-    _winConfig.posY = position.second;
+  auto app::app_pos(const std::pair<int, int> &position) -> app& {
+    _win_config.pos_x = position.first;
+    _win_config.pos_y = position.second;
     return *this;
   }
 
-  auto App::SubSystems(const SystemInit sysFlags) -> App& {
-    _sysFlags = sysFlags;
+  auto app::sub_systems(const system_init sysFlags) -> app& {
+    _sys_flags = sysFlags;
     return *this;
   }
 
-  auto App::AppRenderer(std::shared_ptr<RenderingDevice>&& renderPtr) -> App& {
-    _renderer = std::move(renderPtr);
+  auto app::app_renderer(std::shared_ptr<rendering_device>&& render_ptr) -> app& {
+    _renderer = std::move(render_ptr);
     return *this;
   }
 
-  auto App::AppOpacity(const float opacity) -> App& {
-    _winConfig.opacity = opacity;
+  auto app::app_opacity(const float opacity) -> app& {
+    _win_config.opacity = opacity;
     return *this;
   }
 
-  auto App::AppIcon(const std::string& iconPath) -> App& {
-    _winConfig.icon = Surface{IMG_Load(iconPath.c_str())};
+  auto app::app_icon(const std::string& icon_path) -> app& {
+    _win_config.icon = surface{IMG_Load(icon_path.c_str())};
     return *this;
   }
 
-  auto App::Fullscreen() -> App& {
-    _winConfig.flags = _winConfig.flags | WindowFlags::Fullscreen;
+  auto app::fullscreen() -> app& {
+    _win_config.flags = _win_config.flags | window_flags::fullscreen;
     return *this;
   }
 
-  auto App::Build() -> bool {
-    SDL_SetAppMetadata(appName.c_str(), nullptr, nullptr);
-    if (SDL_Init(std::to_underlying(_sysFlags)) && TTF_Init()) {
+  auto app::build() -> bool {
+    SDL_SetAppMetadata(_app_name.c_str(), nullptr, nullptr);
+    if (SDL_Init(std::to_underlying(_sys_flags)) && TTF_Init()) {
 
       // false positive
       // cppcheck-suppress syntaxError
-      if (_window = SDL_CreateWindow(_winConfig.windowTitle.c_str(), _winConfig.width, _winConfig.height, std::to_underlying(_winConfig.flags)); _window != nullptr) {
-        SDL_SetWindowPosition(_window, _winConfig.posX, _winConfig.posY);
+      if (_window = SDL_CreateWindow(_win_config.window_title.c_str(), _win_config.width, _win_config.height, std::to_underlying(_win_config.flags)); _window != nullptr) {
+        SDL_SetWindowPosition(_window, _win_config.pos_x, _win_config.pos_y);
 
-        if (_winConfig.opacity != 1.0f) {
-          SDL_SetWindowOpacity(_window, _winConfig.opacity);
+        if (_win_config.opacity != 1.0f) {
+          SDL_SetWindowOpacity(_window, _win_config.opacity);
         }
-        if (!_winConfig.icon.Empty()) {
-          SDL_SetWindowIcon(_window, *_winConfig.icon);
+        if (!_win_config.icon.empty()) {
+          SDL_SetWindowIcon(_window, *_win_config.icon);
         }
 
-        return InitializeGame();
+        return initialize_game();
       }
     }
 
@@ -140,36 +140,36 @@ namespace swgtk {
     return false;
   }
 
-  void App::EventsAndTimeStep() {
+  void app::events_and_time_step() {
     SDL_Event e;
 
-    ResetScroll();
-    ResetMouseEvents();
-    ResetKeyEvent();
+    reset_scroll();
+    reset_mouse_events();
+    reset_key_event();
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
         case SDL_EVENT_MOUSE_BUTTON_UP:
         case SDL_EVENT_MOUSE_BUTTON_DOWN: {
-          SetMouseEvent(MButton{e.button.button}, MButtonData{
-                                                      .state = (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? MButtonState::Pressed : MButtonState::Released,
-                                                      .clicks = e.button.clicks});
+          set_mouse_event(m_button{e.button.button}, m_button_data{
+                                                      .state = (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? m_button_state::pressed : m_button_state::released,
+                                                      .clicks = e.button.clicks,});
           break;
         }
 
         case SDL_EVENT_KEY_DOWN:
         case SDL_EVENT_KEY_UP: {
-          SetKeyEvent(static_cast<LayoutCode>(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
+          set_key_event(static_cast<layout_code>(e.key.scancode), (e.type == SDL_EVENT_KEY_DOWN));
           break;
         }
 
         case SDL_EVENT_MOUSE_WHEEL: {
-          AddScroll(e.wheel.x, e.wheel.y);
+          add_scroll(e.wheel.x, e.wheel.y);
           break;
         }
 
         case SDL_EVENT_QUIT: {
-          CloseApp();
+          close_app();
           break;
         }
         default: {
@@ -179,16 +179,16 @@ namespace swgtk {
     }
 
 
-    SetKeyboardState();
-    SetModState(SDL_GetModState());
+    set_keyboard_state();
+    set_mod_state(SDL_GetModState());
 
-    UpdateMouseState();
+    update_mouse_state();
 
-    _gameTimer.UpdateTime();
+    _gameTimer.update_time();
   }
 
-  auto App::InitializeGame() const -> bool {
-    if (_renderer->PrepareDevice(_window)) {
+  auto app::initialize_game() const -> bool {
+    if (_renderer->prepare_device(_window)) {
       return true;
     }
 
@@ -196,27 +196,27 @@ namespace swgtk {
     return false;
   }
 
-  void App::Run() {
+  void app::run() {
     if ((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == SDL_INIT_VIDEO) {
-      ShowWindow();
+      show_window();
       SDL_SyncWindow(_window); // Make sure window is ready before starting the simulation.
     }
 #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop_arg(App::EmscriptenUpdate, this, -1, true);
+    emscripten_set_main_loop_arg(app::EmscriptenUpdate, this, -1, true);
 
 #else
 
-    bool gameOk = true;
+    bool game_ok = true;
 
-    while (_running && gameOk) {
-      EventsAndTimeStep();
-      gameOk = GameTick();
+    while (_running && game_ok) {
+      events_and_time_step();
+      game_ok = game_tick();
     }
 
 #endif // __EMSCRIPTEN__
   }
 
-  void App::CloseApp() {
+  void app::close_app() {
 #ifdef __EMSCRIPTEN__
     emscripten_cancel_main_loop();
 #else
@@ -226,8 +226,8 @@ namespace swgtk {
   }
 
 #ifdef __EMSCRIPTEN__
-  void App::EmscriptenUpdate(void* ptr) {
-    auto* app = static_cast<App*>(ptr);
+  void app::EmscriptenUpdate(void* ptr) {
+    auto* app = static_cast<app*>(ptr);
     app->EventsAndTimeStep();
     app->GameTick();
   }

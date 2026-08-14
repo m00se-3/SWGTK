@@ -8,61 +8,61 @@
 
 namespace swgtk {
 
-  enum class ShaderFormat : std::uint32_t {
-    Invalid = SDL_GPU_SHADERFORMAT_INVALID,
-    Private = SDL_GPU_SHADERFORMAT_PRIVATE,
-    Spirv = SDL_GPU_SHADERFORMAT_SPIRV,
-    Dxbc = SDL_GPU_SHADERFORMAT_DXBC,
-    Dxil = SDL_GPU_SHADERFORMAT_DXIL,
-    Msl = SDL_GPU_SHADERFORMAT_MSL,
-    Metallib = SDL_GPU_SHADERFORMAT_METALLIB,
+  enum class shader_format : std::uint32_t {
+    invalid = SDL_GPU_SHADERFORMAT_INVALID,
+    priv = SDL_GPU_SHADERFORMAT_PRIVATE,
+    spirv = SDL_GPU_SHADERFORMAT_SPIRV,
+    dxbc = SDL_GPU_SHADERFORMAT_DXBC,
+    dxil = SDL_GPU_SHADERFORMAT_DXIL,
+    msl = SDL_GPU_SHADERFORMAT_MSL,
+    metallib = SDL_GPU_SHADERFORMAT_METALLIB,
   };
 
-  enum class GPUAPI : std::uint32_t {
-    None = 0u,
-    Vulkan = 1u,
-    D3D12 = 2u,
-    Metal = 3u,
+  enum class gpu_api : std::uint32_t {
+    none = 0u,
+    vulkan = 1u,
+    d3d12 = 2u,
+    metal = 3u,
   };
 
-  struct GPU_Params {
-    ShaderFormat format{ShaderFormat::Spirv};
-    bool debugMode{false};
-    GPUAPI apiName;
+  struct gpu_params {
+    shader_format format{shader_format::spirv};
+    bool debug_mode{false};
+    gpu_api api_name;
   };
 
-  class SDLGPU : public RenderingDevice, public std::enable_shared_from_this<SDLGPU> {
+  class gpu : public rendering_device, public std::enable_shared_from_this<gpu> {
     public:
-    constexpr SDLGPU() = default;
-    explicit constexpr SDLGPU(GPU_Params params) : _params(params) {}
+    constexpr gpu() = default;
+    explicit constexpr gpu(const gpu_params params) : _params(params) {}
 
-    constexpr SDLGPU(const SDLGPU&) = delete;
-    constexpr auto operator=(const SDLGPU&) -> SDLGPU& = delete;
-    constexpr SDLGPU(SDLGPU&&) = delete;
-    constexpr auto operator=(SDLGPU&&) -> SDLGPU& = delete;
-    ~SDLGPU() override { SDLGPU::DestroyDevice(); }
+    constexpr gpu(const gpu&) = delete;
+    constexpr auto operator=(const gpu&) -> gpu& = delete;
+    constexpr gpu(gpu&&) = delete;
+    constexpr auto operator=(gpu&&) -> gpu& = delete;
+    ~gpu() override { gpu::destroy_device(); }
 
-    auto BufferClear(const SDL_FColor& color = SDL_FColor{.r = 0.0f, .g = 0.0f, .b = 0.0f, .a = 1.0f}) -> void override;
-    auto BufferPresent() -> void override;
+    auto buffer_clear(const color_t& color = color_t{}) -> void override;
+    auto buffer_present() -> void override;
 
-    auto PrepareDevice(SDL_Window* window) -> bool override;
-    auto DestroyDevice() -> void override;
-    auto IsDeviceInitialized() const -> bool override;
-    [[nodiscard]] auto GetRef() -> std::weak_ptr<RenderingDevice> override { return shared_from_this(); }
+    auto prepare_device(SDL_Window* window) -> bool override;
+    auto destroy_device() -> void override;
+    auto is_device_initialized() const -> bool override;
+    [[nodiscard]] auto get_ref() -> std::weak_ptr<rendering_device> override { return shared_from_this(); }
 
-    auto SetBackgroundColor(const SDL_FColor& color) -> void override;
-    auto SetFont(TTF_Font* font) -> void; // TODO: Should this be taken out of the class, like with SDLHW2D?
-    auto SetVSync(VSync value) -> void override;
-    [[nodiscard]] auto GetVSync() const -> VSync override;
+    auto set_background_color(const color_t& color) -> void override;
+    auto set_font(TTF_Font* font) -> void; // TODO: Should this be taken out of the class, like with Basic2D?
+    auto set_vsync(vsync value) -> void override;
+    [[nodiscard]] auto get_vsync() const -> vsync override;
 
     template <typename... Args>
-    [[nodiscard]] static auto Create(Args&&... args) -> std::shared_ptr<SDLGPU> { return std::shared_ptr<SDLGPU>(std::forward<Args>(args)...); }
+    [[nodiscard]] static auto create(Args&&... args) -> std::shared_ptr<gpu> { return std::shared_ptr<gpu>(std::forward<Args>(args)...); }
 
     private:
     SDL_GPUDevice* _device = nullptr;
-  SDL_Window* _window = nullptr;
-    TTF_TextEngine* _textEngine = nullptr; // TODO: Should this be taken out of the class, like with SDLHW2D?
-    GPU_Params _params{};
+    SDL_Window* _window = nullptr;
+    TTF_TextEngine* _textEngine = nullptr; // TODO: Should this be taken out of the class, like with Basic2D?
+    gpu_params _params{};
   };
 
 }

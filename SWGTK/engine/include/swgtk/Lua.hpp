@@ -5,8 +5,8 @@
 #include <swgtk/Utility.hpp>
 
 namespace swgtk {
-  class App;
-  void InitLua(App* app, sol::state& lua, LuaPrivledges priv = LuaPrivledges::None);
+  class app;
+  void init_lua(app* app, sol::state& lua, lua_privledges priv = lua_privledges::none);
 } // namespace swgtk
 
 #endif // SWGTK_INCLUDE_SWGTK_LUA_HPP

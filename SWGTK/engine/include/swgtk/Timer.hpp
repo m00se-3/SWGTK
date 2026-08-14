@@ -23,9 +23,9 @@ namespace swgtk {
    * It was created, primarily, for counting time between successive application frames.
    * However, it can be easily used for other things. (Open to change suggestions.)
    */
-  class Timer {
+  class timer {
   public:
-    void UpdateTime() {
+    void update_time() {
       _currentFrameTime = std::chrono::steady_clock::now();
 
       _timeDifference = std::chrono::duration_cast<std::chrono::microseconds>(_currentFrameTime - _lastFrameTime);
@@ -33,13 +33,13 @@ namespace swgtk {
     }
 
     // Get a floating-point representation of time between the last updates in seconds.
-    [[nodiscard]] constexpr auto GetSeconds() const { return std::chrono::duration<float, std::ratio<1, 1>>(_timeDifference).count(); }
+    [[nodiscard]] constexpr auto get_seconds() const { return std::chrono::duration<float, std::ratio<1, 1>>(_timeDifference).count(); }
 
     // Get a floating-point representation of time between the last updates in milliseconds.
-    [[nodiscard]] constexpr auto GetMilliseconds() const { return std::chrono::duration<double, std::milli>(_timeDifference).count(); }
+    [[nodiscard]] constexpr auto get_milliseconds() const { return std::chrono::duration<double, std::milli>(_timeDifference).count(); }
 
     // Get a microsecond accurate representation of the time between the last updates.
-    [[nodiscard]] constexpr auto GetMicroseconds() const { return _timeDifference.count(); }
+    [[nodiscard]] constexpr auto get_microseconds() const { return _timeDifference.count(); }
 
   private:
     using timePoint = std::chrono::time_point<std::chrono::steady_clock>;

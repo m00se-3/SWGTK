@@ -16,23 +16,23 @@
 
 namespace swgtk {
 
-  auto Font::LoadDefault() -> Font {
-    if (const auto filePath = std::filesystem::path{SWGTK_DEFAULT_FONT_FILE}; std::filesystem::exists(filePath)) {
-      const auto fileString = filePath.string();
+  auto font::load_default() -> font {
+    if (const auto file_path = std::filesystem::path{SWGTK_DEFAULT_FONT_FILE}; std::filesystem::exists(file_path)) {
+      const auto file_string = file_path.string();
 
-      if (TTF_Font* ttf = TTF_OpenFont(fileString.c_str(), detail::defaultFontSize); ttf != nullptr) {
-        return Font{ttf};
+      if (TTF_Font* ttf = TTF_OpenFont(file_string.c_str(), detail::default_font_size); ttf != nullptr) {
+        return font{ttf};
       }
     }
 
     DEBUG_PRINT("Error finding or loading font file {}\n", SWGTK_DEFAULT_FONT_FILE);
-    return Font{};
+    return font{};
   }
 
-  Font::Font(const std::filesystem::path& path, const float fontSize) {
-    const auto fileString = path.string();
-    if ( _ptr = FontHandle{ TTF_OpenFont(fileString.c_str(), fontSize) }; _ptr == nullptr) {
-        DEBUG_PRINT2("Error opening font file {}: {}\n", fileString, SDL_GetError());
+  font::font(const std::filesystem::path& path, const float fontSize) {
+    const auto file_string = path.string();
+    if ( _ptr = FontHandle{ TTF_OpenFont(file_string.c_str(), fontSize) }; _ptr == nullptr) {
+        DEBUG_PRINT2("Error opening font file {}: {}\n", file_string, SDL_GetError());
     }
   }
 

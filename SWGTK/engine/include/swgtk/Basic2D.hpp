@@ -41,46 +41,47 @@ namespace swgtk {
      This is based on SDL3's hardware accelerated 2D rendering backend. It does not support shaders.
    *
    */
-  class Basic2D : public RenderingDevice, public std::enable_shared_from_this<Basic2D> {
+  class basic_2d : public rendering_device, public std::enable_shared_from_this<basic_2d> {
   public:
-    constexpr Basic2D() = default;
-    Basic2D(const Basic2D&) = delete;
-    Basic2D(Basic2D&&) noexcept = delete;
-    auto operator=(const Basic2D&) -> Basic2D& = delete;
-    auto operator=(Basic2D&&) noexcept -> Basic2D& = delete;
-    ~Basic2D() override { Basic2D::DestroyDevice(); }
+    constexpr basic_2d() = default;
+    basic_2d(const basic_2d&) = delete;
+    basic_2d(basic_2d&&) noexcept = delete;
+    auto operator=(const basic_2d&) -> basic_2d& = delete;
+    auto operator=(basic_2d&&) noexcept -> basic_2d& = delete;
+    ~basic_2d() override { basic_2d::destroy_device(); }
 
-    void BufferClear(const Color& color = Color{}) override;
-    void BufferPresent() override;
+    void buffer_clear(const color_t& col = color_t{}) override;
+    void buffer_present() override;
 
-    void SetBackgroundColor(const Color& color) override { SetDrawColor(color); }
-    [[nodiscard]] constexpr auto IsDeviceInitialized() const -> bool override { return _render != nullptr; }
+    void set_background_color(const color_t& color) override { set_draw_color(color); }
+    [[nodiscard]] constexpr auto is_device_initialized() const -> bool override { return _render != nullptr; }
 
-    [[nodiscard]] auto PrepareDevice(SDL_Window* window_ptr) -> bool override;
-    void DestroyDevice() override;
+    [[nodiscard]] auto prepare_device(SDL_Window* window_ptr) -> bool override;
+
+    void destroy_device() override;
 
     /**
      * @brief SDL3 has several vsync options that you can set. This function wraps that functionality.
      *
      * @param value
      */
-    void SetVSync(const VSync value) override { SDL_SetRenderVSync(_render, std::to_underlying(value)); }
+    void set_vsync(const vsync value) { SDL_SetRenderVSync(_render, std::to_underlying(value)); }
 
-    [[nodiscard]] auto GetVSync() const -> VSync override {
+    [[nodiscard]] auto get_vsync() const -> vsync {
       int ret{};
       SDL_GetRenderVSync(_render, &ret);
-      return VSync{ret};
+      return vsync{ret};
     }
 
-    [[nodiscard]] auto GetRef() -> std::weak_ptr<RenderingDevice> override { return shared_from_this(); }
+    [[nodiscard]] auto get_ref() -> std::weak_ptr<rendering_device> override { return shared_from_this(); }
 
-    void SetDrawColor(const Red_t r, const Green_t g, const Blue_t b, const Alpha_t a = Alpha_t{}) const { SDL_SetRenderDrawColorFloat(_render, r.value, g.value, b.value, a.value); }
-    void SetDrawColor(const Color& color = Color{}) const {
-      SDL_SetRenderDrawColorFloat(_render, color.red, color.green, color.blue, color.alpha);
+    void set_draw_color(const red_v r, const green_v g, const blue_v b, const alpha_v a = alpha_v{}) const { SDL_SetRenderDrawColorFloat(_render, r.value, g.value, b.value, a.value); }
+    void set_draw_color(const color_t& color = color_t{}) const {
+      SDL_SetRenderDrawColorFloat(_render, color.r, color.g, color.b, color.a);
     }
 
-    void DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;
-    void DrawTexture(Texture2D texture, const std::optional<SDL_FRect>& src,
+    void draw_texture(texture_2d texture, const std::optional<SDL_FRect>& src = std::nullopt, const std::optional<SDL_FRect>& dest = std::nullopt) const;
+    void draw_texture(texture_2d texture, const std::optional<SDL_FRect>& src,
                      const std::optional<SDL_FRect>& dest, double angle,
                      const std::optional<SDL_FPoint>& center = std::nullopt,
                      SDL_FlipMode flip = SDL_FLIP_NONE) const;
@@ -93,8 +94,8 @@ namespace swgtk {
      * @param pos - Destination rectangle
      * @param color
      */
-    void DrawPlainText(TTF_Font* font, std::string_view text,
-                       const SDL_FRect& pos, const Color& color = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const;
+    void draw_plain_text(TTF_Font* font, std::string_view text,
+                       const SDL_FRect& pos, const color_t& color = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const;
 
     /**
      * @brief Same as DrawPlainText() except it allows you to specify word wrapping support.
@@ -105,44 +106,44 @@ namespace swgtk {
      * @param wrapLen Length of text before wrapping, in bytes.
      * @param color
      */
-    void DrawPlainWrapText(TTF_Font* font, std::string_view text, const SDL_FRect& pos,
-                           int wrapLen = 0, const Color& color = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const;
+    void draw_plain_wrap_text(TTF_Font* font, std::string_view text, const SDL_FRect& pos,
+                           int wrapLen = 0, const color_t& color = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const;
 
     /*
       Combines SDL_ttf's API with SDL_Textures to preload text renderables as Textures. These can be rotated and tinted as needed.
     */
 
-    [[nodiscard]] auto LoadPlainText(TTF_Font* font,
-                                     std::string_view text, const Color& color = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+    [[nodiscard]] auto load_plain_text(TTF_Font* font,
+                                     std::string_view text, const color_t& color = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
-    [[nodiscard]] auto LoadBlendedText(TTF_Font* font,
-                                       std::string_view text, const Color& color = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+    [[nodiscard]] auto load_blended_text(TTF_Font* font,
+                                       std::string_view text, const color_t& color = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
-    [[nodiscard]] auto LoadShadedText(TTF_Font* font,
+    [[nodiscard]] auto load_shaded_text(TTF_Font* font,
                                       std::string_view text,
-                                      const Color& bg = Color{},
-                                      const Color& fg = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+                                      const color_t& bg = color_t{},
+                                      const color_t& fg = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
-    [[nodiscard]] auto LoadLCDText(TTF_Font* font,
+    [[nodiscard]] auto load_lcd_text(TTF_Font* font,
                                    std::string_view text,
-                                   const Color& bg = Color{},
-                                   const Color& fg = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+                                   const color_t& bg = color_t{},
+                                   const color_t& fg = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
-    [[nodiscard]] auto LoadPlainWrapText(TTF_Font* font, std::string_view text,
-                                         int wrapLen = 0, const Color& color = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+    [[nodiscard]] auto load_plain_wrap_text(TTF_Font* font, std::string_view text,
+                                         int wrapLen = 0, const color_t& color = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
-    [[nodiscard]] auto LoadBlendedWrapText(TTF_Font* font, std::string_view text,
-                                           int wrapLen = 0, const Color& color = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+    [[nodiscard]] auto load_blended_wrap_text(TTF_Font* font, std::string_view text,
+                                           int wrapLen = 0, const color_t& color = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
-    [[nodiscard]] auto LoadShadedWrapText(TTF_Font* font, std::string_view text,
+    [[nodiscard]] auto load_shaded_wrap_text(TTF_Font* font, std::string_view text,
                                           int wrapLen = 0,
-                                          const Color& bg = Color{},
-                                          const Color& fg = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+                                          const color_t& bg = color_t{},
+                                          const color_t& fg = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
-    [[nodiscard]] auto LoadLCDWrapText(TTF_Font* font, std::string_view text,
+    [[nodiscard]] auto load_lcd_wrap_text(TTF_Font* font, std::string_view text,
                                        int wrapLen = 0,
-                                       const Color& bg = Color{},
-                                       const Color& fg = Color{ SDL_Color{.r = defaultAlphaInt, .g = defaultAlphaInt, .b = defaultAlphaInt, .a = defaultAlphaInt} }) const -> Texture2D;
+                                       const color_t& bg = color_t{},
+                                       const color_t& fg = color_t{ SDL_Color{.r = default_alpha_int, .g = default_alpha_int, .b = default_alpha_int, .a = default_alpha_int} }) const -> texture_2d;
 
     /**
      * @brief Used to draw arbitrary shapes with raw vertex information. Great for making draw calls from
@@ -152,29 +153,29 @@ namespace swgtk {
      * @param vertices
      * @param indices
      */
-    void DrawGeometry(Texture2D texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
+    void draw_geometry(texture_2d texture, const std::span<SDL_Vertex> vertices, const std::span<int> indices) const {
       SDL_RenderGeometry(_render, *texture, vertices.data(), static_cast<int>(std::ssize(vertices)),
                          indices.data(), static_cast<int>(std::ssize(indices)));
     }
 
-    [[nodiscard]] auto LoadTextureImg(const std::filesystem::path& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> Texture2D;
-    [[nodiscard]] auto CreateRenderableTexture(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> Texture2D;
-    [[nodiscard]] auto CreateTextureFromSurface(const Surface& surface) const -> Texture2D;
+    [[nodiscard]] auto load_texture_img(const std::filesystem::path& img, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> texture_2d;
+    [[nodiscard]] auto create_renderable_texture(int width, int height, SDL_PixelFormat format = SDL_PIXELFORMAT_RGBA32, SDL_BlendMode blendMode = SDL_BLENDMODE_BLEND) const -> texture_2d;
+    [[nodiscard]] auto create_texture_from_surface(const surface& surface) const -> texture_2d;
 
-    [[nodiscard]] auto GetDrawColor() const -> Color {
+    [[nodiscard]] auto get_draw_color() const -> color_t {
       SDL_FColor res{};
       SDL_GetRenderDrawColorFloat(_render, &res.r, &res.g, &res.b, &res.a);
 
-      return Color{ res };
+      return color_t{ res };
     }
 
-    auto SetDrawTarget(Texture2D texture) const -> bool { return SDL_SetRenderTarget(_render, *texture); }
+    auto set_draw_target(texture_2d texture) const -> bool { return SDL_SetRenderTarget(_render, *texture); }
 
     template <typename... Args>
-    [[nodiscard]] static auto Create(Args&&... args) noexcept { return std::make_shared<Basic2D>(std::forward<Args>(args)...); }
+    [[nodiscard]] static auto create(Args&&... args) noexcept { return std::make_shared<basic_2d>(std::forward<Args>(args)...); }
 
 #ifdef SWGTK_BUILD_WITH_LUA
-    void InitLua(sol::state* lua_) override;
+    void init_lua(sol::state* lua_) override;
 #endif
 
   private:

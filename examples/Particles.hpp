@@ -21,44 +21,44 @@
 #include "swgtk/Font.hpp"
 #include "swgtk/Math.hpp"
 
-inline constexpr auto particleCount = 100uz;
+inline constexpr auto particle_count = 100uz;
 
 namespace swgtk {
 
-  struct MouseCursor {
+  struct mouse_cursor {
     SDL_FPoint pos{};
-    Texture2D texture;
+    texture_2d texture;
   };
 
-  struct Particle {
+  struct particle {
     SDL_FPoint pos{};
     SDL_FPoint velocity{};
-    Rads angle;
+    rads angle;
     float speed = 0.f;
     float lifetime = 0.f;
   };
 
-  class ParticlesTest final : public Scene::Node {
+  class particles_test final : public scene::node {
   public:
-    explicit ParticlesTest(const ObjectRef<Scene> &scene) :
-        Node(scene), _particles(std::vector<Particle>(particleCount)),
-        _gen(_rd()), _app(scene->GetApp()),
-        _render(scene->AppRenderer<Basic2D>()) {}
+    explicit particles_test(const object_ref<scene> &scene) :
+        node(scene), _particles(std::vector<particle>(particle_count)),
+        _gen(_rd()), _app(scene->get_app()),
+        _render(scene->app_renderer<basic_2d>()) {}
 
-    auto Create() -> bool override;
-    auto Update(float deltaTime) -> bool override;
+    auto create() -> bool  override;
+    auto update(float deltaTime) -> bool  override;
 
-    [[nodiscard]] auto Draw() const { return _render; }
-    [[nodiscard]] auto GetAverageTime() const { return _averageTime; }
+    [[nodiscard]] auto draw() const { return _render; }
+    [[nodiscard]] auto get_average_time() const { return _averageTime; }
 
   private:
-    MouseCursor _mouse;
-    std::vector<Particle> _particles;
+    mouse_cursor _mouse;
+    std::vector<particle> _particles;
     std::random_device _rd;
     std::mt19937_64 _gen;
-    ObjectRef<App> _app;
-    ObjectRef<Basic2D> _render;
-    Font _font{Font::LoadDefault()};
+    object_ref<app> _app;
+    object_ref<basic_2d> _render{};
+    font _font{font::load_default()};
     uint32_t _currentFrameCount = 0u;
     float _runningTime = 0.0f;
     float _averageTime = 0.0f;

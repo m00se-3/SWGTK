@@ -21,7 +21,7 @@
 
 namespace swgtk {
 
-  struct GPUTextureHandle {
+  struct gpu_texture_handle {
     SDL_GPUDevice* device;
     SDL_GPUTexture* texture;
   };
@@ -32,34 +32,34 @@ namespace swgtk {
     When creating a SDL_Texture, you are responsible for calling the appropriate SDL function for your use case. However,
     the Texture2D class will reference count your SDL_Texture and clean it up for you when all references are destroyed.
   */
-  class Texture2D {
-    static void DestroyTexture(SDL_Texture* texture) { SDL_DestroyTexture(texture); }
+  class texture_2d {
+    static void destroy_texture(SDL_Texture* texture) { SDL_DestroyTexture(texture); }
 
   public:
-    Texture2D() = default;
-    explicit Texture2D(SDL_Texture* texture) :
-        _texture(std::shared_ptr<SDL_Texture>{texture, DestroyTexture}) {}
+    texture_2d() = default;
+    explicit texture_2d(SDL_Texture* texture) :
+        _texture(std::shared_ptr<SDL_Texture>{texture, destroy_texture}) {}
 
     [[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
-    [[nodiscard]] auto Get(this auto&& self) { return self._texture; }
+    [[nodiscard]] auto get(this auto&& self) { return self._texture; }
 
-    void SetBlendMode(const SDL_BlendMode mode) const { SDL_SetTextureBlendMode(_texture.get(), mode); }
+    void set_blend_mode(const SDL_BlendMode mode) const { SDL_SetTextureBlendMode(_texture.get(), mode); }
 
-    void SetTint(const SDL_FColor& color) const {
+    void set_tint(const SDL_FColor& color) const {
       SDL_SetTextureColorModFloat(_texture.get(), color.r, color.g, color.b);
       SDL_SetTextureAlphaModFloat(_texture.get(), color.a);
     }
 
-    void SetScaleMode(const SDL_ScaleMode mode) const { SDL_SetTextureScaleMode(_texture.get(), mode); }
+    void set_scale_mode(const SDL_ScaleMode mode) const { SDL_SetTextureScaleMode(_texture.get(), mode); }
 
-    [[nodiscard]] auto GetBlendMode() const -> SDL_BlendMode {
+    [[nodiscard]] auto get_blend_mode() const -> SDL_BlendMode {
       SDL_BlendMode blend{};
 
       SDL_GetTextureBlendMode(_texture.get(), &blend);
       return blend;
     }
 
-    [[nodiscard]] auto GetTint() const -> SDL_FColor {
+    [[nodiscard]] auto get_tint() const -> SDL_FColor {
       SDL_FColor color{};
 
       SDL_GetTextureColorModFloat(_texture.get(), &color.r, &color.g, &color.b);
@@ -68,7 +68,7 @@ namespace swgtk {
       return color;
     }
 
-    [[nodiscard]] auto GetScaleMode() const -> SDL_ScaleMode {
+    [[nodiscard]] auto get_scale_mode() const -> SDL_ScaleMode {
       SDL_ScaleMode mode{};
 
       SDL_GetTextureScaleMode(_texture.get(), &mode);
@@ -76,7 +76,7 @@ namespace swgtk {
       return mode;
     }
 
-    [[nodiscard]] auto GetSize() const -> std::pair<float, float> {
+    [[nodiscard]] auto get_size() const -> std::pair<float, float> {
       float w{}, y{};
 
       SDL_GetTextureSize(_texture.get(), &w, &y);
@@ -87,16 +87,16 @@ namespace swgtk {
     std::shared_ptr<SDL_Texture> _texture;
   };
 
-  class TextureGPU {
+  class texture_gpu {
   public:
-    TextureGPU() = default;
-    TextureGPU(SDL_GPUDevice* device, SDL_GPUTexture* texture)
-      : _texture({ texture, Destroyer{.device = device} }) {}
+    texture_gpu() = default;
+    texture_gpu(SDL_GPUDevice* device, SDL_GPUTexture* texture)
+      : _texture({ texture, destroyer{.device = device} }) {}
 
     [[nodiscard]] auto operator*(this auto&& self) { return self._texture.get(); }
-    [[nodiscard]] auto Get(this auto&& self) { return self._texture; }
+    [[nodiscard]] auto get(this auto&& self) { return self._texture; }
 
-    struct Destroyer {
+    struct destroyer {
       SDL_GPUDevice* device = nullptr;
       auto operator()(SDL_GPUTexture* texture) const -> void { SDL_ReleaseGPUTexture(device, texture); }
     };

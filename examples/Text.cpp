@@ -16,25 +16,25 @@
 #include <swgtk/Utility.hpp>
 
 namespace swgtk {
-  auto TextTest::Create() -> bool {
-    _app = _scene->GetApp();
-    _render = _scene->AppRenderer<Basic2D>();
-    _font.SetStyle(FontStyle::Underlined);
+  auto text_test::create() -> bool {
+    _app = _scene->get_app();
+    _render = _scene->app_renderer<basic_2d>();
+    _font.set_style(font_style::underlined);
 
-    _mouse.texture = _render->LoadPlainWrapText(*_font, "Hello\nWorld!", 0, Color::Red());
+    _mouse.texture = _render->load_plain_wrap_text(*_font, "Hello\nWorld!", 0, color_t::red());
 
-    _background = _render->LoadLCDWrapText(*_font, "EAT!\nSLEEP!\nCODE!");
+    _background = _render->load_lcd_wrap_text(*_font, "EAT!\nSLEEP!\nCODE!");
 
     return true;
   }
 
-  auto TextTest::Update(const float dt) -> bool {
+  auto text_test::update(const float dt) -> bool {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers) - Reason: It's pointless to create constants for this test.
 
-    _mouse.pos = _app->GetMousePos();
+    _mouse.pos = _app->get_mouse_pos();
     _mouse.angle += static_cast<double>(dt) * 2.0;
 
-    auto [width, height] = _mouse.texture.GetSize();
+    auto [width, height] = _mouse.texture.get_size();
 
     auto rect = SDL_FRect{};
 
@@ -44,12 +44,12 @@ namespace swgtk {
     rect.x = _mouse.pos.x - (rect.w / 2.0f);
     rect.y = _mouse.pos.y - (rect.h / 2.0f);
 
-    _render->BufferClear();
+    _render->buffer_clear();
 
-    _render->DrawTexture(_background);
+    _render->draw_texture(_background);
 
     // Rotating in SDL3 is in degrees...
-    _render->DrawTexture(_mouse.texture, std::nullopt, rect, RadiansToDegrees(_mouse.angle).value());
+    _render->draw_texture(_mouse.texture, std::nullopt, rect, radians_to_degrees(_mouse.angle).value());
 
 
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
@@ -64,7 +64,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv) -> int 
   constexpr auto w = 800;
   constexpr auto h = 600;
 
-  if (swgtk::App app("Text Test", w, h, swgtk::Basic2D::Create()); app.Build()) {
-    app.RunGame<swgtk::TextTest>();
+  if (swgtk::app app("Text Test", w, h, swgtk::basic_2d::create()); app.build()) {
+    app.run_game<swgtk::text_test>();
   }
 }
